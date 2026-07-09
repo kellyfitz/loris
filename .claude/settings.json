@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make)",
+      "Bash(make *)",
+      "Bash(./configure)",
+      "Bash(./configure *)",
+      "Bash(/Users/fitz/Code/loris/configure)",
+      "Bash(/Users/fitz/Code/loris/configure *)",
+      "Bash(./reconf)",
+      "Bash(autoreconf *)",
+      "Bash(aclocal *)",
+      "Bash(autoconf *)",
+      "Bash(automake *)",
+      "Bash(autoheader *)",
+      "Bash(glibtoolize *)",
+      "Bash(libtoolize *)",
+      "Bash(lldb *)",
+      "Bash(xcodebuild *)",
+      "Bash(xcrun *)",
+      "Bash(lipo *)",
+      "Bash(otool *)",
+      "Bash(nm *)",
+      "Bash(command -v *)",
+      "Bash(sysctl -n *)",
+      "Bash(brew --prefix)",
+      "Bash(brew --prefix *)",
+      "Bash(brew list *)",
+      "Bash(brew info *)",
+      "Bash(brew search *)",
+      "Bash(swig -version)"
+    ]
+  }
+}
