@@ -121,10 +121,24 @@ int main( int argc, char * argv[] )
 
         cout << "analyzed, found " << clar.size() << " partials" << endl;
         
-        Partial & fund = *(std::find_if( clar.begin(), clar.end(), PartialUtils::isLabelEqual(1) ));
+        PartialList::iterator fundIt =
+            std::find_if( clar.begin(), clar.end(), PartialUtils::isLabelEqual(1) );
+        if ( fundIt == clar.end() )
+        {
+            cout << "FAILED: no partial labeled 1 (fundamental) was found." << endl;
+            return 1;
+        }
+        Partial & fund = *fundIt;
         cout << "fundamental appears to be about " << fund.frequencyAt(1) << " Hz." << endl;
-        
-        Partial & second = *(std::find_if( clar.begin(), clar.end(), PartialUtils::isLabelEqual(2) ));
+
+        PartialList::iterator secondIt =
+            std::find_if( clar.begin(), clar.end(), PartialUtils::isLabelEqual(2) );
+        if ( secondIt == clar.end() )
+        {
+            cout << "FAILED: no partial labeled 2 (second harmonic) was found." << endl;
+            return 1;
+        }
+        Partial & second = *secondIt;
         cout << "second harmonic appears to be about " << second.frequencyAt(1) << " Hz." << endl;
         cout << "(they should be around 415 and 830)" << endl;
         

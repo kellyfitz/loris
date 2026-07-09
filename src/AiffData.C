@@ -846,14 +846,20 @@ convertSamplesToBytes( const std::vector< double > & samples,
 # define HUGE_VAL HUGE
 #endif							/* HUGE_VAL */
 
-#define FloatToUnsigned(f)((Int_32)((Int_32(f - 2147483648.0)) + (Int_32)(2147483647)) + 1)
+//	The mantissa halves are 32-bit *unsigned* quantities. Converting the
+//	floored double mantissa (always in [0, 2^32)) to Uint_32 is exact and
+//	well defined. The old macro cast through the signed Int_32 and added
+//	2147483647, which overflows a signed int -- undefined behavior that
+//	clang miscompiled at -O2 (sample rates read back wrong). See the read
+//	path below for the symmetric fix.
+#define FloatToUnsigned(f) ((Uint_32)(f))
 
 void ConvertToIeeeExtended(double num, extended80 * x)
 {
 	int sign;
 	int expon;
 	double fMant, fsMant;
-	Int_32 hiMant, loMant;
+	Uint_32 hiMant, loMant;
 	char * bytes = x->data;
 
 	if (num < 0) {
@@ -909,7 +915,11 @@ void ConvertToIeeeExtended(double num, extended80 * x)
 # define HUGE_VAL HUGE
 #endif							/* HUGE_VAL */
 
-# define UnsignedToFloat(u)(((double)((Int_32)(u - (Int_32)(2147483647) - 1))) + 2147483648.0)
+//	A 32-bit unsigned mantissa converts to double exactly, so this is just
+//	a widening cast. The old macro round-tripped through signed Int_32
+//	arithmetic (subtracting 2147483648) which is signed overflow / UB when
+//	the high mantissa bit is set -- the defect that clang -O2 miscompiled.
+# define UnsignedToFloat(u) ((double)(u))
 
 /****************************************************************
  * Extended precision IEEE floating-point conversion routine.
@@ -919,18 +929,21 @@ double ConvertFromIeeeExtended(const extended80 * x)
 {								/* LCN */ /* ? */
 	double f;
 	int expon;
-	Int_32 hiMant, loMant;
+	Uint_32 hiMant, loMant;
 	const char * bytes = x->data;
 
+	//	Assemble the mantissa halves as unsigned so that shifting a byte
+	//	value into bit 31 is well defined (shifting into the sign bit of a
+	//	signed int is undefined behavior).
 	expon = ((bytes[0] & 0x7F) << 8) | (bytes[1] & 0xFF);
-	hiMant = ((int)(bytes[2] & 0xFF) << 24)
-		| ((int)(bytes[3] & 0xFF) << 16)
-		| ((int)(bytes[4] & 0xFF) << 8)
-		| ((int)(bytes[5] & 0xFF));
-	loMant = ((int)(bytes[6] & 0xFF) << 24)
-		| ((int)(bytes[7] & 0xFF) << 16)
-		| ((int)(bytes[8] & 0xFF) << 8)
-		| ((int)(bytes[9] & 0xFF));
+	hiMant = ((Uint_32)(bytes[2] & 0xFF) << 24)
+		| ((Uint_32)(bytes[3] & 0xFF) << 16)
+		| ((Uint_32)(bytes[4] & 0xFF) << 8)
+		| ((Uint_32)(bytes[5] & 0xFF));
+	loMant = ((Uint_32)(bytes[6] & 0xFF) << 24)
+		| ((Uint_32)(bytes[7] & 0xFF) << 16)
+		| ((Uint_32)(bytes[8] & 0xFF) << 8)
+		| ((Uint_32)(bytes[9] & 0xFF));
 
 	if (expon == 0 && hiMant == 0 && loMant == 0)
 		f = 0;
