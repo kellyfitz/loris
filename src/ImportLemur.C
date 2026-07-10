@@ -45,56 +45,18 @@
 #include "Notifier.h"
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <fstream>
 #include <string>
 
-//	in case configure wasn't run (no config.h), 
-//	pick some (hopefully-) reasonable values for
-//	these things and hope for the best...
-#if ! defined( SIZEOF_SHORT )
-#define SIZEOF_SHORT 2
-#endif
+//	exact-width types for parsing Lemur file data
+typedef std::int16_t 	Int_16;
+typedef std::uint16_t 	Uint_16;
+typedef std::int32_t 	Int_32;
+typedef std::uint32_t 	Uint_32;
 
-#if ! defined( SIZEOF_INT )
-#define SIZEOF_INT 4
-#endif
-
-#if ! defined( SIZEOF_LONG )
-#define SIZEOF_LONG 4	// not for DEC Alpha!
-#endif
-
-#if SIZEOF_SHORT == 2
-typedef short 			Int_16;
-typedef unsigned short 	Uint_16;
-#elif SIZEOF_INT == 2
-typedef int 			Int_16;
-typedef unsigned int 	Uint_16;
-#else
-#error "cannot find an appropriate type for 16-bit integers"
-#endif
-
-#if SIZEOF_INT == 4
-typedef int 			Int_32;
-typedef unsigned int 	Uint_32;
-#elif SIZEOF_LONG == 4
-typedef long 			Int_32;
-typedef unsigned long 	Uint_32;
-#else
-#error "cannot find an appropriate type for 32-bit integers"
-#endif
-
-
-#if ! defined( SIZEOF_FLOAT ) || SIZEOF_FLOAT == 4
 typedef float			Float_32;
-#else
-#error "cannot find an appropriate type for 32-bit floats"
-#endif
-
-#if ! defined( SIZEOF_DOUBLE ) || SIZEOF_DOUBLE == 8
 typedef double			Double_64;
-#else
-#error "cannot find an appropriate type for 64-bit double-precision floats"
-#endif
 
 
 #if defined(HAVE_M_PI) && (HAVE_M_PI)

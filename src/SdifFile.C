@@ -85,6 +85,7 @@ SDIF spec: http://www.cnmat.berkeley.edu/SDIF/
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <list>
 #include <string>
@@ -106,59 +107,12 @@ namespace Loris {
 //	CNMAT SDIF types
 // ---------------------------------------------------------------------------
 
-//	try to use the information gathered by configure -- if not using 
-//  config.h, then pick some (hopefully-) reasonable values for
-//	these things and hope for the best...
-#if ! defined( SIZEOF_SHORT )
-#define SIZEOF_SHORT 2
-#endif
+//	exact-width integer types for parsing SDIF data
+typedef std::uint16_t   sdif_unicode;
+typedef std::int16_t    sdif_int16;
+typedef std::int32_t    sdif_int32;
+typedef std::uint32_t   sdif_uint32;
 
-#if ! defined( SIZEOF_INT )
-#define SIZEOF_INT 4
-#endif
-
-#if ! defined( SIZEOF_LONG )
-#define SIZEOF_LONG 4	
-#endif
-
-#if defined(SIZEOF_SHORT) && (SIZEOF_SHORT == 2)
-typedef unsigned short  sdif_unicode;
-typedef short           sdif_int16;
-#elif defined(SIZEOF_INT) && (SIZEOF_INT == 2)
-typedef unsigned int    sdif_unicode;
-typedef int             sdif_int16;
-#else
-#error "SdifFile.C: cannot identify a two-byte integer type, define SIZEOF_SHORT or SIZEOF_INT"
-#endif
-
-#if defined(SIZEOF_INT) && (SIZEOF_INT == 4)
-typedef int             sdif_int32;
-typedef unsigned int    sdif_uint32;
-#elif defined(SIZEOF_LONG) && (SIZEOF_LONG == 4)
-typedef long            sdif_int32;
-typedef unsigned long   sdif_uint32;
-#else
-#error "SdifFile.C: cannot identify a four-byte integer type, define SIZEOF_INT or SIZEOF_LONG"
-#endif
-
-// It is probably an unnecessary nuisance to check these, since there's
-// no alternative type to try. Requiring builders to define these 
-// symbols doesn't really serve any purpose. C++ doesn't provide a 
-// standard way to find a data type having a particular size 
-//  (as stdint.h does for interger types in C99).
-/*
-#if SIZEOF_FLOAT == 4
-typedef float           sdif_float32;
-#else
-#error "SdifFile.C: cannot identify a four-byte floating-point type"
-#endif
-
-#if SIZEOF_DOUBLE == 8
-typedef double          sdif_float64;
-#else
-#error "SdifFile.C: cannot identify a eight-byte floating-point type"
-#endif
-*/
 typedef float           sdif_float32;
 typedef double          sdif_float64;
 

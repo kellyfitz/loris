@@ -33,44 +33,15 @@
 
 #include "Marker.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
-//	in case configure wasn't run (no config.h), 
-//	pick some (hopefully-) reasonable values for
-//	these things and hope for the best...
-#if ! defined( SIZEOF_SHORT )
-#define SIZEOF_SHORT 2
-#endif
-
-#if ! defined( SIZEOF_INT )
-#define SIZEOF_INT 4
-#endif
-
-#if ! defined( SIZEOF_LONG )
-#define SIZEOF_LONG 4	// not for DEC Alpha!
-#endif
-
-
-#if SIZEOF_SHORT == 2
-typedef short 			Int_16;
-typedef unsigned short 	Uint_16;
-#elif SIZEOF_INT == 2
-typedef int 			Int_16;
-typedef unsigned int 	Uint_16;
-#else
-#error "cannot find an appropriate type for 16-bit integers"
-#endif
-
-#if SIZEOF_INT == 4
-typedef int 			Int_32;
-typedef unsigned int 	Uint_32;
-#elif SIZEOF_LONG == 4
-typedef long 			Int_32;
-typedef unsigned long 	Uint_32;
-#else
-#error "cannot find an appropriate type for 32-bit integers"
-#endif
+//	exact-width integer types for parsing AIFF data
+typedef std::int16_t 	Int_16;
+typedef std::uint16_t 	Uint_16;
+typedef std::int32_t 	Int_32;
+typedef std::uint32_t 	Uint_32;
 
 
 //	begin namespace
@@ -158,7 +129,7 @@ struct InstrumentCk
 	{ 
 		Int_16	playMode;	/* 0 - no loop, 1 - forward looping, 2 - backward looping */ 
 		Uint_16 beginLoop;	/* this is a reference to a markerID, so you always 
-	ÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊ have to work with MARK and INST together!! */ 
+	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ have to work with MARK and INST together!! */ 
 		Uint_16 endLoop; 
 	}; 
 
