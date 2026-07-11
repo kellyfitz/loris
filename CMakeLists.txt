@@ -51,6 +51,12 @@ if(LORIS_UTILS)
     add_subdirectory(utils)
 endif()
 
+# include(CTest) defines BUILD_TESTING (default ON)
+include(CTest)
+if(BUILD_TESTING)
+    add_subdirectory(test)
+endif()
+
 #----------------------------------------------------------------
 # Configuration summary
 #----------------------------------------------------------------
