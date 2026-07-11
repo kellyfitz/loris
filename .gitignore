@@ -108,6 +108,9 @@ xcode/DerivedData/
 *~
 *.swp
 
+# --- CMake build tree ---
+/build/
+
 # --- Python virtual environment ---
 /.venv/
 /venv/
