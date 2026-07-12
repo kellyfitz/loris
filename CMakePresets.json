@@ -1,0 +1,86 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Debug (venv Python)",
+            "description": "Debug build; Python/SWIG from the project .venv, FFTW from Homebrew",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            },
+            "environment": {
+                "VIRTUAL_ENV": "${sourceDir}/.venv",
+                "PATH": "${sourceDir}/.venv/bin:/opt/homebrew/bin:$penv{PATH}"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release (venv Python)",
+            "inherits": "default",
+            "binaryDir": "${sourceDir}/build-release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "nofftw",
+            "displayName": "Debug, bundled FFT (no FFTW)",
+            "inherits": "default",
+            "binaryDir": "${sourceDir}/build-nofftw",
+            "cacheVariables": {
+                "LORIS_FFTW": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "jobs": 8
+        },
+        {
+            "name": "release",
+            "configurePreset": "release",
+            "jobs": 8
+        },
+        {
+            "name": "nofftw",
+            "configurePreset": "nofftw",
+            "jobs": 8
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "jobs": 8
+            }
+        },
+        {
+            "name": "release",
+            "configurePreset": "release",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "jobs": 8
+            }
+        },
+        {
+            "name": "nofftw",
+            "configurePreset": "nofftw",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "jobs": 8
+            }
+        }
+    ]
+}

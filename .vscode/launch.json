@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug current CMake target",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            "environment": [
+                { "name": "srcdir", "value": "${workspaceFolder}/test" }
+            ],
+            "MIMode": "lldb"
+        },
+        {
+            "name": "Debug test_aiff",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test/test_aiff",
+            "cwd": "${workspaceFolder}/build/test/work/test_aiff",
+            "environment": [
+                { "name": "srcdir", "value": "${workspaceFolder}/test" }
+            ],
+            "MIMode": "lldb"
+        },
+        {
+            "name": "Debug loris-analyze (clarinet)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/utils/loris-analyze",
+            "args": [
+                "332",
+                "664",
+                "${workspaceFolder}/test/clarinet.aiff",
+                "-o",
+                "clarinet.sdif"
+            ],
+            "cwd": "${workspaceFolder}/build",
+            "MIMode": "lldb"
+        }
+    ]
+}

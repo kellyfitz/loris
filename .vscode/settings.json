@@ -1,0 +1,18 @@
+{
+    // VS Code launched from the Dock does not inherit the shell PATH,
+    // so point the extension at Homebrew's cmake explicitly
+    "cmake.cmakePath": "/opt/homebrew/bin/cmake",
+    // drive everything from CMakePresets.json
+    "cmake.useCMakePresets": "always",
+    // newer CMake Tools hides build/launch target pickers from the status
+    // bar by default; show them
+    "cmake.options.statusBarVisibility": "visible",
+    "cmake.buildBeforeRun": true,
+    // show CTest tests in the Testing sidebar
+    "cmake.ctest.testExplorerIntegration": true,
+    // the old .C extension means C++ here
+    "files.associations": {
+        "*.C": "cpp",
+        "*.i": "cpp"
+    }
+}
