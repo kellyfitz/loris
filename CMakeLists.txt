@@ -51,6 +51,27 @@ if(LORIS_UTILS)
     add_subdirectory(utils)
 endif()
 
+#----------------------------------------------------------------
+# Python module (SWIG). Python and SWIG are located here at the top
+# level so their imported targets are visible in scripting/ and test/.
+# With the project .venv first on PATH, both are found there.
+#----------------------------------------------------------------
+if(LORIS_PYTHON)
+    # honor an activated virtual environment (VIRTUAL_ENV set): the module
+    # is then built for and installed into that venv's site-packages
+    if(DEFINED ENV{VIRTUAL_ENV})
+        set(Python3_FIND_VIRTUALENV ONLY)
+    endif()
+    find_package(Python3 COMPONENTS Interpreter Development.Module)
+    find_package(SWIG 4.0)
+    if(Python3_FOUND AND SWIG_FOUND)
+        add_subdirectory(scripting)
+        message(STATUS "Python module: ${Python3_EXECUTABLE} -> ${Python3_SITEARCH}")
+    else()
+        message(WARNING "Cannot find Python and/or SWIG. Python module cannot be built.")
+    endif()
+endif()
+
 # include(CTest) defines BUILD_TESTING (default ON)
 include(CTest)
 if(BUILD_TESTING)

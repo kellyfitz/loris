@@ -45,3 +45,15 @@ loris_add_test(test_partial test_Partial.C)
 loris_add_test(test_resample test_Resampler.C)
 loris_add_test(test_sdiffile test_SdifFile.C)
 loris_add_test(test_synthesizer test_Synthesizer.C)
+
+# Python module test: morphtest.py against the just-built module in
+# build/scripting (PYTHONPATH holds both _loris and loris.py there)
+if(TARGET pyloris)
+    set(_workdir ${CMAKE_CURRENT_BINARY_DIR}/work/run_pytest)
+    file(MAKE_DIRECTORY ${_workdir})
+    add_test(NAME run_pytest
+        COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/morphtest.py
+        WORKING_DIRECTORY ${_workdir})
+    set_tests_properties(run_pytest PROPERTIES
+        ENVIRONMENT "srcdir=${CMAKE_CURRENT_SOURCE_DIR};PYTHONPATH=$<TARGET_FILE_DIR:pyloris>")
+endif()
