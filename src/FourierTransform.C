@@ -35,10 +35,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "FourierTransform.h"
 #include "LorisExceptions.h"
 #include "Notifier.h"

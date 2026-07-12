@@ -78,6 +78,9 @@ if(BUILD_TESTING)
     add_subdirectory(test)
 endif()
 
+# optional `docs` target, when doxygen is available
+add_subdirectory(doc)
+
 #----------------------------------------------------------------
 # Configuration summary
 #----------------------------------------------------------------

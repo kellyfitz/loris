@@ -31,10 +31,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "LinearEnvelope.h"
 
 //	begin namespace

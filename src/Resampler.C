@@ -37,10 +37,6 @@
  * Phase correction added by Kelly 13 Dec 2005.
  * Interface updated by Kelly Aug 2010.
  */
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "Resampler.h"
 #include "Breakpoint.h"
 #include "LinearEnvelope.h"

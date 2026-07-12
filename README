@@ -18,36 +18,27 @@ For documentation, please see the files in the doc subdirectory.
 For a list of major changes to Loris, organized by release number,
 please see the file NEWS.
 
-INSTALLATION: 
+INSTALLATION:
 
-For generic configuration and installation instructions, see
-the file INSTALL.
+Loris builds with CMake (3.24 or newer). For detailed configuration and
+installation instructions, see the file INSTALL. Briefly:
+
+    cmake -S . -B build
+    cmake --build build
+    ctest --test-dir build
+    cmake --install build
 
 In order to compile and link the Loris library and scripting extensions,
 you will need a modern, reasonably standard-compliant C++ compiler (and
 linker, etc.). To build scripting extensions, such as the Python module,
 you will also need SWIG, a tool that connects programs written in C and
 C++ with a variety of high-level programming languages, available at
-www.swig.org 
+www.swig.org (or via pip: `pip install swig`).
 
 For best performance, you should also install the FFTW Fourier transform
-library, available at www.fftw.org. Mac OS X users see note below. FFTW
-is covered by its own license and copyright, and is entirely separate
-from Loris. FFTW is not required to build or use Loris.
-
-
-MacOS INSTALLATION:
-
-Loris can be built using the standard GNU tools from a Terminal window
-under Mac OS X (Darwin), follow the instructions for the standard
-distribution. You will, of course, need the developers' tools, available
-from Apple, in order to compile Loris (or anything else) under OS X. It
-is also possible to build Loris using Xcode under OS X.
-
-NOTE: By default, FFTW builds and installs only static libraries under
-Mac OS X. Loris needs to link against the dynamic FFTW library. You need
-to explicitly enable dynamic linking when building FFTW so that the
-dynamic (shared) library is built.
+library, available at www.fftw.org. FFTW is covered by its own license
+and copyright, and is entirely separate from Loris. FFTW is not required
+to build or use Loris.
 
 
 COPYRIGHT AND LICENSE:

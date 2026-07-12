@@ -34,10 +34,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "Fundamental.h"
 
 #include "LorisExceptions.h"

@@ -31,10 +31,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "Envelope.h"
 
 //	Since Envelope is just an interface, there's nothing interesting in 

@@ -72,10 +72,6 @@ SDIF spec: http://www.cnmat.berkeley.edu/SDIF/
 
 */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "SdifFile.h"
 #include "LorisExceptions.h"
 #include "Notifier.h"
@@ -227,13 +223,11 @@ static const char *error_string_array[] = {
 //	CNMAT SDIF little endian machinery.
 // ---------------------------------------------------------------------------
 
-//	WORDS_BIGENDIAN is defined (or not) in config.h, determined 
-//	at configure-time, changed from test of LITTLE_ENDIAN
-//	which might be erroneously defined in some standard header.
-
-//  If we didn't run configure, try to make a good guess.
-#if !(HAVE_CONFIG_H) && !defined(WORDS_BIGENDIAN)
-    #if (defined(__ppc__) || defined(__ppc64__))
+//	WORDS_BIGENDIAN is determined from the compiler's target macros
+//	(GCC and Clang define __BYTE_ORDER__; compilers that don't, like
+//	MSVC, only target little-endian machines).
+#if !defined(WORDS_BIGENDIAN)
+    #if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
     #define WORDS_BIGENDIAN 1
     #else
     #undef WORDS_BIGENDIAN

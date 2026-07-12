@@ -31,10 +31,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "BigEndian.h"
 #include "LorisExceptions.h"
 #include <vector>
@@ -50,19 +46,13 @@ namespace Loris {
 //
 static bool bigEndianSystem( void )
 {
-#if defined(WORDS_BIGENDIAN)
-	return true;
-#elif HAVE_CONFIG_H && !defined(WORDS_BIGENDIAN)
-	return false;
-#else	
 	static union {
 		int s ;
 		char c[sizeof(int)] ;
 	} x ;
-	bool ret = (x.s = 1, x.c[0] != 1) ? true : false;
-	
+	static bool ret = (x.s = 1, x.c[0] != 1) ? true : false;
+
 	return ret; // x.c[0] != 1;
-#endif
 }
 
 // ---------------------------------------------------------------------------

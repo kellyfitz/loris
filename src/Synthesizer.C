@@ -32,10 +32,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-    #include "config.h"
-#endif
-
 #include "Synthesizer.h"
 #include "Oscillator.h"
 #include "Breakpoint.h"

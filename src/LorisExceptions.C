@@ -37,10 +37,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "LorisExceptions.h"
 #include <string>
 

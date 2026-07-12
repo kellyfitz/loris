@@ -37,10 +37,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "F0Estimate.h"
 
 #include "LorisExceptions.h"	// for Assert

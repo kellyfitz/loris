@@ -46,10 +46,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "PartialBuilder.h"
 
 #include "BreakpointEnvelope.h"

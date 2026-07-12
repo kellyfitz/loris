@@ -31,10 +31,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "Partial.h"
 #include "Breakpoint.h"
 #include "BreakpointUtils.h"

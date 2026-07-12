@@ -31,10 +31,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
 #include "Distiller.h"
 #include "Breakpoint.h"
 #include "BreakpointUtils.h"
