@@ -75,7 +75,7 @@ using namespace Loris;
 //	by converting Partial references to pointer arguments.
 //
 
-struct CallWithPointer : public std::unary_function< Partial, void >
+struct CallWithPointer
 {
 	typedef void (* Func)( Partial *, void * );
 	Func func;
@@ -89,7 +89,7 @@ struct CallWithPointer : public std::unary_function< Partial, void >
 	}
 };
 
-struct PredWithPointer : public std::unary_function< const Partial, bool >
+struct PredWithPointer
 {
 	typedef int (* Pred)( const Partial *, void * );
 	Pred pred;
@@ -190,7 +190,7 @@ void copyIf( const PartialList * src, PartialList * dst,
 		ThrowIfNull((PartialList *) dst);
 		
 		std::remove_copy_if( src->begin(), src->end(), std::back_inserter( *dst ),
-							 std::not1( PredWithPointer( predicate, data ) ) );
+							 [pred = PredWithPointer( predicate, data )]( const Partial & p ) { return ! pred( p ); } );
 	}
 	catch( Exception & ex ) 
 	{
@@ -222,7 +222,7 @@ void copyLabeled( const PartialList * src, long label, PartialList * dst )
 		ThrowIfNull((PartialList *) dst);
 		
 		std::remove_copy_if( src->begin(), src->end(), std::back_inserter( *dst ),
-							 std::not1( PartialUtils::isLabelEqual(label) ) );
+							 [pred = PartialUtils::isLabelEqual(label)]( const Partial & p ) { return ! pred( p ); } );
 	}
 	catch( Exception & ex ) 
 	{
@@ -306,7 +306,7 @@ void extractIf( PartialList * src, PartialList * dst,
         
         std::list< Partial >::iterator it = 
 			std::stable_partition( src->begin(), src->end(), 
-								   std::not1( PredWithPointer( predicate, data ) ) );
+								   [pred = PredWithPointer( predicate, data )]( const Partial & p ) { return ! pred( p ); } );
 		
         PartialList tmp = src->extract( it, src->end() );
 		dst->splice( dst->end(), tmp );
@@ -360,7 +360,7 @@ void extractLabeled( PartialList * src, long label, PartialList * dst )
     
         std::list< Partial >::iterator it = 
 			std::stable_partition( src->begin(), src->end(), 
-								        std::not1( PartialUtils::isLabelEqual(label) ) );
+								        [pred = PartialUtils::isLabelEqual(label)]( const Partial & p ) { return ! pred( p ); } );
 		
         PartialList tmp = src->extract( it, src->end() );
 		dst->splice( dst->end(), tmp );

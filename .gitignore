@@ -29,18 +29,6 @@ __pycache__/
 *.pytest.*
 *.pi.*
 
-# --- Xcode ---
-xcode/build/
-xcode/DerivedData/
-*.xcuserstate
-**/xcuserdata/
-**/xcshareddata/IDEWorkspaceChecks.plist
-# Legacy per-user Xcode files (currently committed relics; safe to `git rm --cached` later)
-*.pbxuser
-*.mode1v3
-*.mode2v3
-*.perspectivev3
-
 # --- macOS / editor cruft ---
 .DS_Store
 *~

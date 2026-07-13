@@ -448,9 +448,10 @@ PartialList::iterator Distiller::distill_list( PartialList & partials )
 		Partial::label_type label = lower->label();
 
         //  identify a sequence of Partials having the same label:
-	    PartialList::iterator upper = 
+	    PartialList::iterator upper =
 	        std::find_if( lower, partials.end(),
-	                      std::not1( PartialUtils::isLabelEqual( label ) ) );
+	                      [pred = PartialUtils::isLabelEqual( label )]( const Partial & p )
+	                          { return ! pred( p ); } );
                             
         //  upper is the first Partial after lower whose label is not
         //  equal to that of lower.

@@ -35,7 +35,7 @@
 #include "Notifier.h"
 #include "LorisExceptions.h"
 #include <algorithm>	//	for std::transform(), others
-#include <functional>	//	for bind1st, multiplies, etc.
+#include <functional>
 #include <cstdlib>	    //	for std::abs()
 #include <numeric>	    //	for std::accumulate()
 
@@ -532,7 +532,6 @@ ReassignedSpectrum::operator[]( unsigned long idx ) const
 //
 template <class T>
 struct make_complex
-	: binary_function< T, T, std::complex<T> >
 {
 	std::complex<T> operator()(const T& re, const T& im) const
     {
@@ -636,7 +635,7 @@ ReassignedSpectrum::buildReassignmentWindows( const std::vector< double > & wind
 	// are correct.
 	double winsum = std::accumulate( window.begin(), window.end(), 0. );    
     std::transform( window.begin(), window.end(), mWindow.begin(), 
-			        std::bind1st( std::multiplies<double>(), 2/winsum ) );                    
+			        [scale = 2/winsum]( double v ) { return scale * v; } );                    
     
 
     //  Construct the ramped windows from the scaled window.
@@ -694,7 +693,7 @@ ReassignedSpectrum::buildReassignmentWindows( const std::vector< double > & wind
 	// are correct.
 	double winsum = std::accumulate( window.begin(), window.end(), 0. );    
     std::transform( window.begin(), window.end(), mWindow.begin(), 
-			        std::bind1st( std::multiplies<double>(), 2/winsum ) ); 
+			        [scale = 2/winsum]( double v ) { return scale * v; } ); 
                     
                         
     //  The fancy frequency reassignment window needs to scale the
@@ -703,7 +702,7 @@ ReassignedSpectrum::buildReassignmentWindows( const std::vector< double > & wind
     const double fancyScale = windowDerivative.size() / ( winsum * Pi );
 	std::vector< double > framp( windowDerivative.size(), 0 );
 	std::transform( windowDerivative.begin(), windowDerivative.end(), framp.begin(), 
-			        std::bind1st( std::multiplies<double>(), fancyScale ) );
+			        [fancyScale]( double v ) { return fancyScale * v; } );
                     
 
     //  Construct the ramped windows from the scaled window.

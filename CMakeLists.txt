@@ -13,6 +13,11 @@ cmake_minimum_required(VERSION 3.24)
 
 project(Loris VERSION 1.9 LANGUAGES C CXX)
 
+# the sources are C++17-clean (no auto_ptr, unary/binary_function,
+# bind1st/2nd, or not1); make that a checked guarantee
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 #----------------------------------------------------------------
 # Version components, substituted into src/loris.h.in
 # (keep consistent with the project() version above)
@@ -80,6 +85,7 @@ endif()
 
 # optional `docs` target, when doxygen is available
 add_subdirectory(doc)
+
 
 #----------------------------------------------------------------
 # Configuration summary

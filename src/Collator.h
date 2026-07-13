@@ -251,9 +251,10 @@ Collator::collate( PartialList & partials )
     // and collate the unlabeled ones and replace the 
     // unlabeled range.
     // (This requires bidirectional iterator support.)
-    Iterator beginUnlabeled = 
-       std::partition( partials.begin(), partials.end(), 
-                              std::not1( PartialUtils::isLabelEqual(0) ) );
+    Iterator beginUnlabeled =
+       std::partition( partials.begin(), partials.end(),
+                              [pred = PartialUtils::isLabelEqual(0)]( const Partial & p )
+                                  { return ! pred( p ); } );
         //  this used to be a stable partition, which 
         //  is very much slower and seems unnecessary
         

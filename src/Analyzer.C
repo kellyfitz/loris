@@ -116,8 +116,8 @@ protected:
 // ---------------------------------------------------------------------------
 class FundamentalBuilder : public LinearEnvelopeBuilder
 {
-    std::auto_ptr< Envelope > mFminEnv;
-    std::auto_ptr< Envelope > mFmaxEnv; 
+    std::unique_ptr< Envelope > mFminEnv;
+    std::unique_ptr< Envelope > mFmaxEnv; 
     
     double mAmpThresh, mFreqThresh;
     
@@ -625,7 +625,7 @@ Analyzer::analyze( const double * bufBegin, const double * bufEnd, double srate,
     
     //  configure bw association policy, unless
     //  bandwidth association is disabled:
-    std::auto_ptr< AssociateBandwidth > bwAssociator;
+    std::unique_ptr< AssociateBandwidth > bwAssociator;
     if( m_bwAssocParam > 0 )
     {
         bwAssociator.reset( new AssociateBandwidth( bwRegionWidth(), srate ) );

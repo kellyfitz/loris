@@ -63,7 +63,7 @@ namespace PartialUtils {
 //!
 //! \invariant	env is a non-zero pointer to a valid instance of a 
 //!            class derived from the abstract class Envelope.
-class PartialMutator : public std::unary_function< Partial, void >
+class PartialMutator
 {
 public:
 
@@ -967,8 +967,7 @@ void fixPhaseBetween( Iter b, Iter e, double t1, double t2 )
 //! Partial argument is less than the specified duration in
 //! seconds, and false otherwise.
 //
-class isDurationLess : public std::unary_function< const Partial, bool >
-{
+class isDurationLess{
 public:
     //! Initialize a new instance with the specified label.
 	isDurationLess( double x ) : mDurationSecs(x) {}
@@ -991,8 +990,7 @@ private:
 //! Predicate functor returning true if the label of its Partial argument is
 //! equal to the specified 32-bit label, and false otherwise.
 //
-class isLabelEqual : public std::unary_function< const Partial, bool >
-{
+class isLabelEqual{
 public:
     //! Initialize a new instance with the specified label.
 	isLabelEqual( int l ) : label(l) {}
@@ -1015,8 +1013,7 @@ private:
 //! Predicate functor returning true if the label of its Partial argument is
 //! greater than the specified 32-bit label, and false otherwise.
 //
-class isLabelGreater : public std::unary_function< const Partial, bool >
-{
+class isLabelGreater{
 public:
    //! Initialize a new instance with the specified label.
 	isLabelGreater( int l ) : label(l) {}
@@ -1039,8 +1036,7 @@ private:
 //! Predicate functor returning true if the label of its Partial argument is
 //! less than the specified 32-bit label, and false otherwise.
 //
-class isLabelLess : public std::unary_function< const Partial, bool >
-{
+class isLabelLess{
 public:
    //! Initialize a new instance with the specified label.
 	isLabelLess( int l ) : label(l) {}
@@ -1064,8 +1060,7 @@ private:
 //! Partial argument is less than the specified absolute amplitude, and 
 //! false otherwise.
 //
-class isPeakLess : public std::unary_function< const Partial, bool >
-{
+class isPeakLess{
 public:
     //! Initialize a new instance with the specified peak amplitude.
 	isPeakLess( double x ) : thresh(x) {}
@@ -1084,7 +1079,12 @@ private:
 
 //	-- comparitors --
 
-typedef std::binary_function< const Partial, const Partial, bool > PartialComparitor;
+//	Common (empty) base for Partial comparitors. Formerly a typedef of
+//	std::binary_function, which C++17 removed; the adapter typedefs it
+//	provided are not used.
+struct PartialComparitor
+{
+};
 
 // ---------------------------------------------------------------------------
 //	compareLabelLess
@@ -1116,9 +1116,7 @@ public:
 //! argument has duration less than that of the second Partial
 //! argument, and false otherwise.
 //
-class compareDurationLess : 
-	public std::binary_function< const Partial, const Partial, bool >
-{
+class compareDurationLess{
 public:
    //! Compare two Partials, return true if its first Partial
    //! argument has duration less than that of the second Partial
@@ -1140,9 +1138,7 @@ public:
 //! argument has duration greater than that of the second Partial
 //! argument, and false otherwise.
 //
-class compareDurationGreater : 
-	public std::binary_function< const Partial, const Partial, bool >
-{
+class compareDurationGreater{
 public:
    //! Compare two Partials, return true if its first Partial
    //! argument has duration greater than that of the second Partial
@@ -1164,9 +1160,7 @@ public:
 //! argument has start time earlier than that of the second Partial
 //! argument, and false otherwise.
 //
-class compareStartTimeLess : 
-	public std::binary_function< const Partial, const Partial, bool >
-{
+class compareStartTimeLess{
 public:
    //! Compare two Partials, return true if its first Partial
    //! argument has start time earlier than that of the second Partial

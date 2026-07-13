@@ -73,8 +73,7 @@ Sieve::Sieve( double partialFadeTime ) :
 //	that Partial ptrs are arranged by label, with the lowest labels
 //	first, and then with the longest Partials having each label
 //	before the shorter ones.
-struct SortPartialPtrs :
-	public std::binary_function< const Partial *, const Partial *, bool >
+struct SortPartialPtrs
 {
 	bool operator()( const Partial * lhs, const Partial * rhs ) const 
 		{ 
@@ -86,8 +85,7 @@ struct SortPartialPtrs :
 
 //	Definition of predicate for finding the end of a Patial *
 //	range having a common label.
-struct PartialPtrLabelNE :
-	public std::unary_function< const Partial *, bool >
+struct PartialPtrLabelNE
 {
 	int label;
 	PartialPtrLabelNE( int l ) : label(l) {}
