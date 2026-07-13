@@ -4,7 +4,7 @@
 #   manipulation, and synthesis of digitized sounds using the Reassigned 
 #   Bandwidth-Enhanced Additive Sound Model.
 #   
-#   Loris is Copyright (c) 1999-2016 by Kelly Fitz and Lippold Haken
+#   Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
 #  
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -38,11 +38,6 @@ Generates a simple linear morph between a
 clarinet and a flute using the Loris
 extension module for Python.
 """
-
-# suport Python 2 (>=2.6) and 3
-from __future__ import print_function
-
-
 
 print( __doc__ )
 
@@ -84,7 +79,6 @@ try:
     print( 'this will fail because the Partials are unchannelized' )
     loris.exportSpc( 'bad_spc_file.pytest.spc', clar, 90 )
 except Exception as e:
-    import sys
     print( 'caught Exception, error is:' , e.args[0] )
     print( 'OK, moving on!' )
 
@@ -97,19 +91,11 @@ loris.distill( clar )
 # clarinet analysis:
 f = 0
 n = 0
-import sys
-if float(sys.version[:3]) >= 2.2:
-    p = clar.first()
-    for pos in p:
-        f = f + pos.frequency()
-        n = n + 1
-else:
-    p = clar.iterator().next()
-    it = p.iterator()
-    while not it.atEnd():
-        f = f + it.next().frequency()
-        n = n + 1
-        
+p = clar.first()
+for pos in p:
+    f = f + pos.frequency()
+    n = n + 1
+
 print( "avg frequency of first distilled clarinet partial is", f/n )
 
 print( 'shifting pitch of clarinet' )

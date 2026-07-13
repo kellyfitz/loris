@@ -29,6 +29,12 @@ __pycache__/
 *.pytest.*
 *.pi.*
 
+# --- Demo outputs (demo/morphdemo.py writes these into demo/; the tracked
+#     input sounds live in demo/source/, so these anchored globs miss them) ---
+/demo/*.aiff
+/demo/*.sdif
+/demo/*.spc
+
 # --- macOS / editor cruft ---
 .DS_Store
 *~

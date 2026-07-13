@@ -1,4 +1,4 @@
-# Loris is Copyright (c) 1999-2016 by Kelly Fitz and Lippold Haken
+# Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
 # <loris@cerlsoundgroup.org>
 #  
 # This file is free software; as a special exception the author gives
@@ -31,12 +31,12 @@ demo_output = cello.dilated.aiff \
 	flutello2.aiff \
 	flutinet.aiff
 
-scriptingdir = ../scripting
+# The demo imports the installed Loris Python module. Build and install
+# Loris first (see ../INSTALL); with the module on the Python path, the
+# demo runs directly.
+run_demo = python3 $(demo_script)
 
-env_run = env PYTHONPATH=$(scriptingdir):$(scriptingdir)/.libs python $(demo_script)
-noenv_run = python $(demo_script)
-
-GACK = "!!! cannot run the demos script without the sound sources !!!"
+GACK = "!!! cannot run the demo script without the sound sources !!!"
 
 
 # targets:
@@ -44,15 +44,11 @@ GACK = "!!! cannot run the demos script without the sound sources !!!"
 all: demo
 
 demo:
-	-test -f $(demo_source_tarball) && tar zxf $(demo_source_tarball)
 	(test -f "source/clarinet.source.aiff" && \
 	test -f "source/cello.source.aiff" && \
 	test -f "source/flute.source.aiff" ) || \
 	(echo $(GACK) && return 1)
-	( test -d $(scriptingdir)  \
-	&& echo "using Loris distribution" \
-	&& $(env_run) ) || \
-	$(noenv_run)
+	$(run_demo)
 
 	
 	

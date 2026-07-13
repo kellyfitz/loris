@@ -3,7 +3,7 @@
 //  Loris
 //
 //  Created by Kelly Fitz on 11/8/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
 //
 
 #include "BlockSynthReader.h"

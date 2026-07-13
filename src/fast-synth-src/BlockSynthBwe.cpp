@@ -3,7 +3,7 @@
  *  Loris
  *
  *  Created by Pop on 10/3/11.
- *  Copyright 2011 __MyCompanyName__. All rights reserved.
+ *  Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
  *
  */
 
