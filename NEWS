@@ -3,7 +3,8 @@ synthesis, and morphing, developed by Kelly Fitz and Lippold Haken
 at the CERL Sound Group. Loris includes a C++ class library, a
 Python module, a C-linkable interface, and documentation.
 
-Loris 1.9 includes minor bug fixes and API enhancements. 
+Loris 2.0 modernizes the build and toolchain: it replaces the autotools
+build with CMake, requires C++17, and builds with no compiler warnings.
 
 A detailed list of major changes is given in the change 
 history, below. 
@@ -22,6 +23,36 @@ Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken.
 
 
 History of visible changes, organized by release number:
+
+-------------------------------------------------------
+changes since 1.9 release:
+
+- Replaced the autotools (configure/automake/libtool) build system with
+CMake (3.24 or newer). See INSTALL for the new build instructions. The
+config.h header is gone; the two configurable macros it held are now
+supplied directly by the build.
+
+- The library now requires a C++17 compiler. Modernized the sources to
+be free of deprecated constructs (std::auto_ptr, std::unary_function/
+binary_function, std::bind1st/bind2nd, std::not1): a clean build now
+emits no warnings.
+
+- Fixed a signed-integer-overflow bug in the AIFF IEEE-extended (80-bit)
+sample-rate conversion that could misread sample rates under optimizing
+compilers.
+
+- Added a CMake target and CTest registration for the full test suite
+(run with ctest), and a VS Code environment (CMakePresets.json plus
+.vscode) for building, testing, and debugging from the IDE.
+
+- Removed the Csound opcodes, the Xcode project, and the Windows project
+files. Absorbed the fast block synthesizer (loris-fastsynth).
+
+- Ported the morphing demo (demo/morphdemo.py) to Python 3, and removed
+the obsolete lorisdoc.py (its docstrings now live in the SWIG interface
+files, which also generate call signatures automatically).
+
+- FFTW remains optional; without it, Loris uses its bundled FFT.
 
 -------------------------------------------------------
 changes since 1.8 release:

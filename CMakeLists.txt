@@ -11,7 +11,7 @@
 
 cmake_minimum_required(VERSION 3.24)
 
-project(Loris VERSION 1.9 LANGUAGES C CXX)
+project(Loris VERSION 2.0 LANGUAGES C CXX)
 
 # the sources are C++17-clean (no auto_ptr, unary/binary_function,
 # bind1st/2nd, or not1); make that a checked guarantee

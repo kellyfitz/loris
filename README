@@ -18,6 +18,8 @@ For documentation, please see the files in the doc subdirectory.
 For a list of major changes to Loris, organized by release number,
 please see the file NEWS.
 
+Maintainers: for the steps to cut a tagged release, see RELEASING.md.
+
 INSTALLATION:
 
 Loris builds with CMake (3.24 or newer). For detailed configuration and
