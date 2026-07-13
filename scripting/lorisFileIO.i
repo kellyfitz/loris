@@ -469,13 +469,17 @@ class SpcFile
 {
 public:
 %feature("docstring",
-"Construct and return a new SpcFile by importing envelope parameter 
-streams from the file having the specified filename or path, 
+"Construct and return a new SpcFile by importing envelope parameter
+streams from the file having the specified filename or path,
 or initialize an instance of SpcFile having the specified fractional
 MIDI note number. If a PartialList is specified, add those
-Partials to the file. Otherwise, the new SpcFile contains 
+Partials to the file. Otherwise, the new SpcFile contains
 no Partials (or envelope parameter streams).
-The default MIDI note number is 60 (middle C).") SpcFile;
+The default MIDI note number is 60 (middle C).
+
+    f = SpcFile( partials, 69 )   # from Partials, A above middle C (440 Hz)
+    f = SpcFile( 69 )             # empty, A above middle C (440 Hz)
+    f = SpcFile( 'mysound.spc' )  # import from a file") SpcFile;
 
 	SpcFile( const char * filename );
 	SpcFile( double midiNoteNum = 60 );
@@ -492,7 +496,7 @@ The default MIDI note number is 60 (middle C).") SpcFile;
 
 %feature("docstring",
 "Return the MIDI note number for this SpcFile.
-Note number 60 corresponds to middle C.") sampleRate;
+Note number 60 corresponds to middle C.") midiNoteNumber;
 
 	double midiNoteNumber( void ) const;
 
