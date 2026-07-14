@@ -19,11 +19,6 @@
 
 #include <cmath>
 
-extern "C" {
-#include "oscil.h"
-#include "multiplyAdd.h"
-}
-
 #include "r250.h"
 
 //	begin namespace
@@ -124,86 +119,6 @@ static Fastsynth_Float_Type * make_mod_index_table( int N )
 static Fastsynth_Float_Type NoiseBuffer[ BlockSynthBwe::TabSize ];
 
 
-/*
- generate_env_segment
- 
- Generate samples of an arbitrary envelope segment, from initial and target values.
- The target value is the value that would be achieved by the envelope one sample after
- the last one generated.
- 
- Passing dTime allows a little extra efficiency, == one over howmany.
- 
- 
- *** Make this a generator. 
- 
- */
-static void generate_env_segment( Fastsynth_Float_Type ival, Fastsynth_Float_Type tval, Fastsynth_Float_Type dTime, 
-								 Fastsynth_Float_Type * output, int howmany, int stride )
-
-{
-    const Fastsynth_Float_Type dVal = ( tval - ival )  * dTime;
-    Fastsynth_Float_Type val = ival;
-    while ( howmany-- > 0 )
-    {
-        *output = val;
-        val += dVal;
-		output += stride;        
-    }
-    
-}
-
-
-/*
- generate_random
- 
- *** Make this fast! For now just call random.
- 
- Need to add a filter too. And maybe interpolation.
- 
- */
-
-static void generate_random( Fastsynth_Float_Type * output, int howmany, int stride )
-{
-	using std::rand;
-	
-	static const Fastsynth_Float_Type OneOverRandMax = 1. / RAND_MAX;
-	
-	while ( howmany-- > 0 )
-    {
-		Fastsynth_Float_Type zero_to_one = rand() * OneOverRandMax;
-        *output = 2.*( 0.5 + zero_to_one );
-		output += stride;        
-    }
-	
-}
-
-/*
- generate_table_lookup_01
- 
- Generate samples that are a function of the input, from samples of the
- function stored in a wavetable. The input is assumed to be bounded 0 to 1.
- 
- 
- */
-
-static void generate_table_lookup_01( Fastsynth_Float_Type * in, int in_stride,
-									 Fastsynth_Float_Type const * const Table, unsigned int TableMaxIdx,
-									 Fastsynth_Float_Type * output, int howmany, int stride )
-{
-	while ( howmany-- > 0 )
-    {
-		unsigned int idx = (unsigned int)( (*in * TableMaxIdx) + 0.5 ); // cheap rounding
-		
-        *output = Table[ idx ];
-		
-		in += in_stride;        
-		output += stride;        
-    }
-	
-	
-}
-
-
 BlockSynthBwe::BlockSynthBwe( unsigned int blockLenSamples, 
 							  Fastsynth_Float_Type sample_rate,
                               unsigned int numOscils ) :
@@ -230,7 +145,7 @@ BlockSynthBwe::allocateOscils( unsigned int howMany, Fastsynth_Float_Type sample
 {
 	BlockOscillator proto = BlockOscillator( mBlockLenSamples, sample_rate );
 	
-	// mOscils is a std::vector< oscil_info >	
+	// mOscils is a std::vector< BlockOscillator >
 	mOscils.resize( howMany, proto );
 }
 

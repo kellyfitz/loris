@@ -26,7 +26,8 @@
 #include "PartialUtils.h"
 #include "Synthesizer.h"
 
-#include "fastsynth.h"
+#include "BlockSynthBwe.h"
+#include "BlockSynthReader.h"
 
 #include <algorithm>
 #include <chrono>
@@ -46,6 +47,10 @@ using namespace Loris;
 const double Rate = 44100;
 const double TwoPi = 2 * 3.14159265358979324;
 
+//  Block size used by this harness (the loris-fastsynth utility uses its
+//  own, currently 128). All measured baselines below assume 100.
+const unsigned int Fastsynth_BlockSize_samples = 100;
+
 //  --------------------------------------------------------------------
 //  rendering helpers
 //  --------------------------------------------------------------------
@@ -61,14 +66,33 @@ static vector< double > renderStandard( PartialList & partials )
     return buf;
 }
 
+//  Render by driving BlockSynthReader + BlockSynthBwe directly, the same
+//  way the loris-fastsynth utility does.
+//
+//  (History note: this replaced a fastsynth() driver function that lived
+//  in src/fast-synth-src/fastsynth.h/.cpp, removed in the 2026-07 dead-code
+//  cleanup along with an earlier, vectorized structure-of-arrays synthesis
+//  built on oscil.c/multiplyAdd.c kernels. If that vectorized approach is
+//  ever worth reviving, it is in the git history -- see the commit that
+//  deleted fastsynth.cpp.)
 static vector< double > renderFast( PartialList & partials )
 {
+    const double interval = Fastsynth_BlockSize_samples / Rate;
     const double dur = PartialUtils::timeSpan( partials.begin(), partials.end() ).second;
-    //  fastsynth writes through &samps_out.front() without resizing:
-    //  the caller pre-sizes (same sizing as loris_fastsynth_main.cpp)
+
+    BlockSynthReader reader( partials, interval );
+    BlockSynthBwe synth( Fastsynth_BlockSize_samples, Rate, reader.numPartials() );
+
+    const unsigned int numBlocks = 1 + (unsigned int)( ( dur / interval ) + 0.5 );
     vector< Fastsynth_Float_Type > buf(
         (size_t)std::ceil( dur * Rate ) + 2 * Fastsynth_BlockSize_samples, 0. );
-    fastsynth( partials, Rate, buf );
+
+    Fastsynth_Float_Type * putEmHere = &buf.front();
+    for ( unsigned int blocknum = 0; blocknum < numBlocks; ++blocknum )
+    {
+        synth.render( reader.getFrame( blocknum ), putEmHere );
+        putEmHere += Fastsynth_BlockSize_samples;
+    }
     return vector< double >( buf.begin(), buf.end() );
 }
 

@@ -72,9 +72,6 @@ set(FASTSYNTH_SRC
     fast-synth-src/BlockOscillator.cpp
     fast-synth-src/BlockSynthBwe.cpp
     fast-synth-src/BlockSynthReader.cpp
-    fast-synth-src/fastsynth.cpp
-    fast-synth-src/multiplyAdd.c
-    fast-synth-src/oscil.c
     fast-synth-src/r250.c
     fast-synth-src/randlcg.c
 )
