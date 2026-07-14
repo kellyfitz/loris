@@ -36,10 +36,6 @@
  *
  */
  
-//#if HAVE_CONFIG_H
-//    #include "config.h"
-//#endif
-
 #include "BlockOscillator.h"
 
 
@@ -59,6 +55,9 @@ const Fastsynth_Float_Type OneOverTwoPi = 1.0/TwoPi;
 
 
 using Loris::Breakpoint;
+
+//	begin namespace
+namespace Loris {
 
 // ---------------------------------------------------------------------------
 //  fill_cos_table
@@ -169,8 +168,6 @@ static inline Fastsynth_Float_Type phaseToTableIndex( double phRadians )
  	return ph;	
 }
 
-//  begin namespace
-//namespace Loris {
 
 
 // ---------------------------------------------------------------------------
@@ -220,7 +217,7 @@ BlockOscillator::BlockOscillator( unsigned int blockLenSamples,
 //  (frequency, amplitude, bandwidth, and phase).
 //	No checking is performed, except that phase is wrapped.
 //
-void 
+void
 BlockOscillator::set( const Breakpoint & bp )
 {
     mFreqPhaseInc = bp.frequency() * mPhaseIncOverF;
@@ -228,6 +225,31 @@ BlockOscillator::set( const Breakpoint & bp )
     mBandwidth = bp.bandwidth();
     mPhaseIdx = phaseToTableIndex( bp.phase() );
 
+}
+
+// ---------------------------------------------------------------------------
+//  initOnset
+// ---------------------------------------------------------------------------
+//  Initialize the oscillator to render an onset toward a target Breakpoint:
+//  zero amplitude, the target's frequency and bandwidth, and phase walked
+//  back one block at the target frequency, so that oscillating toward the
+//  target lands exactly on the target phase (the same state a preceding
+//  null Breakpoint would have established).
+//
+void
+BlockOscillator::initOnset( const Breakpoint & bpTgt )
+{
+    mFreqPhaseInc = bpTgt.frequency() * mPhaseIncOverF;
+    mAmplitude = 0;
+    mBandwidth = bpTgt.bandwidth();
+
+    //  walk the phase back one block at the target frequency
+    //  (in wavetable index units), and wrap it into the table
+    const Fastsynth_Float_Type N = TabSize;
+    Fastsynth_Float_Type ph =
+        phaseToTableIndex( bpTgt.phase() ) - ( mFreqPhaseInc * mBlockLenSamples );
+    ph -= N * std::floor( ph / N );
+    mPhaseIdx = ph;
 }
 
 // ---------------------------------------------------------------------------
@@ -406,4 +428,5 @@ BlockOscillator::oscillate( const Breakpoint & bpTgt, Fastsynth_Float_Type * put
     mPhaseIdx = ph;
 }
 
-//}   //  end of namespace Loris
+
+}	//	end of namespace Loris

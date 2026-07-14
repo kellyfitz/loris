@@ -1,3 +1,6 @@
+#ifndef Loris_BlockSynthBwe_h
+#define Loris_BlockSynthBwe_h
+
 /*
  *  BlockSynthBwe.h
  *  Loris
@@ -30,6 +33,9 @@ typedef float Fastsynth_Float_Type;
 // ------------------------------------
 //	class BlockSynthBwe
 // ------------------------------------
+
+//	begin namespace
+namespace Loris {
 
 class BlockSynthBwe
 {
@@ -78,3 +84,6 @@ public:
 	
 	
 };	//	end of class BlockSynthBwe
+}	//	end of namespace Loris
+
+#endif /* ndef Loris_BlockSynthBwe_h */

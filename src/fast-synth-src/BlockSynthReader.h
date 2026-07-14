@@ -24,6 +24,9 @@ typedef float Fastsynth_Float_Type;
 
 
 
+//	begin namespace
+namespace Loris {
+
 class BlockSynthReader
 {
 private:
@@ -52,5 +55,7 @@ public:
     FrameType & getFrameAtTime( double frameTime );
 
 };  // end of class BlockSynthReader
+}	//	end of namespace Loris
+
 
 #endif

@@ -67,7 +67,24 @@ set(PI_SRC
     lorisUtilities_pi.C
 )
 
-add_library(loris SHARED ${CPP_SRC} ${PI_SRC})
+# fast block synthesizer (work in progress; headers not installed)
+set(FASTSYNTH_SRC
+    fast-synth-src/BlockOscillator.cpp
+    fast-synth-src/BlockSynthBwe.cpp
+    fast-synth-src/BlockSynthReader.cpp
+    fast-synth-src/fastsynth.cpp
+    fast-synth-src/multiplyAdd.c
+    fast-synth-src/oscil.c
+    fast-synth-src/r250.c
+    fast-synth-src/randlcg.c
+)
+
+add_library(loris SHARED ${CPP_SRC} ${PI_SRC} ${FASTSYNTH_SRC})
+
+# Fastsynth_Float_Type is part of the fast-synth API types, so every
+# consumer must agree with the library: make the definition PUBLIC.
+# (Renders in double precision, as the original Xcode target did.)
+target_compile_definitions(loris PUBLIC FASTSYNTH_FLOAT_TYPE=double)
 
 # continue the libtool -version-info 13:0:0 lineage
 set_target_properties(loris PROPERTIES VERSION 13.0.0 SOVERSION 13)
@@ -77,6 +94,7 @@ set_target_properties(loris PROPERTIES VERSION 13.0.0 SOVERSION 13)
 target_include_directories(loris PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/fast-synth-src>
 )
 
 target_compile_options(loris PRIVATE -Wno-comment)

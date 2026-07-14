@@ -1,3 +1,6 @@
+#ifndef Loris_BlockOscillator_h
+#define Loris_BlockOscillator_h
+
 /*
  * This is the Loris C++ Class Library, implementing analysis, 
  * manipulation, and synthesis of digitized sounds using the Reassigned 
@@ -49,6 +52,9 @@ typedef float Fastsynth_Float_Type;
 #endif
 
 
+//	begin namespace
+namespace Loris {
+
 class BlockOscillator
 {
 	//	oscillator state
@@ -84,11 +90,21 @@ public:
 									 Fastsynth_Float_Type init_phase = 0 );
 	
 	
-	//  Set the instantaneous envelope parameters 
+	//  Set the instantaneous envelope parameters
 	//  (frequency, amplitude, bandwidth, and phase).
 	//	No checking is performed, except that phase is wrapped.
 	//
 	void set( const Loris::Breakpoint & bp );
+
+
+	//  Initialize the oscillator to render an onset toward a target
+	//  Breakpoint: zero amplitude, the target's frequency and bandwidth,
+	//  and phase walked back one block at the target frequency, so that
+	//  oscillating toward the target lands exactly on the target phase.
+	//  Rendering an onset therefore never depends on a null Breakpoint
+	//  having preceded the target in the frame stream.
+	//
+	void initOnset( const Loris::Breakpoint & bpTgt );
 	
 	
 	//! Return the current amplitude, need access to know whether to 
@@ -128,3 +144,6 @@ public:
 	void oscillate( const Loris::Breakpoint & bpTgt, Fastsynth_Float_Type * putEmHere,
                     const Fastsynth_Float_Type * modulator );
 };
+}	//	end of namespace Loris
+
+#endif /* ndef Loris_BlockOscillator_h */

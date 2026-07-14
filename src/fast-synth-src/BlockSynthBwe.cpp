@@ -26,6 +26,9 @@ extern "C" {
 
 #include "r250.h"
 
+//	begin namespace
+namespace Loris {
+
 
 const Fastsynth_Float_Type TwoPi = 2 * 3.14159265358979324;
 
@@ -241,7 +244,7 @@ BlockSynthBwe::render( std::vector< Loris::Breakpoint > & thisFrame, Fastsynth_F
     {
         mNoiseBufferIndex = 0;
     }
-        //  need a decorrelating delay here! NOT YET IMPLEMENTED
+        //  TODO: need a decorrelating delay here! NOT YET IMPLEMENTED
     
     for ( unsigned int partialNum = 0; partialNum < mOscils.size(); ++partialNum )
     {
@@ -251,18 +254,25 @@ BlockSynthBwe::render( std::vector< Loris::Breakpoint > & thisFrame, Fastsynth_F
 		
 		//  skip over all of this if all samples will be zero
 		if ( 0 < nxtBp.amplitude() || 0 < osc.amplitude() )
-		{    						        
-			osc.oscillate( nxtBp, putEmHere, NoiseBuffer );			
+		{
+			//	Onset from silence: initialize the oscillator from the
+			//	target Breakpoint (phase walked back one block at the
+			//	target frequency), so that correct rendering never
+			//	depends on a null Breakpoint having preceded the target
+			//	in the frame stream.
+			if ( 0 == osc.amplitude() )
+			{
+				osc.initOnset( nxtBp );
+			}
+			osc.oscillate( nxtBp, putEmHere, NoiseBuffer );
 		}
-		
-		//  reset oscillator phase if current amp is zero
-		//
-		//	HEY this order of operations assumes that the first frame is always filled
-		//	with zero-amplitude Breakpoints (or at more precisely that all Partials
-        //  fade in).
+
+		//  park the oscillator on the target if current amp is zero --
+		// 	resetting only phase is not sufficient/equivalent if
+		//	oscillation was skipped.
+		//	(Note: osc.amplitude is zero iff nxtBp.amplitude is zero)
 		if ( 0 == osc.amplitude() )
 		{
-			// osc.setPhase( nxtBp.phase() );
 			osc.set( nxtBp );
 		}
 	}
@@ -366,3 +376,5 @@ void generate_randi( unsigned int decimation, Fastsynth_Float_Type * output, int
 //		value += dvalue;
 //	}	
 }
+
+}	//	end of namespace Loris

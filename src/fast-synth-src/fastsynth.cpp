@@ -39,6 +39,9 @@ const Fastsynth_Float_Type TwoPi = 2 * 3.14159265358979324;
 
 
 using namespace Loris;
+
+//	begin namespace
+namespace Loris {
 using std::vector;
 
 /*
@@ -53,7 +56,7 @@ static Fastsynth_Float_Type * make_cos_table( int N )
     using std::cos;
     
 	int i;
-	Fastsynth_Float_Type * table = (Fastsynth_Float_Type *)malloc( (N*1)*sizeof(Fastsynth_Float_Type) );
+	Fastsynth_Float_Type * table = (Fastsynth_Float_Type *)malloc( (N+1)*sizeof(Fastsynth_Float_Type) );
 	
 	/* fill it with a cosine wave */
 	for ( i = 0; i < N+1; ++i )
@@ -81,7 +84,7 @@ static Fastsynth_Float_Type * make_carrier_amp_table( int N )
     using std::sqrt;
     
 	int i;
-	Fastsynth_Float_Type * table = (Fastsynth_Float_Type *)malloc( (N*1)*sizeof(Fastsynth_Float_Type) );
+	Fastsynth_Float_Type * table = (Fastsynth_Float_Type *)malloc( (N+1)*sizeof(Fastsynth_Float_Type) );
 	
 	/* fill it with a cosine wave */
 	for ( i = 0; i < N+1; ++i )
@@ -109,7 +112,7 @@ static Fastsynth_Float_Type * make_mod_index_table( int N )
     using std::sqrt;
     
 	int i;
-	Fastsynth_Float_Type * table = (Fastsynth_Float_Type *)malloc( (N*1)*sizeof(Fastsynth_Float_Type) );
+	Fastsynth_Float_Type * table = (Fastsynth_Float_Type *)malloc( (N+1)*sizeof(Fastsynth_Float_Type) );
 	
 	/* fill it with a cosine wave */
 	for ( i = 0; i < N+1; ++i )
@@ -547,3 +550,5 @@ for ( unsigned int partialNum = 0; partialNum < mOscils.size(); ++partialNum )
 
 
 #endif
+
+}	//	end of namespace Loris

@@ -1,3 +1,6 @@
+#ifndef Loris_fastsynth_h
+#define Loris_fastsynth_h
+
 /*
  *  fastsynth.h
  *  Loris
@@ -25,6 +28,9 @@ typedef float Fastsynth_Float_Type;
 #endif
 
 //const double Fastsynth_fadetime_seconds = 0.001;
+//	begin namespace
+namespace Loris {
+
 const unsigned int Fastsynth_BlockSize_samples = 100;
 
 void fastsynth( Loris::PartialList & partials, double sample_rate, 
@@ -100,3 +106,6 @@ public:
 	
 	
 };	//	end of class BlockOscilBwe
+}	//	end of namespace Loris
+
+#endif /* ndef Loris_fastsynth_h */

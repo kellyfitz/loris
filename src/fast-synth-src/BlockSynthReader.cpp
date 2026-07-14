@@ -14,6 +14,9 @@
 
 #include <cmath>    // for std::floor
 
+//	begin namespace
+namespace Loris {
+
 
 
 BlockSynthReader::BlockSynthReader( Loris::PartialList & partials, 
@@ -60,6 +63,7 @@ BlockSynthReader::BlockSynthReader( Loris::PartialList & partials,
 		
 		
 		Loris::Partial::const_iterator pos = p.begin();
+		Assert( pos.time() >= 0.0 );		//	alternatively, skip over Breakpoints at time < 0.0
 		unsigned int frameNum = std::floor( (pos.time() * OneOverInterval) + 0.5 /* round */ );
 		while( pos != p.end() )
 		{
@@ -97,3 +101,4 @@ BlockSynthReader::FrameType & BlockSynthReader::getFrameAtTime( double frameTime
     return mBpFrames[frameNum];
 }
 
+}	//	end of namespace Loris
