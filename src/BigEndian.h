@@ -1,8 +1,8 @@
 #ifndef INCLUDE_BIGENDIAN_H
 #define INCLUDE_BIGENDIAN_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -36,19 +36,21 @@
 #include <iosfwd>
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	class BigEndian
 //
 class BigEndian
 {
-public:
-	static std::istream & read( std::istream & s, long howmany, int size, char * putemHere );
-	static std::ostream & write( std::ostream & s, long howmany, int size, const char * stuff );	
-};	//	end of class BigEndian
+  public:
+    static std::istream &read(std::istream &s, long howmany, int size,
+                              char *putemHere);
+    static std::ostream &write(std::ostream &s, long howmany, int size,
+                               const char *stuff);
+}; //	end of class BigEndian
 
-
-}	//	end of namespace Loris
+} // namespace Loris
 
 #endif /* ndef INCLUDE_BIGENDIAN_H */

@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -32,60 +32,57 @@
  *
  */
 
-#include "SpectralPeakSelector.h"
-
-
 #include "Breakpoint.h"
 #include "Notifier.h"
 #include "ReassignedSpectrum.h"
+#include "SpectralPeakSelector.h"
 
-
-#include <cmath>    //  for abs and fabs
-
+#include <cmath> //  for abs and fabs
 
 // define this to use local minima in frequency
-// reassignment to detect "peaks", otherwise 
+// reassignment to detect "peaks", otherwise
 // magnitude peaks are used.
 #define USE_REASSIGNMENT_MINS 1
-//#undef USE_REASSIGNMENT_MINS
-
+// #undef USE_REASSIGNMENT_MINS
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	construction - constant resolution
 // ---------------------------------------------------------------------------
-SpectralPeakSelector::SpectralPeakSelector( double srate, double maxTimeCorrection ) :
-	mSampleRate( srate ),
-    mMaxTimeOffset( maxTimeCorrection )
+SpectralPeakSelector::SpectralPeakSelector(double srate,
+                                           double maxTimeCorrection) :
+    mSampleRate(srate),
+    mMaxTimeOffset(maxTimeCorrection)
 {
 }
 
 // ---------------------------------------------------------------------------
 //	selectPeaks
 // ---------------------------------------------------------------------------
-//	Collect and return magnitude peaks in the lower half of the spectrum, 
+//	Collect and return magnitude peaks in the lower half of the spectrum,
 //	ignoring those having frequencies below the specified minimum, and
 //	those having large time corrections.
 //
 //  If the minimumFrequency is unspecified, 0 Hz is used.
 //
-//  There are two strategies for doing. Probably each one should be a 
+//  There are two strategies for doing. Probably each one should be a
 //  separate class, but for now, they are just separate functions.
 
 Peaks
-SpectralPeakSelector::selectPeaks( ReassignedSpectrum & spectrum, 
-                                   double minFrequency )
+SpectralPeakSelector::selectPeaks(ReassignedSpectrum &spectrum,
+                                  double minFrequency)
 {
 #if defined(USE_REASSIGNMENT_MINS) && USE_REASSIGNMENT_MINS
 
-    return selectReassignmentMinima( spectrum, minFrequency );
-    
+    return selectReassignmentMinima(spectrum, minFrequency);
+
 #else
 
-    return selectMagnitudePeaks( spectrum, minFrequency );
-    
+    return selectMagnitudePeaks(spectrum, minFrequency);
+
 #endif
 }
 
@@ -93,152 +90,150 @@ SpectralPeakSelector::selectPeaks( ReassignedSpectrum & spectrum,
 //	selectReassignmentMinima (private)
 // ---------------------------------------------------------------------------
 Peaks
-SpectralPeakSelector::selectReassignmentMinima( ReassignedSpectrum & spectrum, 
-                                                double minFrequency )
+SpectralPeakSelector::selectReassignmentMinima(ReassignedSpectrum &spectrum,
+                                               double minFrequency)
 {
-	using namespace std; // for abs and fabs
+    using namespace std; // for abs and fabs
 
-	const double sampsToHz = mSampleRate / spectrum.size();
-	const double oneOverSR = 1. / mSampleRate;
-	const double minFreqSample = minFrequency / sampsToHz;
-	const double maxCorrectionSamples = mMaxTimeOffset * mSampleRate;
-	
-	Peaks peaks;
-	
-	int start_j = 1, end_j = (spectrum.size() / 2) - 2;
-	
-	double fsample = start_j;
-	do 
-	{
-	    fsample = spectrum.reassignedFrequency( start_j++ );
-	} while( fsample < minFreqSample );
-	
-	for ( int j = start_j; j < end_j; ++j ) 
-	{	 
+    const double sampsToHz = mSampleRate / spectrum.size();
+    const double oneOverSR = 1. / mSampleRate;
+    const double minFreqSample = minFrequency / sampsToHz;
+    const double maxCorrectionSamples = mMaxTimeOffset * mSampleRate;
 
-	    // look for changes in the frequency reassignment,
-	    // from positive to negative correction, indicating
-	    // a concentration of energy in the spectrum:
-	    double next_fsample = spectrum.reassignedFrequency( j+1 );
-	    if ( fsample > j && next_fsample < j + 1 )
-	    {
-	        //  choose the smaller correction of fsample or next_fsample:
-	        // (could also choose the larger magnitude?)
-	        double freq;
-	        int peakidx;
-	        if ( (fsample-j) < (j+1-next_fsample) )
-	        {
-	            freq = fsample * sampsToHz;
-	            peakidx = j;
-	        }
-	        else
-	        {
-	            freq = next_fsample * sampsToHz;
-	            peakidx = j+1;
-	        }
-            
+    Peaks peaks;
+
+    int start_j = 1, end_j = (spectrum.size() / 2) - 2;
+
+    double fsample = start_j;
+    do
+    {
+        fsample = spectrum.reassignedFrequency(start_j++);
+    } while (fsample < minFreqSample);
+
+    for (int j = start_j; j < end_j; ++j)
+    {
+
+        // look for changes in the frequency reassignment,
+        // from positive to negative correction, indicating
+        // a concentration of energy in the spectrum:
+        double next_fsample = spectrum.reassignedFrequency(j + 1);
+        if (fsample > j && next_fsample < j + 1)
+        {
+            //  choose the smaller correction of fsample or next_fsample:
+            // (could also choose the larger magnitude?)
+            double freq;
+            int peakidx;
+            if ((fsample - j) < (j + 1 - next_fsample))
+            {
+                freq = fsample * sampsToHz;
+                peakidx = j;
+            }
+            else
+            {
+                freq = next_fsample * sampsToHz;
+                peakidx = j + 1;
+            }
+
             //  still possible that the frequency winds up being
             //  below the specified minimum
-            if ( freq >= minFrequency )
-            {            	         
+            if (freq >= minFrequency)
+            {
                 //	keep only peaks with small time corrections:
-                double timeCorrectionSamps = spectrum.reassignedTime( peakidx );
-                if ( fabs(timeCorrectionSamps) < maxCorrectionSamples )
+                double timeCorrectionSamps = spectrum.reassignedTime(peakidx);
+                if (fabs(timeCorrectionSamps) < maxCorrectionSamples)
                 {
-                    double mag = spectrum.reassignedMagnitude( peakidx );
-                    double phase = spectrum.reassignedPhase( peakidx );    			
+                    double mag = spectrum.reassignedMagnitude(peakidx);
+                    double phase = spectrum.reassignedPhase(peakidx);
 
-                    //	this will be overwritten later in analysis, 
+                    //	this will be overwritten later in analysis,
                     //	might be ignored altogether, only used if the
                     //	mixed derivative convergence indicator is stored
                     //	as bandwidth in Analyzer:
-                    double bw = spectrum.convergence( j );
-
+                    double bw = spectrum.convergence(j);
 
                     //	also store the corrected peak time in seconds, won't
                     //	be able to compute it later:
                     double time = timeCorrectionSamps * oneOverSR;
-                    Breakpoint bp( freq, mag, bw, phase );
-                    peaks.push_back( SpectralPeak( time, bp ) );
+                    Breakpoint bp(freq, mag, bw, phase);
+                    peaks.push_back(SpectralPeak(time, bp));
                 }
             }
-                	        
-	    }
-	    fsample = next_fsample;
-	}
-    
-	/*
-	debugger << "SpectralPeakSelector::selectReassignmentMinima: found " 
-             << peaks.size() << " peaks" << endl;
-	*/
-    	
-	return peaks;
+        }
+        fsample = next_fsample;
+    }
 
+    /*
+    debugger << "SpectralPeakSelector::selectReassignmentMinima: found "
+             << peaks.size() << " peaks" << endl;
+    */
+
+    return peaks;
 }
 
 // ---------------------------------------------------------------------------
 //	selectMagnitudePeaks (private)
 // ---------------------------------------------------------------------------
 Peaks
-SpectralPeakSelector::selectMagnitudePeaks( ReassignedSpectrum & spectrum,
-                                            double minFrequency )
+SpectralPeakSelector::selectMagnitudePeaks(ReassignedSpectrum &spectrum,
+                                           double minFrequency)
 {
-	using namespace std; // for abs and fabs
+    using namespace std; // for abs and fabs
 
-	const double sampsToHz = mSampleRate / spectrum.size();
-	const double oneOverSR = 1. / mSampleRate;
-	const double minFreqSample = minFrequency / sampsToHz;
-	const double maxCorrectionSamples = mMaxTimeOffset * mSampleRate;
-	
-	Peaks peaks;
-	
-	int start_j = 1, end_j = (spectrum.size() / 2) - 2;
-	
-	double fsample = start_j;
-	do 
-	{
-	    fsample = spectrum.reassignedFrequency( start_j++ );
-	} while( fsample < minFreqSample );
-	
-	for ( int j = start_j; j < end_j; ++j ) 
-	{	 
-		if ( spectrum.reassignedMagnitude(j) > spectrum.reassignedMagnitude(j-1) && 
-			 spectrum.reassignedMagnitude(j) > spectrum.reassignedMagnitude(j+1) ) 
-		{				
-			//	skip low-frequency peaks:
-			double fsample = spectrum.reassignedFrequency( j );
-			if ( fsample < minFreqSample )
-				continue;
+    const double sampsToHz = mSampleRate / spectrum.size();
+    const double oneOverSR = 1. / mSampleRate;
+    const double minFreqSample = minFrequency / sampsToHz;
+    const double maxCorrectionSamples = mMaxTimeOffset * mSampleRate;
 
-			//	skip peaks with large time corrections:
-			double timeCorrectionSamps = spectrum.reassignedTime( j );
-			if ( fabs(timeCorrectionSamps) > maxCorrectionSamples )
-				continue;
-				
-			double mag = spectrum.reassignedMagnitude( j );
-			double phase = spectrum.reassignedPhase( j );
-			
-			//	this will be overwritten later in analysis, 
-			//	might be ignored altogether, only used if the
-			//	mixed derivative convergence indicator is stored
-			//	as bandwidth in Analyzer:
-			double bw = spectrum.convergence( j );
-			
-			//	also store the corrected peak time in seconds, won't
-			//	be able to compute it later:
-			double time = timeCorrectionSamps * oneOverSR;
-			Breakpoint bp ( fsample * sampsToHz, mag, bw, phase );
-			peaks.push_back( SpectralPeak( time, bp ) );
-						
-		}	//	end if itsa peak
-	}
-	
+    Peaks peaks;
+
+    int start_j = 1, end_j = (spectrum.size() / 2) - 2;
+
+    double fsample = start_j;
+    do
+    {
+        fsample = spectrum.reassignedFrequency(start_j++);
+    } while (fsample < minFreqSample);
+
+    for (int j = start_j; j < end_j; ++j)
+    {
+        if (spectrum.reassignedMagnitude(j) >
+                spectrum.reassignedMagnitude(j - 1) &&
+            spectrum.reassignedMagnitude(j) >
+                spectrum.reassignedMagnitude(j + 1))
+        {
+            //	skip low-frequency peaks:
+            double fsample = spectrum.reassignedFrequency(j);
+            if (fsample < minFreqSample)
+                continue;
+
+            //	skip peaks with large time corrections:
+            double timeCorrectionSamps = spectrum.reassignedTime(j);
+            if (fabs(timeCorrectionSamps) > maxCorrectionSamples)
+                continue;
+
+            double mag = spectrum.reassignedMagnitude(j);
+            double phase = spectrum.reassignedPhase(j);
+
+            //	this will be overwritten later in analysis,
+            //	might be ignored altogether, only used if the
+            //	mixed derivative convergence indicator is stored
+            //	as bandwidth in Analyzer:
+            double bw = spectrum.convergence(j);
+
+            //	also store the corrected peak time in seconds, won't
+            //	be able to compute it later:
+            double time = timeCorrectionSamps * oneOverSR;
+            Breakpoint bp(fsample * sampsToHz, mag, bw, phase);
+            peaks.push_back(SpectralPeak(time, bp));
+
+        } //	end if itsa peak
+    }
+
     /*
-	debugger << "SpectralPeakSelector::selectMagnitudePeaks: found " 
+    debugger << "SpectralPeakSelector::selectMagnitudePeaks: found "
              << peaks.size() << " peaks" << endl;
-    */         		
-	return peaks;
+    */
+    return peaks;
 }
 
-
-}	//	end of namespace Loris
+} // namespace Loris

@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -33,11 +33,12 @@
 
 #include "Envelope.h"
 
-//	Since Envelope is just an interface, there's nothing interesting in 
+//	Since Envelope is just an interface, there's nothing interesting in
 //	the implementation file.
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	destructor
@@ -47,4 +48,4 @@ Envelope::~Envelope(void)
 {
 }
 
-}	//	end of namespace Loris
+} // namespace Loris

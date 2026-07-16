@@ -1,8 +1,8 @@
 #ifndef INCLUDE_ENVELOPE_H
 #define INCLUDE_ENVELOPE_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -33,10 +33,11 @@
  *
  */
 
-#include <memory>	//	 for autoptr
+#include <memory> //	 for autoptr
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	class Envelope
@@ -56,115 +57,109 @@ namespace Loris {
 //
 class Envelope
 {
-//	-- public interface --
-public:
-//	-- construction --
+    //	-- public interface --
+  public:
+    //	-- construction --
 
     // allow compiler to generate constructors
 
-	//!	Destroy this Envelope (virtual to allow subclassing).
-	virtual ~Envelope( void );
+    //!	Destroy this Envelope (virtual to allow subclassing).
+    virtual ~Envelope(void);
 
-//	-- Envelope interface --
+    //	-- Envelope interface --
 
-	//!	Return an exact copy of this Envelope (following the Prototype
-	//!	pattern).
-	virtual Envelope * clone( void ) const = 0;
+    //!	Return an exact copy of this Envelope (following the Prototype
+    //!	pattern).
+    virtual Envelope *clone(void) const = 0;
 
-	//!	Return the value of this Envelope at the specified time. 	 
-	virtual double valueAt( double x ) const = 0;	
-	
-};	//	end of abstract class Envelope
+    //!	Return the value of this Envelope at the specified time.
+    virtual double valueAt(double x) const = 0;
 
+}; //	end of abstract class Envelope
 
 // ---------------------------------------------------------------------------
 //	class ScaleAndOffsetEnvelope
 //
-//! ScaleAndOffsetEnvelope is an derived Envelope class for objects 
+//! ScaleAndOffsetEnvelope is an derived Envelope class for objects
 //! representing envelopes having a scale and offset applied (in that order).
 
 class ScaleAndOffsetEnvelope : public Envelope
 {
-//	-- public interface --
-public:
-//	-- construction --
+    //	-- public interface --
+  public:
+    //	-- construction --
 
-    //! Construct a new envelope that is a scaled and offset 
+    //! Construct a new envelope that is a scaled and offset
     //! version of another.
-    ScaleAndOffsetEnvelope( const Envelope & e, double scale, double offset ) :
-    	m_env( e.clone() ),
-    	m_scale( scale ),
-    	m_offset( offset )
+    ScaleAndOffsetEnvelope(const Envelope &e, double scale, double offset) :
+        m_env(e.clone()),
+        m_scale(scale),
+        m_offset(offset)
     {
     }
 
-	//!	Construct a copy of an envelope.
-	ScaleAndOffsetEnvelope( const ScaleAndOffsetEnvelope & rhs ) :
-		m_env( rhs.m_env->clone() ),
-    	m_scale( rhs.m_scale ),
-    	m_offset( rhs.m_offset )
+    //!	Construct a copy of an envelope.
+    ScaleAndOffsetEnvelope(const ScaleAndOffsetEnvelope &rhs) :
+        m_env(rhs.m_env->clone()),
+        m_scale(rhs.m_scale),
+        m_offset(rhs.m_offset)
     {
     }
 
-	//!	Assignment from another envelope.
-	ScaleAndOffsetEnvelope & 
-	operator=( const ScaleAndOffsetEnvelope & rhs )
-	{
-        if ( &rhs != this )
+    //!	Assignment from another envelope.
+    ScaleAndOffsetEnvelope &
+    operator=(const ScaleAndOffsetEnvelope &rhs)
+    {
+        if (&rhs != this)
         {
-            m_env.reset( rhs.m_env->clone() );
+            m_env.reset(rhs.m_env->clone());
             m_scale = rhs.m_scale;
             m_offset = rhs.m_offset;
         }
         return *this;
     }
 
-//	-- Envelope interface --
+    //	-- Envelope interface --
 
-	//!	Return an exact copy of this Envelope (following the Prototype
-	//!	pattern).
-	ScaleAndOffsetEnvelope * clone( void ) const override
-	{
-		return new ScaleAndOffsetEnvelope( *this );
-	}
+    //!	Return an exact copy of this Envelope (following the Prototype
+    //!	pattern).
+    ScaleAndOffsetEnvelope *
+    clone(void) const override
+    {
+        return new ScaleAndOffsetEnvelope(*this);
+    }
 
-	//!	Return the value of this Envelope at the specified time.
-	double valueAt( double x ) const override
-	{
-		return m_offset + ( m_scale * m_env->valueAt( x ) );
-	}
-	
-//  -- private member variables --
+    //!	Return the value of this Envelope at the specified time.
+    double
+    valueAt(double x) const override
+    {
+        return m_offset + (m_scale * m_env->valueAt(x));
+    }
 
-private:
+    //  -- private member variables --
 
-    std::unique_ptr< Envelope > m_env;   	
+  private:
+    std::unique_ptr<Envelope> m_env;
     double m_scale, m_offset;
-	
-};	//	end of class ScaleAndOffsetEnvelope
 
+}; //	end of class ScaleAndOffsetEnvelope
 
 // ---------------------------------------------------------------------------
 //	math operators
 // ---------------------------------------------------------------------------
 
-inline
-ScaleAndOffsetEnvelope
-operator*( const Envelope & e, double x )
+inline ScaleAndOffsetEnvelope
+operator*(const Envelope &e, double x)
 {
-	return ScaleAndOffsetEnvelope( e, x, 0 );
+    return ScaleAndOffsetEnvelope(e, x, 0);
 }
 
-inline
-ScaleAndOffsetEnvelope
-operator*( double x, const Envelope & e )
+inline ScaleAndOffsetEnvelope
+operator*(double x, const Envelope &e)
 {
-	return e * x;
+    return e * x;
 }
 
-
-
-
-}	//	end of namespace Loris
+} // namespace Loris
 
 #endif /* ndef INCLUDE_ENVELOPE_H */

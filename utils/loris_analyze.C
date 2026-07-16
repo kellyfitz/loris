@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -32,16 +32,6 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
-#include <algorithm>
-#include <cstdio> // for scanf
-#include <cstdlib>
-#include <iostream>
-#include <map>
-#include <stack>
-#include <stdexcept>
-#include <string>
-#include <vector>
-
 #include "AiffFile.h"
 #include "Analyzer.h"
 #include "Channelizer.h"
@@ -54,13 +44,23 @@
 #include "SdifFile.h"
 #include "Sieve.h"
 
+#include <algorithm>
+#include <cstdio> // for scanf
+#include <cstdlib>
+#include <iostream>
+#include <map>
+#include <stack>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 using std::cout;
 using std::endl;
 using std::string;
 
-class Command; 
-typedef std::stack< std::string > Arguments;
-typedef std::map< std::string, Command * > CmdDictionary;
+class Command;
+typedef std::stack<std::string> Arguments;
+typedef std::map<std::string, Command *> CmdDictionary;
 
 // ----------------------------------------------------------------
 //  Abstract Command class
@@ -68,23 +68,22 @@ typedef std::map< std::string, Command * > CmdDictionary;
 
 class Command
 {
-public:
-    virtual ~Command( void ) {};
-    virtual void execute( Arguments & args ) const = 0;
+  public:
+    virtual ~Command(void) {};
+    virtual void execute(Arguments &args) const = 0;
 };
 
 // ----------------------------------------------------------------
 //  global program state
 // ----------------------------------------------------------------
 string gInFileName, gOutFileName = "partials.sdif", gTestFileName;
-Loris::Analyzer * gAnalyzer = 0;
+Loris::Analyzer *gAnalyzer = 0;
 bool gCollate = false;
 double gDistill = 0;
 double gSift = 0;
 double gResample = 0;
 bool gVerbose = false;
 double gRate = 44100;
-
 
 // ----------------------------------------------------------------
 //  command-line options string
@@ -169,18 +168,19 @@ options:\n\
 // ----------------------------------------------------------------
 //  argument parsing
 // ----------------------------------------------------------------
-static bool argIsNumber( const string & s, double * ret= 0 )
+static bool
+argIsNumber(const string &s, double *ret = 0)
 {
-    const char * cstr = s.c_str();
-    char * endptr = 0;
-    double x = std::strtod( cstr, &endptr );
-    if ( endptr == cstr )
+    const char *cstr = s.c_str();
+    char *endptr = 0;
+    double x = std::strtod(cstr, &endptr);
+    if (endptr == cstr)
     {
         return false;
     }
     else
     {
-        if ( ret != 0 )
+        if (ret != 0)
         {
             *ret = x;
         }
@@ -188,14 +188,16 @@ static bool argIsNumber( const string & s, double * ret= 0 )
     }
 }
 
-static bool argIsFlag( const string & s )
+static bool
+argIsFlag(const string &s)
 {
-    return s[0] == '-' && ! argIsNumber(s);
+    return s[0] == '-' && !argIsNumber(s);
 }
 
-static string lowercaseArg( string s )
+static string
+lowercaseArg(string s)
 {
-    for ( string::iterator it = s.begin(); it != s.end(); ++it )
+    for (string::iterator it = s.begin(); it != s.end(); ++it)
     {
         *it = std::tolower(*it);
     }
@@ -208,17 +210,18 @@ static string lowercaseArg( string s )
 
 class InfileCommand : public Command
 {
-public:
+  public:
     //  set the global input filename
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a string specifying the filename
-        if ( args.empty() || argIsFlag( args.top() ) )
+        if (args.empty() || argIsFlag(args.top()))
         {
             throw std::invalid_argument("input file specification "
                                         "requires a filename");
         }
-        
+
         gInFileName = args.top();
         cout << "* using input (AIFF) file: " << gInFileName << endl;
 
@@ -228,17 +231,18 @@ public:
 
 class OutfileCommand : public Command
 {
-public:
+  public:
     //  set the global output filename
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a string specifying the filename
-        if ( args.empty() || argIsFlag( args.top() ) )
+        if (args.empty() || argIsFlag(args.top()))
         {
             throw std::invalid_argument("output file specification "
                                         "requires a filename");
         }
-        
+
         gOutFileName = args.top();
         cout << "* using output (SDIF) file: " << gOutFileName << endl;
 
@@ -248,13 +252,14 @@ public:
 
 class TestfileCommand : public Command
 {
-public:
+  public:
     //  set the global filename for a test render
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
-        //  accepts a string specifying the filename, 
+        //  accepts a string specifying the filename,
         //  default is test.aiff
-        if ( args.empty() || argIsFlag( args.top() ) )
+        if (args.empty() || argIsFlag(args.top()))
         {
             gTestFileName = "test.aiff";
         }
@@ -263,26 +268,28 @@ public:
             gTestFileName = args.top();
             args.pop();
         }
-        
+
         cout << "* rendering to (AIFF) file: " << gTestFileName << endl;
     }
 };
 
 class CollateCommand : public Command
 {
-public:
+  public:
     //  set the global flag indicating that the
     //  Partials should be collated before export
-    void execute( Arguments &  ) const 
+    void
+    execute(Arguments &) const
     {
         gCollate = true;
         cout << "* will collate partials" << endl;
 
         //  collation overrides distillation and sifting
-        if ( gDistill || gSift )
+        if (gDistill || gSift)
         {
             cout << "* collate specification overrides "
-                    "distillation or sifting specification" << endl;                  
+                    "distillation or sifting specification"
+                 << endl;
             gDistill = gSift = 0;
         }
     }
@@ -290,36 +297,39 @@ public:
 
 class DistillCommand : public Command
 {
-public:
+  public:
     //  set the global flag indicating that the
     //  Partials should be distilled before export
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("distillation specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("distillation specification "
                                         "must be positive");
         }
 
         gDistill = x;
-        cout << "* will distill partials assuming a fundamental of approximately " 
+        cout << "* will distill partials assuming a fundamental of "
+                "approximately "
              << gDistill << " Hz" << endl;
-        
+
         args.pop();
 
         //  distillation overrides collation and sifting
-        if ( gCollate || gSift )
+        if (gCollate || gSift)
         {
             cout << "* distillation specification overrides "
-                    "collation and sifting specification" << endl;                 
+                    "collation and sifting specification"
+                 << endl;
             gCollate = false;
             gSift = 0;
         }
@@ -328,36 +338,39 @@ public:
 
 class SiftCommand : public Command
 {
-public:
+  public:
     //  set the global flag indicating that the
     //  Partials should be sifted and distilled before export
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("sifting specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("sifting specification "
                                         "must be positive");
         }
 
         gSift = x;
-        cout << "* will sift and distill partials assuming a fundamental of approximately " 
+        cout << "* will sift and distill partials assuming a fundamental of "
+                "approximately "
              << gSift << " Hz" << endl;
-        
+
         args.pop();
 
         //  sifting overrides distillation and collation
-        if ( gCollate || gDistill )
+        if (gCollate || gDistill)
         {
             cout << "* sifting specification overrides "
-                    "collation and distillation specification" << endl;                 
+                    "collation and distillation specification"
+                 << endl;
             gCollate = false;
             gDistill = 0;
         }
@@ -366,28 +379,28 @@ public:
 
 class ResampleCommand : public Command
 {
-public:
+  public:
     //  set the global flag indicating that the
     //  Partials should be resampled before export
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("resample specification "
-                                       "requires a number");
+                                        "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("resample specification "
-                                       "must be positive");
+                                        "must be positive");
         }
 
         gResample = x;
-        cout << "* will resample partials every " 
-             << gResample << " s" << endl;
+        cout << "* will resample partials every " << gResample << " s" << endl;
 
         args.pop();
     }
@@ -395,238 +408,245 @@ public:
 
 class SetHopTimeCommand : public Command
 {
-public:
+  public:
     //  set the hopTime parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("hop time specification "
-                                       "requires a number");
+                                        "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("hop time specification "
-                                       "must be positive");
+                                        "must be positive");
         }
-        
-        gAnalyzer->setHopTime( x );
+
+        gAnalyzer->setHopTime(x);
         cout << "* setting analysis hop time to: ";
         cout << gAnalyzer->hopTime() << " s" << endl;
 
         args.pop();
     }
 };
-    
+
 class SetCropTimeCommand : public Command
 {
-public:
+  public:
     //  set the cropTime parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("crop time specification "
-                                       "requires a number");
-        }
-        
-        if ( x <= 0 )
-        {
-            throw std::invalid_argument("crop time specification "
-                                      "must be positive");
+                                        "requires a number");
         }
 
-        gAnalyzer->setCropTime( x );
+        if (x <= 0)
+        {
+            throw std::invalid_argument("crop time specification "
+                                        "must be positive");
+        }
+
+        gAnalyzer->setCropTime(x);
         cout << "* setting analysis crop time to: ";
         cout << gAnalyzer->cropTime() << " s" << endl;
 
         args.pop();
     }
 };
-    
+
 class SetBwResidueCommand : public Command
 {
-public:
+  public:
     //  set the BWRegionWidth parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("BW region width specification "
                                         "requires a number");
         }
-        
-        if ( x < 0 )
+
+        if (x < 0)
         {
             throw std::invalid_argument("BW region width specification "
                                         "must be non-negative");
         }
-        
-        if ( 0 < x )
+
+        if (0 < x)
         {
-			gAnalyzer->storeResidueBandwidth( x );
-			cout << "* setting analysis BW region width to: ";
-			cout << gAnalyzer->bwRegionWidth() << " Hz" << endl;
-		}
-		else
-		{
-			gAnalyzer->storeNoBandwidth();
-			cout << "* disabling bandwidth association" << endl;
-		}
+            gAnalyzer->storeResidueBandwidth(x);
+            cout << "* setting analysis BW region width to: ";
+            cout << gAnalyzer->bwRegionWidth() << " Hz" << endl;
+        }
+        else
+        {
+            gAnalyzer->storeNoBandwidth();
+            cout << "* disabling bandwidth association" << endl;
+        }
         args.pop();
     }
 };
 
-    
 class SetBwConvergenceCommand : public Command
 {
-public:
+  public:
     //  set the BWRegionWidth parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("BW convergence specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 || x > 1 )
+
+        if (x <= 0 || x > 1)
         {
             throw std::invalid_argument("BW convergence specification "
                                         "must be positive and less than 1");
         }
-        
-        gAnalyzer->storeConvergenceBandwidth( x );
+
+        gAnalyzer->storeConvergenceBandwidth(x);
         cout << "* setting analysis BW convergence tolerance to: ";
         cout << gAnalyzer->bwConvergenceTolerance() << " Hz" << endl;
 
         args.pop();
     }
 };
-    
+
 class SetDriftCommand : public Command
 {
-public:
+  public:
     //  set the frequencyDrift parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("frequency drift specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("frequency drift specification "
                                         "must be positive");
         }
-        
-        gAnalyzer->setFreqDrift( x );
+
+        gAnalyzer->setFreqDrift(x);
         cout << "* setting analysis frequency drift to: ";
         cout << gAnalyzer->freqDrift() << " Hz" << endl;
 
         args.pop();
     }
 };
-    
+
 class SetAmpFloorCommand : public Command
 {
-public:
+  public:
     //  set the ampFloor parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("amplitude floor specification "
                                         "requires a number");
         }
-        
-        if ( x >= 0 )
+
+        if (x >= 0)
         {
             throw std::invalid_argument("amplitude floor specification "
                                         "must be negative");
         }
-        
-        gAnalyzer->setAmpFloor( x );
+
+        gAnalyzer->setAmpFloor(x);
         cout << "* setting analysis amplitude floor to: ";
         cout << gAnalyzer->ampFloor() << " dB" << endl;
 
         args.pop();
     }
 };
-    
+
 class SetFreqFloorCommand : public Command
 {
-public:
+  public:
     //  set the freqFloor parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("frequency floor specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("frequency floor specification "
                                         "must be positive");
         }
-        
-        gAnalyzer->setFreqFloor( x );
+
+        gAnalyzer->setFreqFloor(x);
         cout << "* setting analysis frequency floor to: ";
         cout << gAnalyzer->freqFloor() << " Hz" << endl;
 
         args.pop();
     }
 };
-    
+
 class SetAttenuationCommand : public Command
 {
-public:
+  public:
     //  set the sidelobe attenuation parameter of the global
     //  Loris Analyzer
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("sidelobe attenuation specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("sidelobe attenuation specification "
                                         "must be positive");
         }
-        
-        gAnalyzer->setSidelobeLevel( x );
-        cout << "* setting analysis sidelobe attenuation to: "; 
+
+        gAnalyzer->setSidelobeLevel(x);
+        cout << "* setting analysis sidelobe attenuation to: ";
         cout << gAnalyzer->sidelobeLevel() << " dB" << endl;
 
         args.pop();
@@ -635,27 +655,28 @@ public:
 
 class SetResolutionCommand : public Command
 {
-public:
+  public:
     //  set the frequency resolution parameter of the global
     //  Loris Analyzer (after configuring)
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("frequency resolution specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("frequency resolution specification "
                                         "must be positive");
         }
-        
-        gAnalyzer->setFreqResolution( x );
-        cout << "* setting analysis frequency resolution to: "; 
+
+        gAnalyzer->setFreqResolution(x);
+        cout << "* setting analysis frequency resolution to: ";
         cout << gAnalyzer->freqResolution() << " Hz" << endl;
 
         args.pop();
@@ -664,27 +685,28 @@ public:
 
 class SetWindowCommand : public Command
 {
-public:
+  public:
     //  set the window width parameter of the global
     //  Loris Analyzer (after configuring)
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("window width specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("window width specification "
                                         "must be positive");
         }
-        
-        gAnalyzer->setWindowWidth( x );
-        cout << "* setting analysis window width to: "; 
+
+        gAnalyzer->setWindowWidth(x);
+        cout << "* setting analysis window width to: ";
         cout << gAnalyzer->windowWidth() << " Hz" << endl;
 
         args.pop();
@@ -693,38 +715,40 @@ public:
 
 class SetSampleRateCommand : public Command
 {
-public:
+  public:
     //  set the sample rate for samples read from standard
     //  input, and for rendering partials.
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         //  requires a numeric parameter
         double x;
-        if ( args.empty() || !argIsNumber( args.top(), &x ) )
+        if (args.empty() || !argIsNumber(args.top(), &x))
         {
             throw std::invalid_argument("sample rate specification "
                                         "requires a number");
         }
-        
-        if ( x <= 0 )
+
+        if (x <= 0)
         {
             throw std::invalid_argument("sample rate specification "
                                         "must be positive");
         }
-        
+
         gRate = x;
-        cout << "* setting sample rate to: "; 
+        cout << "* setting sample rate to: ";
         cout << gRate << " Hz" << endl;
 
         args.pop();
     }
 };
-        
+
 class VerboseCommand : public Command
 {
-public:
+  public:
     //  set the verbosity flag to spew out more information.
-    void execute( Arguments & args ) const 
+    void
+    execute(Arguments &args) const
     {
         gVerbose = true;
         cout << "* being even more verbose than usual" << endl;
@@ -735,72 +759,74 @@ public:
 //  parseArguments
 // ----------------------------------------------------------------
 //  Process each command line argument in sequence, and execute
-//  the command associated with each one. Throw 
+//  the command associated with each one. Throw
 //  invalid_argument if an unrecognized argument is encountered,
 //  and allow any exceptions generated by executing the command
 //  to propogate.
 //
-static void parseArguments( Arguments & args, const CmdDictionary & commands )
+static void
+parseArguments(Arguments &args, const CmdDictionary &commands)
 {
-    if ( args.size() < 2 )
+    if (args.size() < 2)
     {
         throw std::invalid_argument("insufficient arguments");
     }
-    
+
     //  the first argument is the program name
     cout << "running " << args.top() << endl;
     args.pop();
-    
+
     //  the second argument specifies the resolution at
     //  which to configure the Analyzer
     double resolution;
-    if ( ! argIsNumber( args.top(), &resolution ) )
+    if (!argIsNumber(args.top(), &resolution))
     {
-        throw std::invalid_argument("first argument must be analyzer resolution");
+        throw std::invalid_argument(
+            "first argument must be analyzer resolution");
     }
     args.pop();
-    
+
     //  if the next argument is not an flag and it is a
-    //  number, then it is the window width at which to 
+    //  number, then it is the window width at which to
     //  configure the Analyzer. If not specified, the
     //  window width is twice the resolution.
     //
-    //  if the next argument is not a flag and is not a 
+    //  if the next argument is not a flag and is not a
     //  number, then it is the input filename. If not specified
     //  here, then either the '-i' flag will specify it, or
     //  samples will be read from standard input:
-    double winwidth = 2*resolution;
-    if ( !args.empty() && argIsNumber( args.top(), &winwidth ) )
+    double winwidth = 2 * resolution;
+    if (!args.empty() && argIsNumber(args.top(), &winwidth))
     {
         args.pop();
     }
     cout << "* configuring Loris Analyzer with resolution " << resolution;
     cout << " and window width " << winwidth << endl;
-    gAnalyzer = new Loris::Analyzer( resolution, winwidth );
-    
-    //  if the next argument is not a flag and is not a 
+    gAnalyzer = new Loris::Analyzer(resolution, winwidth);
+
+    //  if the next argument is not a flag and is not a
     //  number, then it is the input filename. If not specified
     //  here, then either the '-i' flag will specify it, or
     //  samples will be read from standard input:
-    if ( !args.empty() && !argIsFlag( args.top() ) && !argIsNumber( args.top() ) )
+    if (!args.empty() && !argIsFlag(args.top()) && !argIsNumber(args.top()))
     {
         InfileCommand cmd;
-        cmd.execute( args );
+        cmd.execute(args);
     }
-    
+
     //  invariant: there are more command line arguments
     //  to be processed
-    while ( !args.empty() )
+    while (!args.empty())
     {
-        string cmd = lowercaseArg( args.top() );
-        CmdDictionary::const_iterator it = commands.find( cmd );
-        if ( it == commands.end() )
+        string cmd = lowercaseArg(args.top());
+        CmdDictionary::const_iterator it = commands.find(cmd);
+        if (it == commands.end())
         {
-            throw std::invalid_argument( "unrecognized argument " + args.top() );
+            throw std::invalid_argument("unrecognized argument " + args.top());
         }
-        
+
         args.pop();
-        it->second->execute( args );    
+        it->second->execute(args);
     }
 }
 
@@ -809,17 +835,18 @@ static void parseArguments( Arguments & args, const CmdDictionary & commands )
 // ----------------------------------------------------------------
 //  Read samples from standard input into a buffer, return the number
 //  of samples successfully read into the buffer (should be equal to
-//  howmany unless the read fails). 
+//  howmany unless the read fails).
 //
-static int fill_buffer( double * buffer, int howmany )
+static int
+fill_buffer(double *buffer, int howmany)
 {
     using std::scanf;
-    
+
     //  invariant:
     //  j samples have been read into the buffer from
     //  satndard input.
     int j = 0;
-    while ( j < howmany && scanf("%lf", buffer+j ) == 1 )
+    while (j < howmany && scanf("%lf", buffer + j) == 1)
     {
         ++j;
     }
@@ -828,26 +855,27 @@ static int fill_buffer( double * buffer, int howmany )
     //  k samples in the buffer have been overwritten
     //  with either samples from standard input, or
     //  with zeros.
-    for ( int k = j; k < howmany; ++k )
+    for (int k = j; k < howmany; ++k)
     {
         buffer[k] = 0.;
     }
 
-    return  j;
+    return j;
 }
 
 // ----------------------------------------------------------------
 //  main
 // ----------------------------------------------------------------
 
-int main( int argc, char * argv[] )
+int
+main(int argc, char *argv[])
 {
     //  build a dictionary of commands
     CmdDictionary commands;
-    commands["-i"] = commands["-in"] = commands["-ifile"] = commands["-infile"] = 
-        new InfileCommand();
-    commands["-o"] = commands["-out"] = commands["-ofile"] = commands["-outfile"] =
-        new OutfileCommand();
+    commands["-i"] = commands["-in"] = commands["-ifile"] =
+        commands["-infile"] = new InfileCommand();
+    commands["-o"] = commands["-out"] = commands["-ofile"] =
+        commands["-outfile"] = new OutfileCommand();
     commands["-render"] = commands["-synth"] = new TestfileCommand();
     commands["-collate"] = new CollateCommand();
     commands["-distill"] = commands["-dist"] = new DistillCommand();
@@ -855,36 +883,36 @@ int main( int argc, char * argv[] )
     commands["-resample"] = commands["-resamp"] = new ResampleCommand();
     commands["-hop"] = commands["-hoptime"] = new SetHopTimeCommand();
     commands["-crop"] = commands["-croptime"] = new SetCropTimeCommand();
-    commands["-bw"] = commands["-bwregionwidth"]  = commands["-bwresidue"] = 
-    	new SetBwResidueCommand();
+    commands["-bw"] = commands["-bwregionwidth"] = commands["-bwresidue"] =
+        new SetBwResidueCommand();
     commands["-bwconvergence"] = new SetBwConvergenceCommand();
     commands["-drift"] = commands["-freqdrift"] = new SetDriftCommand();
     commands["-ampfloor"] = new SetAmpFloorCommand();
     commands["-freqfloor"] = new SetFreqFloorCommand();
-    commands["-sidelobes"] = commands["-attenutation"] = commands["-sidelobelevel"] =
-        new SetAttenuationCommand();
-    commands["-rate"] = commands["-samplerate"] = commands["-sr"] = 
+    commands["-sidelobes"] = commands["-attenutation"] =
+        commands["-sidelobelevel"] = new SetAttenuationCommand();
+    commands["-rate"] = commands["-samplerate"] = commands["-sr"] =
         new SetSampleRateCommand();
-    commands["-resolution"] = commands["-res"] = commands["-freqres"] = 
+    commands["-resolution"] = commands["-res"] = commands["-freqres"] =
         commands["-freqresolution"] = new SetResolutionCommand();
-    commands["-width"] = commands["-winwidth"] = commands["-windowwidth"] = 
+    commands["-width"] = commands["-winwidth"] = commands["-windowwidth"] =
         new SetWindowCommand();
     commands["-v"] = commands["-verbose"] = new VerboseCommand();
-    
+
     //  build an argument stack, pushing the arguments
     //  in reverse order.
     //  invariant: argc command line arguments remain to be pushed
     Arguments args;
     while (argc-- > 0)
     {
-        args.push( argv[argc] );
+        args.push(argv[argc]);
     }
-    
+
     try
     {
-        parseArguments( args, commands );
+        parseArguments(args, commands);
     }
-    catch ( std::logic_error & ex )
+    catch (std::logic_error &ex)
     {
         cout << "Error parsing arguments: \n\t" << ex.what() << endl;
         cout << "usage: " << argv[0] << " resolution ";
@@ -892,197 +920,196 @@ int main( int argc, char * argv[] )
         cout << gOptions << endl;
         return 1;
     }
-    
+
     //  if verbose, spew out the Analyzer state:
-    if ( gVerbose )
+    if (gVerbose)
     {
         cout << "* Loris Analyzer configuration:" << endl;
-        cout << "*\tfrequency resolution: " << gAnalyzer->freqResolution() << " Hz\n";
-        cout << "*\tanalysis window width: " << gAnalyzer->windowWidth() << " Hz\n";
+        cout << "*\tfrequency resolution: " << gAnalyzer->freqResolution()
+             << " Hz\n";
+        cout << "*\tanalysis window width: " << gAnalyzer->windowWidth()
+             << " Hz\n";
         cout << "*\tanalysis window sidelobe attenuation: "
              << gAnalyzer->sidelobeLevel() << " dB\n";
-        cout << "*\tspectral amplitude floor: " << gAnalyzer->ampFloor() << " dB\n";
-        cout << "*\tminimum partial frequecy: " << gAnalyzer->freqFloor() << " Hz\n";
-        cout << "*\thop time: " << 1000*gAnalyzer->hopTime() << " ms\n";
-        cout << "*\tmaximum partial frequency drift: " << gAnalyzer->freqDrift() 
+        cout << "*\tspectral amplitude floor: " << gAnalyzer->ampFloor()
+             << " dB\n";
+        cout << "*\tminimum partial frequecy: " << gAnalyzer->freqFloor()
              << " Hz\n";
-        cout << "*\tcrop time: " << 1000*gAnalyzer->cropTime() << " ms\n";
-        
-        if ( gAnalyzer->associateBandwidth() )
+        cout << "*\thop time: " << 1000 * gAnalyzer->hopTime() << " ms\n";
+        cout << "*\tmaximum partial frequency drift: " << gAnalyzer->freqDrift()
+             << " Hz\n";
+        cout << "*\tcrop time: " << 1000 * gAnalyzer->cropTime() << " ms\n";
+
+        if (gAnalyzer->associateBandwidth())
         {
-        	if ( gAnalyzer->bandwidthIsResidue() )
-        	{
-        		cout << "*\tspectral residue bandwidth association region width: " 
-             		 << gAnalyzer->bwRegionWidth() << " Hz\n";
+            if (gAnalyzer->bandwidthIsResidue())
+            {
+                cout << "*\tspectral residue bandwidth association region "
+                        "width: "
+                     << gAnalyzer->bwRegionWidth() << " Hz\n";
             }
             else
             {
-            	cout << "*\tsinusoidal convergence bandwidth tolerance: "
-            		 << gAnalyzer->bwConvergenceTolerance() << "\n";
+                cout << "*\tsinusoidal convergence bandwidth tolerance: "
+                     << gAnalyzer->bwConvergenceTolerance() << "\n";
             }
-       	}
-       	else
-       	{
-       		cout << "*\tstoring no bandwidth\n";
-      	}
-      	
-      	if ( 0 != gDistill )
-      	{
-      		cout << "*\tdistilling partials at approximately " << gDistill << " Hz channel resolution\n";
-      	}
-      	else if ( 0 != gSift )
-      	      	{
-      		cout << "*\tsifting and distilling partials at approximately " << gSift << " Hz channel resolution\n";
-      	}
-      	
+        }
+        else
+        {
+            cout << "*\tstoring no bandwidth\n";
+        }
+
+        if (0 != gDistill)
+        {
+            cout << "*\tdistilling partials at approximately " << gDistill
+                 << " Hz channel resolution\n";
+        }
+        else if (0 != gSift)
+        {
+            cout << "*\tsifting and distilling partials at approximately "
+                 << gSift << " Hz channel resolution\n";
+        }
+
         cout << endl;
     }
-    
+
     //  run the analysis
     try
     {
         Loris::AiffFile::samples_type samples;
         Loris::AiffFile::markers_type markers;
         double analysisRate = gRate;
-        if ( !gInFileName.empty() )
+        if (!gInFileName.empty())
         {
             cout << "* reading samples from " << gInFileName << endl;
-            Loris::AiffFile infile( gInFileName );
+            Loris::AiffFile infile(gInFileName);
             samples = infile.samples();
             analysisRate = infile.sampleRate();
             markers = infile.markers();
         }
         else
         {
-            cout << "reading samples from standard input at " 
-                 << gRate << " Hz sample rate" << endl;
+            cout << "reading samples from standard input at " << gRate
+                 << " Hz sample rate" << endl;
             analysisRate = gRate;
             const int bufsize = 1024;
-            double buffer[ bufsize ];
+            double buffer[bufsize];
             int sampsread = 0;
             do
             {
-                sampsread = fill_buffer( buffer, bufsize );
-                samples.insert( samples.end(), buffer, buffer + sampsread );
-            } while ( sampsread == bufsize );
+                sampsread = fill_buffer(buffer, bufsize);
+                samples.insert(samples.end(), buffer, buffer + sampsread);
+            } while (sampsread == bufsize);
             cout << "read " << samples.size() << " samples" << endl;
         }
-        
+
         //	if distilling or sifting, then estimate the fundamental
         //	during analysis, otherwise disable this feature:
-        if ( gDistill > 0 || gSift > 0 )
+        if (gDistill > 0 || gSift > 0)
         {
-        	double f0Nominal = (gDistill >0)?(gDistill):(gSift);
-        	gAnalyzer->buildFundamentalEnv( 0.95 * f0Nominal, 1.05 * f0Nominal );
+            double f0Nominal = (gDistill > 0) ? (gDistill) : (gSift);
+            gAnalyzer->buildFundamentalEnv(0.95 * f0Nominal, 1.05 * f0Nominal);
         }
         else
         {
-        	gAnalyzer->buildFundamentalEnv( false );
+            gAnalyzer->buildFundamentalEnv(false);
         }
-        
+
         cout << "* performing analysis" << endl;
-        Loris::PartialList partials = gAnalyzer->analyze( samples, analysisRate );
-        cout << "* analysis complete" << endl;  
-        
+        Loris::PartialList partials = gAnalyzer->analyze(samples, analysisRate);
+        cout << "* analysis complete" << endl;
+
         //	check or distilling or sifting
-        if ( gDistill > 0 || gSift > 0 )
+        if (gDistill > 0 || gSift > 0)
         {
-            Loris::LinearEnvelope ref = gAnalyzer->fundamentalEnv();    
-            
-            Loris::Channelizer chan( ref, 1 );
-            cout << "* channelizing " << partials.size() 
-                 << " partials" << endl;
-            chan.channelize( partials.begin(), 
-                             partials.end() );
-								  
-			if ( gDistill > 0 )
-			{
-				Loris::PartialList::iterator it =           
-					std::remove_if( partials.begin(), 
-									partials.end(), 
-									Loris::PartialUtils::isLabelEqual( 0 ) );
-									
-				if ( it != partials.end() )
-				{
-					cout << "* removing unlabeled partials" << endl;
-					partials.erase( it, partials.end() );
-				}
-				
-				cout << "* distilling " << partials.size() 
-					  << " partials" << endl;
-				Loris::Distiller::distill( partials,
-										   Loris::Distiller::DefaultFadeTimeMs/1000.0, 
-										   Loris::Distiller::DefaultSilentTimeMs/1000.0 );
-			}
-			else
-			{
-				cout << "* sifting " << partials.size() 
-					  << " partials" << endl;
-				Loris::Sieve::sift( partials.begin(), 
-									partials.end(), 
-									Loris::Sieve::DefaultFadeTimeMs/1000.0 );
-													
-				Loris::PartialList::iterator it =           
-					std::remove_if( partials.begin(), 
-									partials.end(), 
-									Loris::PartialUtils::isLabelEqual( 0 ) );
-									
-				if ( it != partials.end() )
-				{
-					cout << "* removing unlabeled partials" << endl;
-					partials.erase( it, partials.end() );
-				}
-				
-				cout << "* distilling " << partials.size() 
-					  << " partials" << endl;
-				Loris::Distiller::distill( partials,
-										   Loris::Distiller::DefaultFadeTimeMs/1000.0, 
-										   Loris::Distiller::DefaultSilentTimeMs/1000.0 );
-			}
+            Loris::LinearEnvelope ref = gAnalyzer->fundamentalEnv();
+
+            Loris::Channelizer chan(ref, 1);
+            cout << "* channelizing " << partials.size() << " partials" << endl;
+            chan.channelize(partials.begin(), partials.end());
+
+            if (gDistill > 0)
+            {
+                Loris::PartialList::iterator it =
+                    std::remove_if(partials.begin(), partials.end(),
+                                   Loris::PartialUtils::isLabelEqual(0));
+
+                if (it != partials.end())
+                {
+                    cout << "* removing unlabeled partials" << endl;
+                    partials.erase(it, partials.end());
+                }
+
+                cout << "* distilling " << partials.size() << " partials"
+                     << endl;
+                Loris::Distiller::distill(
+                    partials, Loris::Distiller::DefaultFadeTimeMs / 1000.0,
+                    Loris::Distiller::DefaultSilentTimeMs / 1000.0);
+            }
+            else
+            {
+                cout << "* sifting " << partials.size() << " partials" << endl;
+                Loris::Sieve::sift(partials.begin(), partials.end(),
+                                   Loris::Sieve::DefaultFadeTimeMs / 1000.0);
+
+                Loris::PartialList::iterator it =
+                    std::remove_if(partials.begin(), partials.end(),
+                                   Loris::PartialUtils::isLabelEqual(0));
+
+                if (it != partials.end())
+                {
+                    cout << "* removing unlabeled partials" << endl;
+                    partials.erase(it, partials.end());
+                }
+
+                cout << "* distilling " << partials.size() << " partials"
+                     << endl;
+                Loris::Distiller::distill(
+                    partials, Loris::Distiller::DefaultFadeTimeMs / 1000.0,
+                    Loris::Distiller::DefaultSilentTimeMs / 1000.0);
+            }
         }
-        else if ( gCollate )
+        else if (gCollate)
         {
             cout << "* collating " << partials.size();
             cout << " partials" << endl;
-            Loris::Collator::collate( partials,
-								      Loris::Collator::DefaultFadeTimeMs/1000.0, 
-									  Loris::Collator::DefaultSilentTimeMs/1000.0 );
+            Loris::Collator::collate(
+                partials, Loris::Collator::DefaultFadeTimeMs / 1000.0,
+                Loris::Collator::DefaultSilentTimeMs / 1000.0);
         }
-        
-        if ( gResample > 0 )
+
+        if (gResample > 0)
         {
-            Loris::Resampler resamp( gResample );
-            cout << "* resampling " << partials.size() 
-                 << " partials at " << 1000*gResample << " ms intervals" << endl;
-            resamp.resample( partials );
+            Loris::Resampler resamp(gResample);
+            cout << "* resampling " << partials.size() << " partials at "
+                 << 1000 * gResample << " ms intervals" << endl;
+            resamp.resample(partials);
         }
-            
-        cout << "* exporting " << partials.size(); 
+
+        cout << "* exporting " << partials.size();
         cout << " partials to " << gOutFileName << endl;
-        Loris::SdifFile outfile( partials.begin(), 
-                                 partials.end() );
+        Loris::SdifFile outfile(partials.begin(), partials.end());
         outfile.markers() = markers;
-        outfile.write( gOutFileName );
-        
-        if ( ! gTestFileName.empty() )
+        outfile.write(gOutFileName);
+
+        if (!gTestFileName.empty())
         {
-            cout << "* exporting rendered partials to " << gTestFileName << endl;
-            Loris::PartialUtils::crop( partials.begin(),
-                                       partials.end(),
-                                       0, 99999999. );
-            Loris::AiffFile testfile( partials.begin(), 
-                                      partials.end(), gRate );
+            cout << "* exporting rendered partials to " << gTestFileName
+                 << endl;
+            Loris::PartialUtils::crop(partials.begin(), partials.end(), 0,
+                                      99999999.);
+            Loris::AiffFile testfile(partials.begin(), partials.end(), gRate);
             testfile.markers() = markers;
-            testfile.write( gTestFileName );
+            testfile.write(gTestFileName);
         }
-        
+
         cout << "* Done." << endl;
     }
-    catch ( std::exception & ex )
+    catch (std::exception &ex)
     {
         cout << "Error running analysis: " << ex.what() << endl;
         return 1;
     }
-    
+
     return 0;
-} 
+}

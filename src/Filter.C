@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -22,8 +22,8 @@
  *
  * Filter.C
  *
- * Implementation of class Loris::Filter, a generic digital filter of 
- * arbitrary order having both feed-forward and feedback coefficients. 
+ * Implementation of class Loris::Filter, a generic digital filter of
+ * arbitrary order having both feed-forward and feedback coefficients.
  *
  * Kelly Fitz, 1 Sept 1999
  * revised 9 Oct 2009
@@ -39,57 +39,58 @@
 #include <numeric>
 
 //  begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //  default construction
 // ---------------------------------------------------------------------------
-//! Construct a filter with an all-pass unity gain response.    
+//! Construct a filter with an all-pass unity gain response.
 //
-Filter::Filter( void ) :
-    m_ffwdcoefs( 1, 1.0 ),
-    m_fbackcoefs( 1, 1.0 ),
-    m_delayline( 1, 0 ),
-    m_gain( 1.0 )
+Filter::Filter(void) :
+    m_ffwdcoefs(1, 1.0),
+    m_fbackcoefs(1, 1.0),
+    m_delayline(1, 0),
+    m_gain(1.0)
 {
 }
 
 // ---------------------------------------------------------------------------
 //  copy construction
 // ---------------------------------------------------------------------------
-//! Make a copy of another digital filter. 
+//! Make a copy of another digital filter.
 //! Do not copy the filter state (delay line).
 //
-Filter::Filter( const Filter & other ) :
-    m_delayline( other.m_delayline.size(), 0. ),
-    m_ffwdcoefs( other.m_ffwdcoefs ),
-    m_fbackcoefs( other.m_fbackcoefs ),
-    m_gain( other.m_gain )
+Filter::Filter(const Filter &other) :
+    m_delayline(other.m_delayline.size(), 0.),
+    m_ffwdcoefs(other.m_ffwdcoefs),
+    m_fbackcoefs(other.m_fbackcoefs),
+    m_gain(other.m_gain)
 {
-    Assert( m_delayline.size() >= m_ffwdcoefs.size() - 1 );
-    Assert( m_delayline.size() >= m_fbackcoefs.size() - 1 );
+    Assert(m_delayline.size() >= m_ffwdcoefs.size() - 1);
+    Assert(m_delayline.size() >= m_fbackcoefs.size() - 1);
 }
 
 // ---------------------------------------------------------------------------
 //  assignment
 // ---------------------------------------------------------------------------
-//! Make a copy of another digital filter. 
+//! Make a copy of another digital filter.
 //! Do not copy the filter state (delay line).
 //
 Filter &
-Filter::operator=( const Filter & rhs )
+Filter::operator=(const Filter &rhs)
 {
-    if ( &rhs != this )
+    if (&rhs != this)
     {
-        m_delayline.resize( rhs.m_delayline.size() );
+        m_delayline.resize(rhs.m_delayline.size());
         clear();
-        
+
         m_ffwdcoefs = rhs.m_ffwdcoefs;
         m_fbackcoefs = rhs.m_fbackcoefs;
         m_gain = rhs.m_gain;
 
-        Assert( m_delayline.size() >= m_ffwdcoefs.size() - 1 );
-        Assert( m_delayline.size() >= m_fbackcoefs.size() - 1 );
+        Assert(m_delayline.size() >= m_ffwdcoefs.size() - 1);
+        Assert(m_delayline.size() >= m_fbackcoefs.size() - 1);
     }
     return *this;
 }
@@ -101,10 +102,9 @@ Filter::operator=( const Filter & rhs )
 //! construction, and may add functionality, but for efficiency, the filtering
 //! operation is non-virtual.
 //
-Filter::~Filter( void )
+Filter::~Filter(void)
 {
 }
-
 
 // ---------------------------------------------------------------------------
 //  apply
@@ -113,22 +113,23 @@ Filter::~Filter( void )
 //!
 //
 double
-Filter::apply( double input )
-{ 
+Filter::apply(double input)
+{
     // Implement the recurrence relation. m_ffwdcoefs holds the feed-forward
     // coefficients, m_fbackcoefs holds the feedback coeffs. The coefficient
     // vectors and delay lines are ordered by increasing age.
 
-    double wn = - std::inner_product( m_fbackcoefs.begin()+1, m_fbackcoefs.end(), 
-                                      m_delayline.begin(), -input );
-        //  negate input, then negate the inner product
-        
-    m_delayline.push_front( wn );
-    
-    double output = std::inner_product( m_ffwdcoefs.begin(), m_ffwdcoefs.end(), 
-                                        m_delayline.begin(), 0. );
+    double wn =
+        -std::inner_product(m_fbackcoefs.begin() + 1, m_fbackcoefs.end(),
+                            m_delayline.begin(), -input);
+    //  negate input, then negate the inner product
+
+    m_delayline.push_front(wn);
+
+    double output = std::inner_product(m_ffwdcoefs.begin(), m_ffwdcoefs.end(),
+                                       m_delayline.begin(), 0.);
     m_delayline.pop_back();
-        
+
     return output * m_gain;
 }
 
@@ -141,8 +142,8 @@ Filter::apply( double input )
 //! of this filter. The coefficients are stored in order of increasing
 //! delay (lowest order coefficient first).
 
-std::vector< double > 
-Filter::numerator( void )
+std::vector<double>
+Filter::numerator(void)
 {
     return m_ffwdcoefs;
 }
@@ -154,8 +155,8 @@ Filter::numerator( void )
 //! of this filter. The coefficients are stored in order of increasing
 //! delay (lowest order coefficient first).
 
-const std::vector< double > 
-Filter::numerator( void ) const
+const std::vector<double>
+Filter::numerator(void) const
 {
     return m_ffwdcoefs;
 }
@@ -167,8 +168,8 @@ Filter::numerator( void ) const
 //! of this filter. The coefficients are stored in order of increasing
 //! delay (lowest order coefficient first).
 
-std::vector< double > 
-Filter::denominator( void )
+std::vector<double>
+Filter::denominator(void)
 {
     return m_fbackcoefs;
 }
@@ -180,8 +181,8 @@ Filter::denominator( void )
 //! of this filter. The coefficients are stored in order of increasing
 //! delay (lowest order coefficient first).
 
-const std::vector< double > 
-Filter::denominator( void ) const
+const std::vector<double>
+Filter::denominator(void) const
 {
     return m_fbackcoefs;
 }
@@ -189,12 +190,12 @@ Filter::denominator( void ) const
 // ---------------------------------------------------------------------------
 //  clear
 // ---------------------------------------------------------------------------
-//! Clear the filter state. 
+//! Clear the filter state.
 //
 void
-Filter::clear( void )
+Filter::clear(void)
 {
-    std::fill( m_delayline.begin(), m_delayline.end(), 0 );
+    std::fill(m_delayline.begin(), m_delayline.end(), 0);
 }
 
-}   //  end of namespace Loris
+} //  end of namespace Loris

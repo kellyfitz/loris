@@ -1,8 +1,8 @@
 #ifndef INCLUDE_PARTIALBUILDER_H
 #define INCLUDE_PARTIALBUILDER_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -28,10 +28,10 @@
  * extracted from a reassigned time-frequency spectrum to form ridges
  * and construct Partials.
  *
- * This strategy attemps to follow a reference frequency envelope when 
+ * This strategy attemps to follow a reference frequency envelope when
  * forming Partials, by prewarping all peak frequencies according to the
- * (inverse of) frequency reference envelope. The frequency warping is 
- * performed only when computing frequency distances (differences), so 
+ * (inverse of) frequency reference envelope. The frequency warping is
+ * performed only when computing frequency distances (differences), so
  * the stored Partial frequencies remain correct.
  *
  * Kelly Fitz, 28 May 2003
@@ -40,7 +40,7 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
- 
+
 #include "Partial.h"
 #include "PartialList.h"
 #include "PartialPtrs.h"
@@ -49,29 +49,29 @@
 #include <memory>
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 class Envelope;
 
 // ---------------------------------------------------------------------------
 //	class PartialBuilder
 //
-//	A class representing the process of connecting peaks (ridges) on a 
+//	A class representing the process of connecting peaks (ridges) on a
 //	reassigned time-frequency surface to form Partials.
 //
 class PartialBuilder
 {
-// --- public interface ---
+    // --- public interface ---
 
-public:
-
-	//	constructor
+  public:
+    //	constructor
     //
     //  Construct a new builder that constrains Partial frequnecy
     //  drift by the specified drift value in Hz.
-	PartialBuilder( double drift );    
-    
-	//	constructor
+    PartialBuilder(double drift);
+
+    //	constructor
     //
     //  Construct a new builder that constrains Partial frequnecy
     //  drift by the specified drift value in Hz. The frequency
@@ -80,8 +80,8 @@ public:
     //  are linked to eligible Partials. All the Partial frequencies
     //  need to be un-warped at the end of the building process, by
     //  calling finishBuilding().
-	PartialBuilder( double drift, const Envelope & freqWarpEnv );
-	
+    PartialBuilder(double drift, const Envelope &freqWarpEnv);
+
     //  buildPartials
     //
     //	Append spectral peaks, extracted from a reassigned time-frequency
@@ -89,51 +89,49 @@ public:
     //	be used to extend eliglble Partials spawn new Partials.
     //
     //	This is similar to the basic MQ partial formation strategy, except that
-    //	before matching, all frequencies are normalized by the value of the 
-    //	warping envelope at the time of the current frame. 
-    void buildPartials( Peaks & peaks, double frameTime );
+    //	before matching, all frequencies are normalized by the value of the
+    //	warping envelope at the time of the current frame.
+    void buildPartials(Peaks &peaks, double frameTime);
 
     //  finishBuilding
     //
-	//	Return the Partials that were built. After calling finishBuilding, the
+    //	Return the Partials that were built. After calling finishBuilding, the
     //  builder is returned to its initial state, and ready to build another
-    //  set of Partials. 
-	PartialList finishBuilding( void );
+    //  set of Partials.
+    PartialList finishBuilding(void);
 
-private:
+  private:
+    // --- auxiliary member functions ---
 
-// --- auxiliary member functions ---
+    double warped_freq_distance(const Partial &partial, const SpectralPeak &pk);
 
-    double warped_freq_distance( const Partial & partial, const SpectralPeak & pk );
+    bool better_match(const Partial &part, const SpectralPeak &pk1,
+                      const SpectralPeak &pk2);
+    bool better_match(const Partial &part1, const Partial &part2,
+                      const SpectralPeak &pk);
 
-    bool better_match( const Partial & part, const SpectralPeak & pk1,
-		   	           const SpectralPeak & pk2 );
-    bool better_match( const Partial & part1, 
-	  		           const Partial & part2, const SpectralPeak & pk );                       
-                       
-                       
-// --- collected partials ---
+    // --- collected partials ---
 
-	PartialList mCollectedPartials;             //	collect partials here
+    PartialList mCollectedPartials; //	collect partials here
 
-// --- builder state variables ---
-		
-	PartialPtrs mEligiblePartials;
-    PartialPtrs mNewlyEligible;                 // 	keep track of eligible partials here
+    // --- builder state variables ---
 
-// --- parameters ---
-    	
-	std::unique_ptr< Envelope > mFreqWarping;	//	reference envelope
-    
-	double mFreqDrift;
-    	
-// --- disallow copy and assignment ---
-    
-    PartialBuilder( const PartialBuilder & );
-    PartialBuilder& operator=( const PartialBuilder & );
-    
-};	//	end of class PartialBuilder
+    PartialPtrs mEligiblePartials;
+    PartialPtrs mNewlyEligible; // 	keep track of eligible partials here
 
-}	//	end of namespace Loris
+    // --- parameters ---
+
+    std::unique_ptr<Envelope> mFreqWarping; //	reference envelope
+
+    double mFreqDrift;
+
+    // --- disallow copy and assignment ---
+
+    PartialBuilder(const PartialBuilder &);
+    PartialBuilder &operator=(const PartialBuilder &);
+
+}; //	end of class PartialBuilder
+
+} // namespace Loris
 
 #endif /* ndef INCLUDE_PARTIALBUILDER_H */

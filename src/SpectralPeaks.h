@@ -1,8 +1,8 @@
 #ifndef INCLUDE_SPECTRALPEAKS_H
 #define INCLUDE_SPECTRALPEAKS_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -24,7 +24,7 @@
  *
  * SpectralPeaks.h
  *
- * Definition of a type representing a collection (vector) of 
+ * Definition of a type representing a collection (vector) of
  * reassigned spectral peaks or ridges. Shared by analysis policies.
  *
  * Kelly Fitz, 29 May 2003
@@ -33,79 +33,111 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
- 
+
 #include "Breakpoint.h"
 
 #include <vector>
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 //  define a spectral peak data structure
 //
 //  HEY
-//  Clean this mess up! Upgrade this struct into a class that can 
-//  store more kinds of information (like reassignment values), and 
+//  Clean this mess up! Upgrade this struct into a class that can
+//  store more kinds of information (like reassignment values), and
 //  creates a Breakpoint when needed.
 
 class SpectralPeak
 {
-private:
-
+  private:
     double m_time;
     Breakpoint m_breakpoint;
 
-public:
-
+  public:
     //  --- lifecycle ---
-    
-    SpectralPeak( double t, const Breakpoint & bp ) : m_time( t ), m_breakpoint( bp ) {}
-    
-    
+
+    SpectralPeak(double t, const Breakpoint &bp) :
+        m_time(t),
+        m_breakpoint(bp)
+    {
+    }
+
     //  --- access ---
-    
-    double time( void ) const { return m_time; }
-    
-    double amplitude( void ) const { return m_breakpoint.amplitude(); }
-    double frequency( void ) const { return m_breakpoint.frequency(); }
-    double bandwidth( void ) const { return m_breakpoint.bandwidth(); }
-    
+
+    double
+    time(void) const
+    {
+        return m_time;
+    }
+
+    double
+    amplitude(void) const
+    {
+        return m_breakpoint.amplitude();
+    }
+    double
+    frequency(void) const
+    {
+        return m_breakpoint.frequency();
+    }
+    double
+    bandwidth(void) const
+    {
+        return m_breakpoint.bandwidth();
+    }
+
     //  --- mutation ---
-    
-    void setAmplitude( double x ) { m_breakpoint.setAmplitude(x); }
-    void setBandwidth( double x ) { m_breakpoint.setBandwidth(x); }
-    
+
+    void
+    setAmplitude(double x)
+    {
+        m_breakpoint.setAmplitude(x);
+    }
+    void
+    setBandwidth(double x)
+    {
+        m_breakpoint.setBandwidth(x);
+    }
+
     //  this REALLY shouldn't be in here...
-    void addNoiseEnergy( double enoise ) { m_breakpoint.addNoiseEnergy(enoise); }
-    
+    void
+    addNoiseEnergy(double enoise)
+    {
+        m_breakpoint.addNoiseEnergy(enoise);
+    }
+
     //  --- Breakpoint creation ---
-    
-    Breakpoint createBreakpoint( void ) const { return m_breakpoint; }
-    
+
+    Breakpoint
+    createBreakpoint(void) const
+    {
+        return m_breakpoint;
+    }
+
     //  --- comparitors ---
-    
-    //	Comparitor for sorting spectral peaks in order of 
+
+    //	Comparitor for sorting spectral peaks in order of
     //	increasing frequency, or finding maximum frequency.
 
-    static bool sort_increasing_freq( const SpectralPeak & lhs, 
-                                      const SpectralPeak & rhs )
-    { 
-        return lhs.frequency()  < rhs.frequency(); 
+    static bool
+    sort_increasing_freq(const SpectralPeak &lhs, const SpectralPeak &rhs)
+    {
+        return lhs.frequency() < rhs.frequency();
     }
 
     //	predicate used for sorting peaks in order of decreasing amplitude:
-    static bool sort_greater_amplitude( const SpectralPeak & lhs, 
-                                        const SpectralPeak & rhs )
-    { 
-        return lhs.amplitude() > rhs.amplitude(); 
+    static bool
+    sort_greater_amplitude(const SpectralPeak &lhs, const SpectralPeak &rhs)
+    {
+        return lhs.amplitude() > rhs.amplitude();
     }
 };
 
 //	define the structure used to collect spectral peaks:
-typedef std::vector< SpectralPeak > Peaks;
+typedef std::vector<SpectralPeak> Peaks;
 
-
-
-}	//	end of namespace Loris
+} // namespace Loris
 
 #endif /* ndef INCLUDE_SPECTRALPEAKS_H */

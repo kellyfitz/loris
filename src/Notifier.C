@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -22,11 +22,11 @@
  *
  * Notifier.C
  *
- * Definitions of the ostreams used for notification throughout the Loris 
+ * Definitions of the ostreams used for notification throughout the Loris
  * library (notifier and debugger), and the c-linkable functions for assigning
  * notification handlers (of type NotificationHandler, see Notifier.h)
  * to each.
- * 
+ *
  * These ostreams use a streambuf derivative, NotifierBuf, to buffer characters
  * in a std::string, and post them (via a handler) when a newline is received.
  * NotifierBuf is defined and implemented below.
@@ -39,134 +39,146 @@
  */
 
 #include "Notifier.h"
-#include <string>
+
 #include <cstdio>
+#include <string>
 
 #if defined(__GNUC__)
-	//	other compilers have this problem?
-	typedef int int_type;
+//	other compilers have this problem?
+typedef int int_type;
 #endif
 
 using namespace std;
 
 //	begin namespace
-namespace Loris {
-
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	defaultNotifierhandler
 // ---------------------------------------------------------------------------
-//	By default, notifications go to stdout (no need to bring in iostreams 
-//	for this. 
+//	By default, notifications go to stdout (no need to bring in iostreams
+//	for this.
 //
 //	Is printf different from fprint to stdout? On the mac, using CW5, and
 //	linking into a Python module (main() written in c), only printf works.
 //
-static void defaultNotifierhandler( const char * s )
+static void
+defaultNotifierhandler(const char *s)
 {
-	//cout << s << endl;
-	//fprintf( stdout, "%s\n", s );
-	printf( "%s\n", s );
+    // cout << s << endl;
+    // fprintf( stdout, "%s\n", s );
+    printf("%s\n", s);
 }
 
 // ---------------------------------------------------------------------------
 //	class NotifierBuf
 //
-//	streambuf derivative that buffers output in a std::string 
-//	and posts it to a handler (_post) when a newline is received. 
+//	streambuf derivative that buffers output in a std::string
+//	and posts it to a handler (_post) when a newline is received.
 //
 class NotifierBuf : public streambuf
 {
-//	-- public interface --
-public:
-//	construction:
-	NotifierBuf( const std::string & s = "" ) : 
-		_str(s), _post( defaultNotifierhandler ) 
-		//	confirm construction:
-		// { printf( "created a NotifierBuf.\n" ); }
-		{} 
-		
-//	virtual destructor so NotifierBuf can be subclassed:
-//	(use compiler generated, streambuf has virtual destructor)
-	//virtual ~NotifierBuf( void );	
-	
-//	handler manipulation:
-	NotificationHandler setHandler( NotificationHandler h ) throw()
-	{
-		NotificationHandler prev = _post;
-		_post = h;
-		return prev;
-	}
-	
-protected:
-	//	called every time a character is written:
-	virtual int_type overflow( int_type c ) 
-	{
-		if ( c == '\n' ) {
-			_post( _str.c_str() );
-			_str = "";
-		}
-		else if ( c != EOF ) {
-			char ch(c);
-			_str += ch;
-			//_str += static_cast<char>(c); ???
-		}
-		return c;
-	}
-	
-private:
-	//	buffer characters in a string:
-	std::string _str;
-	
-	//	handler:
-	NotificationHandler _post;
-	
-};	//	end of class NotifierBuf
+    //	-- public interface --
+  public:
+    //	construction:
+    NotifierBuf(const std::string &s = "") :
+        _str(s),
+        _post(defaultNotifierhandler)
+    //	confirm construction:
+    // { printf( "created a NotifierBuf.\n" ); }
+    {
+    }
+
+    //	virtual destructor so NotifierBuf can be subclassed:
+    //	(use compiler generated, streambuf has virtual destructor)
+    // virtual ~NotifierBuf( void );
+
+    //	handler manipulation:
+    NotificationHandler
+    setHandler(NotificationHandler h) throw()
+    {
+        NotificationHandler prev = _post;
+        _post = h;
+        return prev;
+    }
+
+  protected:
+    //	called every time a character is written:
+    virtual int_type
+    overflow(int_type c)
+    {
+        if (c == '\n')
+        {
+            _post(_str.c_str());
+            _str = "";
+        }
+        else if (c != EOF)
+        {
+            char ch(c);
+            _str += ch;
+            //_str += static_cast<char>(c); ???
+        }
+        return c;
+    }
+
+  private:
+    //	buffer characters in a string:
+    std::string _str;
+
+    //	handler:
+    NotificationHandler _post;
+
+}; //	end of class NotifierBuf
 
 // ---------------------------------------------------------------------------
 //	stream instances
 // ---------------------------------------------------------------------------
 //	ostreams used throughout Loris for notification.
 //
-//	Instead of making these globals by declaring them at file scope, 
+//	Instead of making these globals by declaring them at file scope,
 //	make them static to these initializer functions, to make sure (?)
 //	that their constructors get called.
 //
-static NotifierBuf & notifierBuffer(void)
+static NotifierBuf &
+notifierBuffer(void)
 {
-	static NotifierBuf buf;
-	return buf;
+    static NotifierBuf buf;
+    return buf;
 }
 
-std::ostream & getNotifierStream(void)
+std::ostream &
+getNotifierStream(void)
 {
-	static ostream os(&notifierBuffer());
-	return os;
+    static ostream os(&notifierBuffer());
+    return os;
 }
 
-
-#if defined( Debug_Loris )
-	static NotifierBuf & debuggerBuffer(void)
-	{
-		static NotifierBuf buf;
-		return buf;
-	}
+#if defined(Debug_Loris)
+static NotifierBuf &
+debuggerBuffer(void)
+{
+    static NotifierBuf buf;
+    return buf;
+}
 #else
-	//	to do nothing at all, need a dummy streambuf:
-	struct Dummybuf : public streambuf
-	{
-	};
-	static Dummybuf & debuggerBuffer( void )
-	{
-		static Dummybuf buf;
-		return buf;
-	}
+//	to do nothing at all, need a dummy streambuf:
+struct Dummybuf : public streambuf
+{
+};
+static Dummybuf &
+debuggerBuffer(void)
+{
+    static Dummybuf buf;
+    return buf;
+}
 #endif
 
-std::ostream & getDebuggerStream(void)
+std::ostream &
+getDebuggerStream(void)
 {
-	static ostream os(&debuggerBuffer());
-	return os;
+    static ostream os(&debuggerBuffer());
+    return os;
 }
 
 // ---------------------------------------------------------------------------
@@ -175,10 +187,10 @@ std::ostream & getDebuggerStream(void)
 //	Specify a new handler for notifications.
 //	Does not throw.
 //
-extern "C" NotificationHandler 
-setNotifierHandler( NotificationHandler fn )
+extern "C" NotificationHandler
+setNotifierHandler(NotificationHandler fn)
 {
-	return notifierBuffer().setHandler( fn );
+    return notifierBuffer().setHandler(fn);
 }
 
 // ---------------------------------------------------------------------------
@@ -188,16 +200,15 @@ setNotifierHandler( NotificationHandler fn )
 //	Debug_Loris is defined, otherwise debugger does nothing.
 //	Does not throw.
 //
-extern "C" NotificationHandler 
-setDebuggerHandler( NotificationHandler fn )
+extern "C" NotificationHandler
+setDebuggerHandler(NotificationHandler fn)
 {
-#if defined( Debug_Loris )
-	return debuggerBuffer().setHandler( fn );
+#if defined(Debug_Loris)
+    return debuggerBuffer().setHandler(fn);
 #else
-	fn = fn;
-	return NULL;
+    fn = fn;
+    return NULL;
 #endif
 }
 
-}	//	end of namespace Loris
-
+} // namespace Loris

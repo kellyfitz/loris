@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -22,8 +22,8 @@
  *
  * NoiseGenerator.C
  *
- * Implementation of a class representing a gaussian noise generator, filtered and 
- * used as a modulator in bandwidth-enhanced synthesis.
+ * Implementation of a class representing a gaussian noise generator, filtered
+ * and used as a modulator in bandwidth-enhanced synthesis.
  *
  * Kelly Fitz, 5 June 2003
  * revised 11 October 2009
@@ -34,12 +34,13 @@
  */
 
 #include "NoiseGenerator.h"
+
 #include <cmath>
 #include <numeric>
 
-
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // --- construction ---
 
@@ -51,10 +52,10 @@ namespace Loris {
 //!
 //!	\param initSeed is the initial seed for the random number generator
 //
-NoiseGenerator::NoiseGenerator( double initSeed ) :
-	m_useed( initSeed ),
-	m_gset( 0 ),
-	m_iset( false )
+NoiseGenerator::NoiseGenerator(double initSeed) :
+    m_useed(initSeed),
+    m_gset(0),
+    m_iset(false)
 {
 }
 
@@ -65,10 +66,10 @@ NoiseGenerator::NoiseGenerator( double initSeed ) :
 //!
 //!	\param newSeed is the new seed for the random number generator
 //
-void 
-NoiseGenerator::seed( double newSeed )
+void
+NoiseGenerator::seed(double newSeed)
 {
-	m_useed = newSeed;
+    m_useed = newSeed;
 }
 
 // --- random number generation ---
@@ -76,7 +77,7 @@ NoiseGenerator::seed( double newSeed )
 // ---------------------------------------------------------------------------
 //	uniform random number generator
 // ---------------------------------------------------------------------------
-//	Taken from "Random Number Generators: Good Ones Are Hard To Find," 
+//	Taken from "Random Number Generators: Good Ones Are Hard To Find,"
 //	Stephen Park and Keith Miller, Communications of the ACM, October 1988,
 //	vol. 31, Number 10.
 //
@@ -86,9 +87,9 @@ NoiseGenerator::seed( double newSeed )
 //
 //	The correctness of the implementation can be checked by confirming that
 // 	after 10000 iterations, the seed, initialized to 1, is 1043618065.
-//	I have confirmed this. 
+//	I have confirmed this.
 //
-//	I have also confirmed that it still works (is correct after 10000 
+//	I have also confirmed that it still works (is correct after 10000
 //	iterations) when I replace the divides with multiplies by oneOverM.
 //
 //	Returns a uniformly distributed random double on the range [0., 1.).
@@ -100,21 +101,27 @@ NoiseGenerator::seed( double newSeed )
 //	(erroneously!) included in g++ cmath, but trunc is not imported
 //	into std. For these two compilers, could just import std. But
 //	trnc doesn't seem to exist anywhere in Linux g++, so use std::modf().
-//	DON'T use integer conversion, because long int ins't as long 
+//	DON'T use integer conversion, because long int ins't as long
 //	as double's mantissa!
 //
-static inline double trunc( double x ) { double y; std::modf(x, &y); return y; }
+static inline double
+trunc(double x)
+{
+    double y;
+    std::modf(x, &y);
+    return y;
+}
 
 inline double
-NoiseGenerator::uniform( void )
+NoiseGenerator::uniform(void)
 {
-	static const double a = 16807.L;
-	static const double m = 2147483647.L;	// == LONG_MAX
-	static const double oneOverM = 1.L / m;
+    static const double a = 16807.L;
+    static const double m = 2147483647.L; // == LONG_MAX
+    static const double oneOverM = 1.L / m;
 
-	double temp = a * m_useed;
-	m_useed = temp - m * trunc( temp * oneOverM );
-	return m_useed * oneOverM;
+    double temp = a * m_useed;
+    m_useed = temp - m * trunc(temp * oneOverM);
+    return m_useed * oneOverM;
 }
 
 // ---------------------------------------------------------------------------
@@ -126,37 +133,37 @@ NoiseGenerator::uniform( void )
 //	This is slightly different than the thing I got off the web, I (have to)
 //	assume (for now) that I knew what I was doing when I altered it.
 //
-inline double 
-NoiseGenerator::gaussian_normal( void )
+inline double
+NoiseGenerator::gaussian_normal(void)
 {
-	//static int m_iset = 0;	//	boolean really, now member variables
-	//static double m_gset;
+    // static int m_iset = 0;	//	boolean really, now member variables
+    // static double m_gset;
 
-	double r = 1., fac, v1, v2;
-	
-	if ( ! m_iset )
-	{
-		v1 = 2. * uniform() - 1.;
-		v2 = 2. * uniform() - 1.;
-		r = v1*v1 + v2*v2;
-		while( r >= 1. )
-		{
-			// v1 = 2. * uniform() - 1.;
-			v1 = v2;
-			v2 = 2. * uniform() - 1.;
-			r = v1*v1 + v2*v2;
-		}
+    double r = 1., fac, v1, v2;
 
-		fac = std::sqrt( -2. * std::log(r) / r );
-		m_gset = v1 * fac;
-		m_iset = true;
-		return v2 * fac;
-	}
-	else
-	{
-		m_iset = false;
-		return m_gset;
-	}
+    if (!m_iset)
+    {
+        v1 = 2. * uniform() - 1.;
+        v2 = 2. * uniform() - 1.;
+        r = v1 * v1 + v2 * v2;
+        while (r >= 1.)
+        {
+            // v1 = 2. * uniform() - 1.;
+            v1 = v2;
+            v2 = 2. * uniform() - 1.;
+            r = v1 * v1 + v2 * v2;
+        }
+
+        fac = std::sqrt(-2. * std::log(r) / r);
+        m_gset = v1 * fac;
+        m_iset = true;
+        return v2 * fac;
+    }
+    else
+    {
+        m_iset = false;
+        return m_gset;
+    }
 }
 
 // --- sample generation ---
@@ -165,18 +172,17 @@ NoiseGenerator::gaussian_normal( void )
 //	sample
 // ---------------------------------------------------------------------------
 //!	Generate and return a new sample of Gaussian noise having zero
-//! mean and unity standard deviation. Approximate the normal distribution 
-//!	using the Box-Muller transformation applied to a uniform random number 
-//!	generator taken from "Random Number Generators: Good Ones Are Hard To Find," 
+//! mean and unity standard deviation. Approximate the normal distribution
+//!	using the Box-Muller transformation applied to a uniform random number
+//!	generator taken from "Random Number Generators: Good Ones Are Hard To Find,"
 //!	Stephen Park and Keith Miller, Communications of the ACM, October 1988,
 //! vol. 31, Number 10.
 //
-double 
-NoiseGenerator::sample( void )
+double
+NoiseGenerator::sample(void)
 {
-	double sample = gaussian_normal();
-	return sample;
+    double sample = gaussian_normal();
+    return sample;
 }
 
-
-}	//	end of namespace Loris
+} // namespace Loris

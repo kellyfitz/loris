@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -31,75 +31,71 @@
  *
  */
 #include "Harmonifier.h"
-
 #include "LinearEnvelope.h"
 
-#include <cmath>    // for pow
+#include <cmath> // for pow
 
-using namespace Loris; 
-
+using namespace Loris;
 
 // ---------------------------------------------------------------------------
 //    Constructor
 // ---------------------------------------------------------------------------
-//! Construct a new Harmonifier that applies the specified 
+//! Construct a new Harmonifier that applies the specified
 //! reference Partial to fix the frequencies of Breakpoints
 //! whose amplitude is below threshold_dB (0 by default,
 //! to apply only to quiet Partials, specify a threshold,
-//! like -90). 
+//! like -90).
 //
-Harmonifier::Harmonifier( const Partial & ref, double threshold_dB ) :
-    _refPartial( ref ),
-    _freqFixThresholdDb( threshold_dB ),
-    _weight( createDefaultEnvelope() )
+Harmonifier::Harmonifier(const Partial &ref, double threshold_dB) :
+    _refPartial(ref),
+    _freqFixThresholdDb(threshold_dB),
+    _weight(createDefaultEnvelope())
 {
-    if ( 0 == _refPartial.numBreakpoints() )
+    if (0 == _refPartial.numBreakpoints())
     {
-        Throw( InvalidArgument, 
-               "Cannot use an empty reference Partial in Harmonizer" );
+        Throw(InvalidArgument,
+              "Cannot use an empty reference Partial in Harmonizer");
     }
-    if ( 0 == _refPartial.label() )
+    if (0 == _refPartial.label())
     {
         //  if the reference is unlabeled, assume that it is the fundamental
-        _refPartial.setLabel( 1 );
+        _refPartial.setLabel(1);
     }
-    
 }
 
 // ---------------------------------------------------------------------------
 //    Constructor
 // ---------------------------------------------------------------------------
-//! Construct a new Harmonifier that applies the specified 
+//! Construct a new Harmonifier that applies the specified
 //! reference Partial to fix the frequencies of Breakpoints
 //! whose amplitude is below threshold_dB (0 by default,
 //! to apply only to quiet Partials, specify a threshold,
-//! like -90). The Envelope is a time-varying weighting 
+//! like -90). The Envelope is a time-varying weighting
 //! on the harmonifing process. When 1, harmonic frequencies
-//! are used, when 0, breakpoint frequencies are unmodified. 
+//! are used, when 0, breakpoint frequencies are unmodified.
 //
-Harmonifier::Harmonifier( const Partial & ref, const Envelope & env, 
-                          double threshold_dB ) :
-    _refPartial( ref ),
-    _freqFixThresholdDb( threshold_dB ),
-    _weight( env.clone() )
+Harmonifier::Harmonifier(const Partial &ref, const Envelope &env,
+                         double threshold_dB) :
+    _refPartial(ref),
+    _freqFixThresholdDb(threshold_dB),
+    _weight(env.clone())
 {
-    if ( 0 == _refPartial.numBreakpoints() )
+    if (0 == _refPartial.numBreakpoints())
     {
-        Throw( InvalidArgument, 
-               "Cannot use an empty reference Partial in Harmonizer" );
+        Throw(InvalidArgument,
+              "Cannot use an empty reference Partial in Harmonizer");
     }
-    if ( 0 == _refPartial.label() )
+    if (0 == _refPartial.label())
     {
         //  if the reference is unlabeled, assume that it is the fundamental
-        _refPartial.setLabel( 1 );
+        _refPartial.setLabel(1);
     }
-    
 }
 
 // ---------------------------------------------------------------------------
 //    Destructor
 // ---------------------------------------------------------------------------
-Harmonifier::~Harmonifier( void )
+Harmonifier::~Harmonifier(void)
 {
 }
 
@@ -110,38 +106,39 @@ Harmonifier::~Harmonifier( void )
 //!
 //! \pre    The Partial p must be labeled with its harmonic number.
 //
-void Harmonifier::harmonify( Partial & p ) const
+void
+Harmonifier::harmonify(Partial &p) const
 {
     //    compute absolute magnitude thresholds:
     static const double FadeRangeDB = 10;
-    const double BeginFade = std::pow( 10., 0.05 * (_freqFixThresholdDb+FadeRangeDB) );
-    const double Threshold = std::pow( 10., 0.05 * _freqFixThresholdDb );
-    const double OneOverFadeSpan = 1. / ( BeginFade - Threshold );
+    const double BeginFade =
+        std::pow(10., 0.05 * (_freqFixThresholdDb + FadeRangeDB));
+    const double Threshold = std::pow(10., 0.05 * _freqFixThresholdDb);
+    const double OneOverFadeSpan = 1. / (BeginFade - Threshold);
 
     double fscale = (double)p.label() / _refPartial.label();
-    
-    for ( Partial::iterator it = p.begin(); it != p.end(); ++it )
+
+    for (Partial::iterator it = p.begin(); it != p.end(); ++it)
     {
-        Breakpoint & bp = it.breakpoint();            
-                
-        if ( bp.amplitude() < BeginFade )
+        Breakpoint &bp = it.breakpoint();
+
+        if (bp.amplitude() < BeginFade)
         {
             //  alpha is the harmonic frequency weighting:
             //  when alpha is 1, the harmonic frequency is used,
             //  when alpha is 0, the breakpoint frequency is
             //  unmodified.
-            double alpha = 
-                std::min( ( BeginFade - bp.amplitude() ) * OneOverFadeSpan, 1. );
-                
-            //  alpha is scaled by the weigthing envelope
-            alpha *= _weight->valueAt( it.time() );
-            
-            double fRef = _refPartial.frequencyAt( it.time() );
-            
-            bp.setFrequency( ( alpha * ( fRef * fscale ) ) + 
-                             ( (1 - alpha) * bp.frequency() ) );
-        }
+            double alpha =
+                std::min((BeginFade - bp.amplitude()) * OneOverFadeSpan, 1.);
 
+            //  alpha is scaled by the weigthing envelope
+            alpha *= _weight->valueAt(it.time());
+
+            double fRef = _refPartial.frequencyAt(it.time());
+
+            bp.setFrequency((alpha * (fRef * fscale)) +
+                            ((1 - alpha) * bp.frequency()));
+        }
     }
 }
 
@@ -151,8 +148,8 @@ void Harmonifier::harmonify( Partial & p ) const
 //! Return the default weighing envelope (always 1).
 //! Used in template constructors.
 //
-Envelope * Harmonifier::createDefaultEnvelope( void )
+Envelope *
+Harmonifier::createDefaultEnvelope(void)
 {
-    return new LinearEnvelope( 1 );
-}    
-
+    return new LinearEnvelope(1);
+}

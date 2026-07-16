@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -22,8 +22,8 @@
  *
  * SpectralSurface.C
  *
- * Implementation of class SpectralSurface, a class representing 
- * a smoothed time-frequency surface that can be used to 
+ * Implementation of class SpectralSurface, a class representing
+ * a smoothed time-frequency surface that can be used to
  * perform cross-synthesis, the filtering of one sound by the
  * time-varying spectrum of another.
  *
@@ -33,154 +33,160 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
-#include "SpectralSurface.h"
-
 #include "BreakpointUtils.h"
 #include "LorisExceptions.h"
 #include "Notifier.h"
 #include "Partial.h"
+#include "SpectralSurface.h"
 
 #include <algorithm>
 #include <iterator>
 
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //    peakAmp - local helper for addPartialAux
 // ---------------------------------------------------------------------------
-static double peakAmp( const Partial & p ) 
-{	
-	if ( 0 == p.numBreakpoints() )
-	{
-		return 0;
-	}
-	return std::max_element( p.begin(), p.end(), 
-							 BreakpointUtils::compareAmplitudeLess()
-							 ).breakpoint().amplitude();
+static double
+peakAmp(const Partial &p)
+{
+    if (0 == p.numBreakpoints())
+    {
+        return 0;
+    }
+    return std::max_element(p.begin(), p.end(),
+                            BreakpointUtils::compareAmplitudeLess())
+        .breakpoint()
+        .amplitude();
 }
 
 // ---------------------------------------------------------------------------
 //    findemfaster - local helper
 // ---------------------------------------------------------------------------
-static std::pair< const Partial *, const Partial * > 
-findemfaster( double freq, double time, const std::vector< Partial > & parray )
+static std::pair<const Partial *, const Partial *>
+findemfaster(double freq, double time, const std::vector<Partial> &parray)
 {
-	static std::vector< Partial >::size_type cacheLastHit = 0;
-	
-	std::vector< Partial >::size_type i = cacheLastHit;
-	const Partial * p1 = 0;
-	const Partial * p2 = 0;
-	if ( parray[i].frequencyAt( time ) < freq )
-	{
-		// search up the list
-		while ( i < parray.size() && parray[i].frequencyAt( time ) < freq )
-		{
-			++i;
-		}
-		if ( i > 0 )
-		{
-			p1 = &parray[i-1];
-			cacheLastHit = i-1;
-		}
-		else
-		{
-			p1 = 0;
-			cacheLastHit = 0;
-		}
-		if ( i < parray.size() )
-		{
-			p2 = &parray[i];
-		}
-		else
-		{
-			p2 = 0;
-		}
-	}
-	else
-	{
-		// search down the list
-		while ( i > 0 && parray[i].frequencyAt( time ) > freq )
-		{
-			--i;
-		}
-		if ( i > 0 || parray[i].frequencyAt( time ) < freq )
-		{
-			p1 = &parray[i];
-			cacheLastHit = i;
-		}
-		else
-		{
-			p1 = 0;
-			cacheLastHit = 0;
-		}
-		if ( i + 1 < parray.size() )
-		{
-			p2 = &parray[i+1];
-		}
-		else
-		{
-			p2 = 0;
-		}
-	}
+    static std::vector<Partial>::size_type cacheLastHit = 0;
 
-	return std::make_pair(p1, p2);
+    std::vector<Partial>::size_type i = cacheLastHit;
+    const Partial *p1 = 0;
+    const Partial *p2 = 0;
+    if (parray[i].frequencyAt(time) < freq)
+    {
+        // search up the list
+        while (i < parray.size() && parray[i].frequencyAt(time) < freq)
+        {
+            ++i;
+        }
+        if (i > 0)
+        {
+            p1 = &parray[i - 1];
+            cacheLastHit = i - 1;
+        }
+        else
+        {
+            p1 = 0;
+            cacheLastHit = 0;
+        }
+        if (i < parray.size())
+        {
+            p2 = &parray[i];
+        }
+        else
+        {
+            p2 = 0;
+        }
+    }
+    else
+    {
+        // search down the list
+        while (i > 0 && parray[i].frequencyAt(time) > freq)
+        {
+            --i;
+        }
+        if (i > 0 || parray[i].frequencyAt(time) < freq)
+        {
+            p1 = &parray[i];
+            cacheLastHit = i;
+        }
+        else
+        {
+            p1 = 0;
+            cacheLastHit = 0;
+        }
+        if (i + 1 < parray.size())
+        {
+            p2 = &parray[i + 1];
+        }
+        else
+        {
+            p2 = 0;
+        }
+    }
+
+    return std::make_pair(p1, p2);
 }
 
 // ---------------------------------------------------------------------------
 //    smoothInTime - local helper
 // ---------------------------------------------------------------------------
-static double smoothInTime( const Partial & p, double t )
+static double
+smoothInTime(const Partial &p, double t)
 {
     const double spanT = 30; // ms
     const int steps = 13;
     const double incrT = (2 * spanT) / (steps - 1);
-    
-	double a = p.amplitudeAt( t );
-	if ( 0 == a )
-	{
-		for (double dehr = -spanT; dehr <= spanT; dehr += incrT )
-		{
-			a += p.amplitudeAt( t + ( .001*dehr ) );
-		}
-		a = a / steps;
-	}
-	return a;	
+
+    double a = p.amplitudeAt(t);
+    if (0 == a)
+    {
+        for (double dehr = -spanT; dehr <= spanT; dehr += incrT)
+        {
+            a += p.amplitudeAt(t + (.001 * dehr));
+        }
+        a = a / steps;
+    }
+    return a;
 }
-	
+
 // ---------------------------------------------------------------------------
 //    surfaceAt - local helper
 // ---------------------------------------------------------------------------
-static double surfaceAt( double f, double t, const std::vector< Partial > & parray )
+static double
+surfaceAt(double f, double t, const std::vector<Partial> &parray)
 {
-	std::pair< const Partial *, const Partial * > both = findemfaster( f, t, parray );
-	const Partial * p1 = both.first;
-	const Partial * p2 = both.second;
-	
-	double moo1 = 0, moo2 = 0, interp = 0;
-	
-	if ( 0 != p1 && 0 != p2 )
-	{
-		interp = (f - p1->frequencyAt( t )) / ( p2->frequencyAt( t ) - p1->frequencyAt( t ) );
-		moo1 = smoothInTime( *p1, t );
-		moo2 = smoothInTime( *p2, t );
-	}
-	else if ( 0 != p2 )
-	{
-		interp = 1;
-		moo2 = smoothInTime( *p2, t );
-		moo1 = moo2;
-	}
-	else if ( 0 != p1 )
-	{
-		interp = 1. / (f - p1->frequencyAt( t ));
-		moo1 = smoothInTime( *p1, t );
-		moo2 = 0;
-	}
-	else
-	{
-		moo1 = moo2 = interp = 0;
-	}
-	return ((1-interp)*moo1 + interp*moo2);
+    std::pair<const Partial *, const Partial *> both =
+        findemfaster(f, t, parray);
+    const Partial *p1 = both.first;
+    const Partial *p2 = both.second;
+
+    double moo1 = 0, moo2 = 0, interp = 0;
+
+    if (0 != p1 && 0 != p2)
+    {
+        interp = (f - p1->frequencyAt(t)) /
+                 (p2->frequencyAt(t) - p1->frequencyAt(t));
+        moo1 = smoothInTime(*p1, t);
+        moo2 = smoothInTime(*p2, t);
+    }
+    else if (0 != p2)
+    {
+        interp = 1;
+        moo2 = smoothInTime(*p2, t);
+        moo1 = moo2;
+    }
+    else if (0 != p1)
+    {
+        interp = 1. / (f - p1->frequencyAt(t));
+        moo1 = smoothInTime(*p1, t);
+        moo2 = 0;
+    }
+    else
+    {
+        moo1 = moo2 = interp = 0;
+    }
+    return ((1 - interp) * moo1 + interp * moo2);
 }
 
 // ---------------------------------------------------------------------------
@@ -192,22 +198,24 @@ static double surfaceAt( double f, double t, const std::vector< Partial > & parr
 //!
 //! \param  p the Partial to modify
 //
-void SpectralSurface::scaleAmplitudes( Partial & p )
+void
+SpectralSurface::scaleAmplitudes(Partial &p)
 {
-	const double FreqScale = 1.0 / mStretchFreq;
-	const double TimeScale = 1.0 / mStretchTime;
+    const double FreqScale = 1.0 / mStretchFreq;
+    const double TimeScale = 1.0 / mStretchTime;
 
     Partial::iterator iter;
-    for ( iter = p.begin(); iter != p.end(); ++iter )
+    for (iter = p.begin(); iter != p.end(); ++iter)
     {
-        Breakpoint & bp = iter.breakpoint();	
+        Breakpoint &bp = iter.breakpoint();
         double f = bp.frequency();
-        double t = iter.time();	
-            
-        double ampscale = surfaceAt( FreqScale * f, TimeScale * t, mPartials ) / mMaxSurfaceAmp;
+        double t = iter.time();
 
-        double a = bp.amplitude() * ( (1.-mEffect) + (mEffect*ampscale) );
-        bp.setAmplitude( a );
+        double ampscale =
+            surfaceAt(FreqScale * f, TimeScale * t, mPartials) / mMaxSurfaceAmp;
+
+        double a = bp.amplitude() * ((1. - mEffect) + (mEffect * ampscale));
+        bp.setAmplitude(a);
     }
 }
 
@@ -220,23 +228,26 @@ void SpectralSurface::scaleAmplitudes( Partial & p )
 //!
 //! \param  p the Partial to modify
 //
-void SpectralSurface::setAmplitudes( Partial & p )
+void
+SpectralSurface::setAmplitudes(Partial &p)
 {
-	const double FreqScale = 1.0 / mStretchFreq;
-	const double TimeScale = 1.0 / mStretchTime;
+    const double FreqScale = 1.0 / mStretchFreq;
+    const double TimeScale = 1.0 / mStretchTime;
 
     Partial::iterator iter;
-    for ( iter = p.begin(); iter != p.end(); ++iter )
+    for (iter = p.begin(); iter != p.end(); ++iter)
     {
-        Breakpoint & bp = iter.breakpoint();	
-        if ( 0 != bp.amplitude() )
+        Breakpoint &bp = iter.breakpoint();
+        if (0 != bp.amplitude())
         {
             double f = bp.frequency();
-            double t = iter.time();	
-                
-            double surfaceAmp = surfaceAt( FreqScale * f, TimeScale * t, mPartials );
-            double a = ( bp.amplitude()*(1.-mEffect) ) + ( mEffect*surfaceAmp );
-            bp.setAmplitude( a );
+            double t = iter.time();
+
+            double surfaceAmp =
+                surfaceAt(FreqScale * f, TimeScale * t, mPartials);
+            double a =
+                (bp.amplitude() * (1. - mEffect)) + (mEffect * surfaceAmp);
+            bp.setAmplitude(a);
         }
     }
 }
@@ -252,9 +263,10 @@ void SpectralSurface::setAmplitudes( Partial & p )
 //! (but greater than 0) compress the surface in the frequency
 //! dimension.
 //
-double SpectralSurface::frequencyStretch( void ) const
+double
+SpectralSurface::frequencyStretch(void) const
 {
-	return mStretchFreq;
+    return mStretchFreq;
 }
 
 // ---------------------------------------------------------------------------
@@ -266,9 +278,10 @@ double SpectralSurface::frequencyStretch( void ) const
 //! (but greater than 0) compress the surface in the time
 //! dimension.
 //
-double SpectralSurface::timeStretch( void ) const
+double
+SpectralSurface::timeStretch(void) const
 {
-	return mStretchTime;
+    return mStretchTime;
 }
 
 // ---------------------------------------------------------------------------
@@ -281,9 +294,10 @@ double SpectralSurface::timeStretch( void ) const
 //! surface. (This is rarely a good way of controlling the
 //! amount of the effect.)
 //
-double SpectralSurface::effect( void ) const
+double
+SpectralSurface::effect(void) const
 {
-	return mEffect;
+    return mEffect;
 }
 
 // ---------------------------------------------------------------------------
@@ -298,14 +312,15 @@ double SpectralSurface::effect( void ) const
 //! \pre    stretch must be positive
 //! \param  stretch the new stretch factor for the frequency dimension
 //
-void SpectralSurface::setFrequencyStretch( double stretch )
+void
+SpectralSurface::setFrequencyStretch(double stretch)
 {
-	if ( 0 > stretch )
-	{
-		Throw( InvalidArgument,     
-               "SpectralSurface frequency stretch must be non-negative." );
-	}
-	mStretchFreq = stretch;
+    if (0 > stretch)
+    {
+        Throw(InvalidArgument,
+              "SpectralSurface frequency stretch must be non-negative.");
+    }
+    mStretchFreq = stretch;
 }
 
 // ---------------------------------------------------------------------------
@@ -320,14 +335,15 @@ void SpectralSurface::setFrequencyStretch( double stretch )
 //! \pre    stretch must be positive
 //! \param  stretch the new stretch factor for the time dimension
 //
-void SpectralSurface::setTimeStretch( double stretch )
+void
+SpectralSurface::setTimeStretch(double stretch)
 {
-	if ( 0 > stretch )
-	{
-		Throw( InvalidArgument,     
-               "SpectralSurface time stretch must be non-negative." );
-	}
-	mStretchTime = stretch;
+    if (0 > stretch)
+    {
+        Throw(InvalidArgument,
+              "SpectralSurface time stretch must be non-negative.");
+    }
+    mStretchTime = stretch;
 }
 
 // ---------------------------------------------------------------------------
@@ -341,18 +357,19 @@ void SpectralSurface::setTimeStretch( double stretch )
 //! amount of the effect.)
 //!
 //! \pre    effect must be between 0 and 1, inclusive
-//! \param  effect the new factor controlling the amount of 
+//! \param  effect the new factor controlling the amount of
 //!         amplitude modification performed by scaleAmplitudes
 //!         and setAmplitudes
 //
-void SpectralSurface::setEffect( double effect )
+void
+SpectralSurface::setEffect(double effect)
 {
-	if ( 0 > effect || 1 < effect )
-	{
-		Throw( InvalidArgument,     
-               "SpectralSurface effect must be non-negative and not greater than 1." );
-	}
-	mEffect = effect;
+    if (0 > effect || 1 < effect)
+    {
+        Throw(InvalidArgument, "SpectralSurface effect must be non-negative "
+                               "and not greater than 1.");
+    }
+    mEffect = effect;
 }
 
 // --- private helpers ---
@@ -365,12 +382,11 @@ void SpectralSurface::setEffect( double effect )
 // using this helper! This just adds the Partial and keeps track
 // of the largest amplitude seen so far.
 //
-void SpectralSurface::addPartialAux( const Partial & p )
+void
+SpectralSurface::addPartialAux(const Partial &p)
 {
-    mPartials.push_back( p );
-    mMaxSurfaceAmp = std::max( mMaxSurfaceAmp, peakAmp( p ) );
+    mPartials.push_back(p);
+    mMaxSurfaceAmp = std::max(mMaxSurfaceAmp, peakAmp(p));
 }
 
-
-}	//end namespace
-
+} // namespace Loris

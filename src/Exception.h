@@ -1,8 +1,8 @@
 #ifndef INCLUDE_EXCEPTION_H_DEPRECATED
 #define INCLUDE_EXCEPTION_H_DEPRECATED
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -24,10 +24,10 @@
  *
  * Exception.h
  *
- * This file formerly defined class Exception, a generic exception class, and 
+ * This file formerly defined class Exception, a generic exception class, and
  * commonly-used derived exception classes, but the name caused build problems
- * on case-insensitive systems having a system header called exception.h, so 
- * the name has been changed to LorisExceptions.h. This file is included as 
+ * on case-insensitive systems having a system header called exception.h, so
+ * the name has been changed to LorisExceptions.h. This file is included as
  * legacy support. New code should use LorisExceptions.h.
  *
  * Kelly Fitz, 17 Aug 1999

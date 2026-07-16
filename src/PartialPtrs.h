@@ -1,8 +1,8 @@
 #ifndef INCLUDE_PARTIALPTRS_H
 #define INCLUDE_PARTIALPTRS_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -39,12 +39,13 @@
  */
 
 #include "Partial.h"
+
 #include <iterator>
 #include <vector>
 
 //	begin namespace
-namespace Loris {
-
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	class PartialPtrs
@@ -55,7 +56,7 @@ namespace Loris {
 //	simply typedefs, they classes have identical interfaces to
 //	std::vector, std::vector::iterator, and std::vector::const_iterator,
 //	respectively.
-//	
+//
 //	PartialPtrs is a collection of pointers to Partials that can be used
 //	(among other things) for algorithms that operate on a range of
 //	Partials, but don't rely on access to their container. A template
@@ -65,14 +66,14 @@ namespace Loris {
 //	generalizing access to the algorithm across containers without
 //	exposing the implementation in the header file.
 //
-typedef std::vector< Partial * > PartialPtrs;
-typedef std::vector< Partial * >::iterator PartialPtrsIterator;
-typedef std::vector< Partial * >::const_iterator PartialPtrsConstIterator;
+typedef std::vector<Partial *> PartialPtrs;
+typedef std::vector<Partial *>::iterator PartialPtrsIterator;
+typedef std::vector<Partial *>::const_iterator PartialPtrsConstIterator;
 
-typedef std::vector< const Partial * > ConstPartialPtrs;
-typedef std::vector< const Partial * >::iterator ConstPartialPtrsIterator;
-typedef std::vector< const Partial * >::const_iterator ConstPartialPtrsConstIterator;
-
+typedef std::vector<const Partial *> ConstPartialPtrs;
+typedef std::vector<const Partial *>::iterator ConstPartialPtrsIterator;
+typedef std::vector<const Partial *>::const_iterator
+    ConstPartialPtrsConstIterator;
 
 // ---------------------------------------------------------------------------
 //	fillPartialPtrs
@@ -84,23 +85,25 @@ typedef std::vector< const Partial * >::const_iterator ConstPartialPtrsConstIter
 //	the header files.
 //
 template <typename Iter>
-void fillPartialPtrs( Iter begin, Iter end, PartialPtrs & fillme )
+void
+fillPartialPtrs(Iter begin, Iter end, PartialPtrs &fillme)
 {
-	fillme.reserve( std::distance( begin, end ) );
-	fillme.clear();
-	while ( begin != end )
-		fillme.push_back( &(*begin++) );
+    fillme.reserve(std::distance(begin, end));
+    fillme.clear();
+    while (begin != end)
+        fillme.push_back(&(*begin++));
 }
 
 template <typename Iter>
-void fillPartialPtrs( Iter begin, Iter end, ConstPartialPtrs & fillme )
+void
+fillPartialPtrs(Iter begin, Iter end, ConstPartialPtrs &fillme)
 {
-	fillme.reserve( std::distance( begin, end ) );
-	fillme.clear();
-	while ( begin != end )
-		fillme.push_back( &(*begin++) );
+    fillme.reserve(std::distance(begin, end));
+    fillme.clear();
+    while (begin != end)
+        fillme.push_back(&(*begin++));
 }
 
-}	//	end of namespace Loris
+} // namespace Loris
 
 #endif /* ndef INCLUDE_PARTIALPTRS_H */

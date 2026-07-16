@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -32,89 +32,95 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
-#include <iostream>
-#include <string>
-#include <vector>
-
 #include "AiffFile.h"
 #include "Exception.h"
 #include "Marker.h"
 #include "SdifFile.h"
 #include "SpcFile.h"
 
+#include <iostream>
+#include <string>
+#include <vector>
+
 using std::cout;
 using std::string;
 using std::vector;
 using namespace Loris;
 
-int main( int argc, char* argv[] )
+int
+main(int argc, char *argv[])
 {
     //  check for a single argument
-    if ( argc != 2 )
+    if (argc != 2)
     {
         cout << "usage:\t" << argv[0] << " filename\n\n";
         return 1;
-    }   
-    
+    }
+
     //  get the filename and its suffix
-    string filename( argv[1] );
-    string suffix = filename.substr( filename.rfind('.')+1 );
-    
-    //cout << "filename is " << filename << "\n";
-    //cout << "suffix is " << suffix << "\n";
-    
-    std::vector< Marker > markers;
-    if ( suffix == "aiff" || suffix == "aif" )
+    string filename(argv[1]);
+    string suffix = filename.substr(filename.rfind('.') + 1);
+
+    // cout << "filename is " << filename << "\n";
+    // cout << "suffix is " << suffix << "\n";
+
+    std::vector<Marker> markers;
+    if (suffix == "aiff" || suffix == "aif")
     {
         try
         {
-            AiffFile f( filename );
+            AiffFile f(filename);
             cout << "AIFF samples file \"" << filename << "\":" << endl;
-            cout << f.numFrames() << " mono samples at " << f.sampleRate() << " Hz\n";
-            cout << "(Duration " << f.numFrames() / f.sampleRate() << " seconds)\n";
+            cout << f.numFrames() << " mono samples at " << f.sampleRate()
+                 << " Hz\n";
+            cout << "(Duration " << f.numFrames() / f.sampleRate()
+                 << " seconds)\n";
             cout << "MIDI note number " << f.midiNoteNumber() << endl;
-            markers.insert( markers.begin(), f.markers().begin(), f.markers().end() );
+            markers.insert(markers.begin(), f.markers().begin(),
+                           f.markers().end());
         }
-        catch( Exception & ex )
+        catch (Exception &ex)
         {
             cout << "Error reading markers from file: " << filename << "\n";
             cout << ex.what() << "\n";
             return 1;
         }
     }
-    else if ( suffix == "sdif" )
+    else if (suffix == "sdif")
     {
         try
         {
-            SdifFile f( filename );
+            SdifFile f(filename);
             cout << "SDIF partials file \"" << filename << "\":" << endl;
-            std::pair< double, double > span = 
-                PartialUtils::timeSpan( f.partials().begin(), f.partials().end() );
+            std::pair<double, double> span = PartialUtils::timeSpan(
+                f.partials().begin(), f.partials().end());
             cout << f.partials().size() << " partials spanning " << span.first;
             cout << " to " << span.second << " seconds.\n";
-            markers.insert( markers.begin(), f.markers().begin(), f.markers().end() );
+            markers.insert(markers.begin(), f.markers().begin(),
+                           f.markers().end());
         }
-        catch( Exception & ex )
+        catch (Exception &ex)
         {
             cout << "Error reading markers from file: " << filename << "\n";
             cout << ex.what() << "\n";
             return 1;
         }
     }
-    else if ( suffix == "spc" )
+    else if (suffix == "spc")
     {
         try
         {
-            SpcFile f( filename );
+            SpcFile f(filename);
             cout << "Spc partials file \"" << filename << "\":" << endl;
-            std::pair< double, double > span = 
-                PartialUtils::timeSpan( f.partials().begin(), f.partials().end() );
+            std::pair<double, double> span = PartialUtils::timeSpan(
+                f.partials().begin(), f.partials().end());
             cout << f.partials().size() << " partials spanning " << span.first;
             cout << " to " << span.second << " seconds.\n";
             cout << "MIDI note number " << f.midiNoteNumber() << endl;
-            markers.insert( markers.begin(), f.markers().begin(), f.markers().end() );
+            markers.insert(markers.begin(), f.markers().begin(),
+                           f.markers().end());
         }
-        catch( Exception & ex )
+        catch (Exception &ex)
         {
             cout << "Error reading markers from file: " << filename << "\n";
             cout << ex.what() << "\n";
@@ -126,8 +132,8 @@ int main( int argc, char* argv[] )
         cout << "Error -- unrecognized suffix: " << suffix << "\n";
         return 1;
     }
-    
-    if ( markers.empty() )
+
+    if (markers.empty())
     {
         cout << "No markers found in " << filename << "\n";
     }
@@ -135,14 +141,13 @@ int main( int argc, char* argv[] )
     {
         cout << "Features marked in " << filename << ":\n";
         //  print out the markers:
-        std::vector< Marker >::iterator it;
-        for ( it = markers.begin(); it != markers.end(); ++it )
+        std::vector<Marker>::iterator it;
+        for (it = markers.begin(); it != markers.end(); ++it)
         {
             cout << it->time() << "\t\"" << it->name() << "\"\n";
         }
     }
-    
+
     cout << "* Done." << endl;
     return 0;
 }
-

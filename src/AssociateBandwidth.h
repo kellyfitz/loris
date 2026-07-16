@@ -1,8 +1,8 @@
 #ifndef INCLUDE_ASSOCIATEBANDWIDTH_H
 #define INCLUDE_ASSOCIATEBANDWIDTH_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -40,7 +40,8 @@
 #include <vector>
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 class Breakpoint;
 
@@ -49,61 +50,60 @@ class Breakpoint;
 //
 //	In the new strategy, Breakpoints are extracted and accumulated
 //	as sinusoids. Spectral peaks that are not extracted (don't exceed
-//	the amplitude floor) or are rejected for certain reasons, are 
-//	accumulated diectly as noise (surplus). After all spectral peaks 
-//	have been accumulated as noise or sinusoids, the noise is distributed 
+//	the amplitude floor) or are rejected for certain reasons, are
+//	accumulated diectly as noise (surplus). After all spectral peaks
+//	have been accumulated as noise or sinusoids, the noise is distributed
 //	as bandwidth.
 //
 class AssociateBandwidth
 {
-//	-- instance variables --
-	std::vector< double > _weights;	//	weights vector for recording 
-									//	frequency distribution of retained
-									//	sinusoids
-	std::vector< double > _surplus; //	surplus (noise) energy vector for
-	 								//	accumulating the distribution of
-	 								//	spectral energy to be distributed 
-	 								//	as noise
-	
-	double _regionRate;				//	inverse of region center spacing
-	
-//	-- public interface --
-public:
-	//	construction:
-	AssociateBandwidth( double regionWidth, double srate );
-	~AssociateBandwidth( void );
-	
-	//	Perform bandwidth association on a collection of reassigned spectral peaks
-	//	or ridges. The range [begin, rejected) spans the Peaks selected to form
-	//	Partials. The range [rejected, end) spans the Peaks that were found in
-	//	the reassigned spectrum, but rejected as too weak or too close (in 
-	//	frequency) to another stronger Peak. 
-	void associateBandwidth( Peaks::iterator begin, 	//	beginning of Peaks
-							 Peaks::iterator rejected, 	//	first rejected Peak
-							 Peaks::iterator end );		//	end of Peaks
-	
-		
-//	-- private helpers --	
-private:	
-	double computeNoiseEnergy( double freq, double amp );
-	
-	//	These four formerly comprised the public interface
-	//	to this policy, now they are all hidden behind a 
-	//	single call to associateBandwidth.
-	
-	//	energy accumulation:
-	void accumulateNoise( double freq, double amp );	
-	void accumulateSinusoid( double freq, double amp  );	
-	
-	//	bandwidth assocation:
-	void associate( SpectralPeak & pk );
-	
-	//	call this to wipe out the accumulated energy to 
-	//	prepare for the next frame (yuk):
-	void reset( void );
-	
-};	// end of class AssociateBandwidth
+    //	-- instance variables --
+    std::vector<double> _weights; //	weights vector for recording
+                                  //	frequency distribution of retained
+                                  //	sinusoids
+    std::vector<double> _surplus; //	surplus (noise) energy vector for
+                                  //	accumulating the distribution of
+                                  //	spectral energy to be distributed
+                                  //	as noise
 
-}	//	end of namespace Loris
+    double _regionRate; //	inverse of region center spacing
+
+    //	-- public interface --
+  public:
+    //	construction:
+    AssociateBandwidth(double regionWidth, double srate);
+    ~AssociateBandwidth(void);
+
+    //	Perform bandwidth association on a collection of reassigned spectral
+    // peaks 	or ridges. The range [begin, rejected) spans the Peaks selected
+    // to form 	Partials. The range [rejected, end) spans the Peaks that were
+    // found in 	the reassigned spectrum, but rejected as too weak or too
+    // close (in 	frequency) to another stronger Peak.
+    void associateBandwidth(Peaks::iterator begin,    //	beginning of Peaks
+                            Peaks::iterator rejected, //	first rejected Peak
+                            Peaks::iterator end);     //	end of Peaks
+
+    //	-- private helpers --
+  private:
+    double computeNoiseEnergy(double freq, double amp);
+
+    //	These four formerly comprised the public interface
+    //	to this policy, now they are all hidden behind a
+    //	single call to associateBandwidth.
+
+    //	energy accumulation:
+    void accumulateNoise(double freq, double amp);
+    void accumulateSinusoid(double freq, double amp);
+
+    //	bandwidth assocation:
+    void associate(SpectralPeak &pk);
+
+    //	call this to wipe out the accumulated energy to
+    //	prepare for the next frame (yuk):
+    void reset(void);
+
+}; // end of class AssociateBandwidth
+
+} // namespace Loris
 
 #endif /* ndef INCLUDE_ASSOCIATEBANDWIDTH_H */

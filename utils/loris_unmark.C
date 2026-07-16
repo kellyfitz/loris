@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -31,140 +31,141 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <vector>
-
 #include "AiffFile.h"
 #include "Exception.h"
 #include "Marker.h"
 #include "SdifFile.h"
 #include "SpcFile.h"
 
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <vector>
+
 using std::cout;
 using std::string;
 using std::vector;
 using namespace Loris;
 
-static void findAndRemoveAll( std::vector< Marker > & markers,
-							  const string & id )
+static void
+findAndRemoveAll(std::vector<Marker> &markers, const string &id)
 {
-	std::vector< Marker >::iterator it = markers.begin();
-	while( it != markers.end() )
-	{
-		if ( it->name() == id )
-		{
-			it = markers.erase( it );
-		}
-		else
-		{
-			++it;
-		}	
-	}
+    std::vector<Marker>::iterator it = markers.begin();
+    while (it != markers.end())
+    {
+        if (it->name() == id)
+        {
+            it = markers.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
 
-int main( int argc, char* argv[] )
+int
+main(int argc, char *argv[])
 {
-	//	check for all arguments
-	if ( argc != 3 )
-	{
-		cout << "usage:\t" << argv[0] << " filename marker_name\n\n";
-		return 1;
-	}	
-	
-	//	get the filename and its suffix
-	string filename( argv[1] );
-	string suffix = filename.substr( filename.rfind('.')+1 );
-	
-	//cout << "filename is " << filename << "\n";
-	//cout << "suffix is " << suffix << "\n";
-	
-	/*
-	char * endptr;
-	double time = strtod( argv[2], &endptr );
-	if ( argv[2] == endptr )
-	{
-		cout << "Bad marker time: " << argv[2] << endl;
-		cout << "usage:\t" << argv[0] << " filename marker_time marker_name\n\n";
-		return 1;
-	}
-	*/
-	string name( argv[2] );
-	
-	cout << "Removing Marker(s) named \"" << name << endl;
-	cout << "from file \"" << filename << "\"" << endl;
-	
-	std::vector< Marker > markers;
-	if ( suffix == "aiff" || suffix == "aif" )
-	{
-		try
-		{
-			AiffFile f( filename );
-			findAndRemoveAll( f.markers(), name );
-			markers = f.markers();
-			f.write( filename );
-		}
-		catch( Exception & ex )
-		{
-			cout << "Error adding marker to AIFF file: " << filename << "\n";
-			cout << ex.what() << "\n";
-			return 1;
-		}
-	}
-	else if ( suffix == "sdif" )
-	{
-		try
-		{
-			SdifFile f( filename );
-			findAndRemoveAll( f.markers(), name );
-			markers = f.markers();
-			f.write( filename );
-		}
-		catch( Exception & ex )
-		{
-			cout << "Error adding marker to SDIF file: " << filename << "\n";
-			cout << ex.what() << "\n";
-			return 1;
-		}
-	}
-	else if ( suffix == "spc" )
-	{
-		try
-		{
-			SpcFile f( filename );
-			findAndRemoveAll( f.markers(), name );
-			markers = f.markers();
-			f.write( filename );
-		}
-		catch( Exception & ex )
-		{
-			cout << "Error adding marker to Spectrum file: " << filename << "\n";
-			cout << ex.what() << "\n";
-			return 1;
-		}
-	}
-	else
-	{
-		cout << "Error -- unrecognized suffix: " << suffix << "\n";
-		return 1;
-	}
-	
-	if ( markers.empty() )
-	{
-		cout << "No more markers in " << filename << "\n";
-	}
-	else
-	{
-		//	print out the markers:
-		cout << "Markers (time\tname)" << endl;
-		std::vector< Marker >::iterator it;
-		for ( it = markers.begin(); it != markers.end(); ++it )
-		{
-			cout << it->time() << "\t\"" << it->name() << "\"\n";
-		}
-	}
-	
-	return 0;
-}
+    //	check for all arguments
+    if (argc != 3)
+    {
+        cout << "usage:\t" << argv[0] << " filename marker_name\n\n";
+        return 1;
+    }
 
+    //	get the filename and its suffix
+    string filename(argv[1]);
+    string suffix = filename.substr(filename.rfind('.') + 1);
+
+    // cout << "filename is " << filename << "\n";
+    // cout << "suffix is " << suffix << "\n";
+
+    /*
+    char * endptr;
+    double time = strtod( argv[2], &endptr );
+    if ( argv[2] == endptr )
+    {
+        cout << "Bad marker time: " << argv[2] << endl;
+        cout << "usage:\t" << argv[0] << " filename marker_time
+    marker_name\n\n"; return 1;
+    }
+    */
+    string name(argv[2]);
+
+    cout << "Removing Marker(s) named \"" << name << endl;
+    cout << "from file \"" << filename << "\"" << endl;
+
+    std::vector<Marker> markers;
+    if (suffix == "aiff" || suffix == "aif")
+    {
+        try
+        {
+            AiffFile f(filename);
+            findAndRemoveAll(f.markers(), name);
+            markers = f.markers();
+            f.write(filename);
+        }
+        catch (Exception &ex)
+        {
+            cout << "Error adding marker to AIFF file: " << filename << "\n";
+            cout << ex.what() << "\n";
+            return 1;
+        }
+    }
+    else if (suffix == "sdif")
+    {
+        try
+        {
+            SdifFile f(filename);
+            findAndRemoveAll(f.markers(), name);
+            markers = f.markers();
+            f.write(filename);
+        }
+        catch (Exception &ex)
+        {
+            cout << "Error adding marker to SDIF file: " << filename << "\n";
+            cout << ex.what() << "\n";
+            return 1;
+        }
+    }
+    else if (suffix == "spc")
+    {
+        try
+        {
+            SpcFile f(filename);
+            findAndRemoveAll(f.markers(), name);
+            markers = f.markers();
+            f.write(filename);
+        }
+        catch (Exception &ex)
+        {
+            cout << "Error adding marker to Spectrum file: " << filename
+                 << "\n";
+            cout << ex.what() << "\n";
+            return 1;
+        }
+    }
+    else
+    {
+        cout << "Error -- unrecognized suffix: " << suffix << "\n";
+        return 1;
+    }
+
+    if (markers.empty())
+    {
+        cout << "No more markers in " << filename << "\n";
+    }
+    else
+    {
+        //	print out the markers:
+        cout << "Markers (time\tname)" << endl;
+        std::vector<Marker>::iterator it;
+        for (it = markers.begin(); it != markers.end(); ++it)
+        {
+            cout << it->time() << "\t\"" << it->name() << "\"\n";
+        }
+    }
+
+    return 0;
+}

@@ -13,17 +13,18 @@
 #define _RANDLCG_H_ 1.1
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #ifdef NO_PROTO
-long         set_seed();
-long         get_seed();
-unsigned long int randlcg();
+    long set_seed();
+    long get_seed();
+    unsigned long int randlcg();
 
 #else
-long         set_seed(long);
-long         get_seed(void);
+long set_seed(long);
+long get_seed(void);
 unsigned long int randlcg(void);
 
 #endif

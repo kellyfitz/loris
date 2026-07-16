@@ -1,8 +1,8 @@
 #ifndef INCLUDE_HARMONIFIER_H
 #define INCLUDE_HARMONIFIER_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -32,209 +32,202 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
-#include "Envelope.h" 
-#include "LorisExceptions.h" 
+#include "Envelope.h"
+#include "LorisExceptions.h"
 #include "Partial.h"
 #include "PartialList.h"
 #include "PartialUtils.h"
 
-#include <algorithm>    // for find
-#include <memory>       // for unique_ptr
+#include <algorithm> // for find
+#include <memory>    // for unique_ptr
 
 //	begin namespace
-namespace Loris {
-
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	Class Harmonifier
 //
 //! A Harmonifier uses a reference frequency envelope to make the
 //! frequencies of labeled Partials harmonic. The amount of frequency
-//! adjustment can be controlled by a time-varying envelope, and a 
+//! adjustment can be controlled by a time-varying envelope, and a
 //! threshold can be supplied so that only quiet Partials are affected.
 //
 class Harmonifier
 {
-//	-- instance variables --
+    //	-- instance variables --
 
-	Partial _refPartial;				//! the Partial whose frequency supplies the
-										//! reference frequency envelope.
-										
-	double _freqFixThresholdDb;		    //!	amplitude threshold below which Partial
-									    //!	frequencies are corrected according to
-									    //!	a reference Partial, if specified.
+    Partial _refPartial; //! the Partial whose frequency supplies the
+                         //! reference frequency envelope.
 
-	std::unique_ptr< Envelope > _weight;  //!	weighting function, when 1 harmonic
-                                        //! frequencies are used, when 0 breakpoint
-                                        //! frequencies are unmodified.
-    
-//	-- public interface --
-public:
+    double _freqFixThresholdDb; //!	amplitude threshold below which Partial
+                                //!	frequencies are corrected according to
+                                //!	a reference Partial, if specified.
 
-//	-- lifecycle --
+    std::unique_ptr<Envelope>
+        _weight; //!	weighting function, when 1 harmonic
+                 //! frequencies are used, when 0 breakpoint
+                 //! frequencies are unmodified.
 
-    //! Construct a new Harmonifier that applies the specified 
+    //	-- public interface --
+  public:
+    //	-- lifecycle --
+
+    //! Construct a new Harmonifier that applies the specified
     //! reference Partial to fix the frequencies of Breakpoints
     //! whose amplitude is below threshold_dB (0 by default,
     //! to apply only to quiet Partials, specify a threshold,
-    //! like -90). 
-   	Harmonifier( const Partial & ref, double threshold_dB = 0 );
+    //! like -90).
+    Harmonifier(const Partial &ref, double threshold_dB = 0);
 
-    //! Construct a new Harmonifier that applies the specified 
+    //! Construct a new Harmonifier that applies the specified
     //! reference Partial to fix the frequencies of Breakpoints
     //! whose amplitude is below threshold_dB (0 by default,
     //! to apply only to quiet Partials, specify a threshold,
-    //! like -90). The Envelope is a time-varying weighting 
+    //! like -90). The Envelope is a time-varying weighting
     //! on the harmonifing process. When 1, harmonic frequencies
-    //! are used, when 0, breakpoint frequencies are unmodified. 
-   	Harmonifier( const Partial & ref, const Envelope & env, 
-   	             double threshold_dB = 0 );
+    //! are used, when 0, breakpoint frequencies are unmodified.
+    Harmonifier(const Partial &ref, const Envelope &env,
+                double threshold_dB = 0);
 
-    //! Construct a new Harmonifier that applies the specified 
+    //! Construct a new Harmonifier that applies the specified
     //! reference Partial to fix the frequencies of Breakpoints
     //! whose amplitude is below threshold_dB (0 by default,
     //! to apply only to quiet Partials, specify a threshold,
     //! like -90). The reference Partial is the first Partial
-    //! in the range [b,e) having the specified label. 
+    //! in the range [b,e) having the specified label.
     //
     //! \throw  InvalidArgument if no Partial in the range [b,e)
     //!         has the specified label.
     //
-	template<typename Iter>
-   	Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
-   	            double threshold_dB = 0 );
+    template <typename Iter>
+    Harmonifier(Iter b, Iter e, Partial::label_type refLabel,
+                double threshold_dB = 0);
 
-    //! Construct a new Harmonifier that applies the specified 
+    //! Construct a new Harmonifier that applies the specified
     //! reference Partial to fix the frequencies of Breakpoints
     //! whose amplitude is below threshold_dB (0 by default,
     //! to apply only to quiet Partials, specify a threshold,
     //! like -90). The reference Partial is the first Partial
-    //! in the range [b,e) having the specified label. 
+    //! in the range [b,e) having the specified label.
     //!
-    //! The Envelope is a time-varying weighting 
+    //! The Envelope is a time-varying weighting
     //! on the harmonifing process. When 1, harmonic frequencies
-    //! are used, when 0, breakpoint frequencies are unmodified. 
+    //! are used, when 0, breakpoint frequencies are unmodified.
     //
     //! \throw  InvalidArgument if no Partial in the range [b,e)
     //!         has the specified label.
     //
-	template<typename Iter>
-   	Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
-   	             const Envelope & env, double threshold_dB = 0 );
+    template <typename Iter>
+    Harmonifier(Iter b, Iter e, Partial::label_type refLabel,
+                const Envelope &env, double threshold_dB = 0);
 
     //! Destructor.
-    ~Harmonifier( void );
+    ~Harmonifier(void);
 
     // use compiler-generated copy and assign.
 
-//	-- operation --
+    //	-- operation --
 
     //! Apply the reference envelope to a Partial.
-    void harmonify( Partial & p ) const;
-    
-    //! Apply the reference envelope to all Partials in a range.    
-	template<typename Iter>
-	void harmonify( Iter b, Iter e  );
+    void harmonify(Partial &p) const;
 
-// -- static members --
+    //! Apply the reference envelope to all Partials in a range.
+    template <typename Iter> void harmonify(Iter b, Iter e);
 
-	//! Static member that constructs an instance and applies
-	//! it to a sequence of Partials. 
-	//! Construct a Harmonifier using as reference the Partial in
-	//! the specified range labeled refLabel, then apply
-	//! the instance to all Partials in the range.
-	//!
-  	//!	\param  b is the beginning of the range of Partials to harmonify
-	//!	\param  e is (one-past) the end of the range of Partials to harmonify
-	//! \param  refLabel is the label of the Partial in [b,e) to
-	//!         use as reference Partial. The reference Partial is the first
-    //!         Partial in the range [b,e) having the specified label. 
-	//! \param  threshold_dB is the amplitude below which breakpoint
-	//!         frequencies are harmonified (0 by default, to apply 
-    //!         only to quiet Partials, specify a threshold, like -90). 
-	//! 
+    // -- static members --
+
+    //! Static member that constructs an instance and applies
+    //! it to a sequence of Partials.
+    //! Construct a Harmonifier using as reference the Partial in
+    //! the specified range labeled refLabel, then apply
+    //! the instance to all Partials in the range.
+    //!
+    //!	\param  b is the beginning of the range of Partials to harmonify
+    //!	\param  e is (one-past) the end of the range of Partials to harmonify
+    //! \param  refLabel is the label of the Partial in [b,e) to
+    //!         use as reference Partial. The reference Partial is the first
+    //!         Partial in the range [b,e) having the specified label.
+    //! \param  threshold_dB is the amplitude below which breakpoint
+    //!         frequencies are harmonified (0 by default, to apply
+    //!         only to quiet Partials, specify a threshold, like -90).
+    //!
     //! \throw  InvalidArgument if no Partial in the range [b,e)
-    //!         has the specified label.	
-    //! \throw  InvalidArgument if refLabel is non-positive.	
-	//!	
-	template< typename Iter >
-	static 
-	void harmonify( Iter b, Iter e, 
-	                Partial::label_type refLabel,
-                    double threshold_dB = 0 );
+    //!         has the specified label.
+    //! \throw  InvalidArgument if refLabel is non-positive.
+    //!
+    template <typename Iter>
+    static void harmonify(Iter b, Iter e, Partial::label_type refLabel,
+                          double threshold_dB = 0);
 
-	//! Static member that constructs an instance and applies
-	//! it to a sequence of Partials. 
-	//! Construct a Harmonifier using as reference the Partial in
-	//! the specified range labeled refLabel, then apply
-	//! the instance to all Partials in the range.
-	//!
-  	//!	\param  b is the beginning of the range of Partials to harmonify
-	//!	\param  e is (one-past) the end of the range of Partials to harmonify
-	//! \param  refLabel is the label of the Partial in [b,e) to
-	//!         use as reference Partial. The reference Partial is the first
-    //!         Partial in the range [b,e) having the specified label. 
-	//! \param  env is a weighting envelope to apply to the harmonification
-	//!         process: when env is 1, use harmonic frequencies, when env
-	//!         is 0, breakpoint frequencies are unmodified.
-	//! \param  threshold_dB is the amplitude below which breakpoint
-	//!         frequencies are harmonified (0 by default, to apply 
-    //!         only to quiet Partials, specify a threshold, like -90). 
-	//! 
+    //! Static member that constructs an instance and applies
+    //! it to a sequence of Partials.
+    //! Construct a Harmonifier using as reference the Partial in
+    //! the specified range labeled refLabel, then apply
+    //! the instance to all Partials in the range.
+    //!
+    //!	\param  b is the beginning of the range of Partials to harmonify
+    //!	\param  e is (one-past) the end of the range of Partials to harmonify
+    //! \param  refLabel is the label of the Partial in [b,e) to
+    //!         use as reference Partial. The reference Partial is the first
+    //!         Partial in the range [b,e) having the specified label.
+    //! \param  env is a weighting envelope to apply to the harmonification
+    //!         process: when env is 1, use harmonic frequencies, when env
+    //!         is 0, breakpoint frequencies are unmodified.
+    //! \param  threshold_dB is the amplitude below which breakpoint
+    //!         frequencies are harmonified (0 by default, to apply
+    //!         only to quiet Partials, specify a threshold, like -90).
+    //!
     //! \throw  InvalidArgument if no Partial in the range [b,e)
-    //!         has the specified label.	
-    //! \throw  InvalidArgument if refLabel is non-positive.	
-	//!	
-	template< typename Iter >
-	static 
-	void harmonify( Iter b, Iter e, 
-	                Partial::label_type refLabel,
-                    const Envelope & env, double threshold_dB = 0 );
+    //!         has the specified label.
+    //! \throw  InvalidArgument if refLabel is non-positive.
+    //!
+    template <typename Iter>
+    static void harmonify(Iter b, Iter e, Partial::label_type refLabel,
+                          const Envelope &env, double threshold_dB = 0);
 
-private:
-
-//	-- helpers --
+  private:
+    //	-- helpers --
 
     //! Return the default weighing envelope (always 1).
     //! Used in template constructors.
-    static Envelope * createDefaultEnvelope( void );
-    
+    static Envelope *createDefaultEnvelope(void);
 };
 
 // ---------------------------------------------------------------------------
 //	constructor
 // ---------------------------------------------------------------------------
-//! Construct a new Harmonifier that applies the specified 
+//! Construct a new Harmonifier that applies the specified
 //! reference Partial to fix the frequencies of Breakpoints
 //! whose amplitude is below threshold_dB (0 by default,
 //! to apply only to quiet Partials, specify a threshold,
 //! like -90). The reference Partial is the first Partial
-//! in the range [b,e) having the specified label. 
+//! in the range [b,e) having the specified label.
 //! \throw  InvalidArgument if no Partial in the range [b,e)
 //!         has the specified label.
 //! \throw  InvalidArgument if refLabel is non-positive.
 //
-template<typename Iter>
-Harmonifier::Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
-                          double threshold_dB ) :
-    _freqFixThresholdDb( threshold_dB ),
-    _weight( createDefaultEnvelope() )
+template <typename Iter>
+Harmonifier::Harmonifier(Iter b, Iter e, Partial::label_type refLabel,
+                         double threshold_dB) :
+    _freqFixThresholdDb(threshold_dB),
+    _weight(createDefaultEnvelope())
 {
-    if ( 1 > refLabel )
+    if (1 > refLabel)
     {
-        Throw( InvalidArgument, "The reference label must be positive." );
+        Throw(InvalidArgument, "The reference label must be positive.");
     }
 
-    b = std::find_if( b, e, PartialUtils::isLabelEqual( refLabel ) );
-    if ( b == e )
-	{
-		Throw( InvalidArgument, "no Partial has the specified reference label" );
-	}
-
-    if ( 0 == b->numBreakpoints() )
+    b = std::find_if(b, e, PartialUtils::isLabelEqual(refLabel));
+    if (b == e)
     {
-        Throw( InvalidArgument, 
-               "Cannot use an empty reference Partial in Harmonizer" );
+        Throw(InvalidArgument, "no Partial has the specified reference label");
+    }
+
+    if (0 == b->numBreakpoints())
+    {
+        Throw(InvalidArgument,
+              "Cannot use an empty reference Partial in Harmonizer");
     }
     _refPartial = *b;
 }
@@ -242,42 +235,42 @@ Harmonifier::Harmonifier( Iter b, Iter e, Partial::label_type refLabel,
 // ---------------------------------------------------------------------------
 //	constructor
 // ---------------------------------------------------------------------------
-//! Construct a new Harmonifier that applies the specified 
+//! Construct a new Harmonifier that applies the specified
 //! reference Partial to fix the frequencies of Breakpoints
 //! whose amplitude is below threshold_dB (0 by default,
 //! to apply only to quiet Partials, specify a threshold,
 //! like -90). The reference Partial is the first Partial
-//! in the range [b,e) having the specified label. 
+//! in the range [b,e) having the specified label.
 //!
-//! The Envelope is a time-varying weighting 
+//! The Envelope is a time-varying weighting
 //! on the harmonifing process. When 1, harmonic frequencies
-//! are used, when 0, breakpoint frequencies are unmodified. 
+//! are used, when 0, breakpoint frequencies are unmodified.
 //!
 //! \throw  InvalidArgument if no Partial in the range [b,e)
 //!         has the specified label.
 //! \throw  InvalidArgument if refLabel is non-positive.
 //
-template<typename Iter>
-Harmonifier::Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
-                          const Envelope & env, double threshold_dB ) :
-    _freqFixThresholdDb( threshold_dB ),
-    _weight( env.clone() )
+template <typename Iter>
+Harmonifier::Harmonifier(Iter b, Iter e, Partial::label_type refLabel,
+                         const Envelope &env, double threshold_dB) :
+    _freqFixThresholdDb(threshold_dB),
+    _weight(env.clone())
 {
-    if ( 1 > refLabel )
+    if (1 > refLabel)
     {
-        Throw( InvalidArgument, "The reference label must be positive." );
+        Throw(InvalidArgument, "The reference label must be positive.");
     }
 
-    b = std::find_if( b, e, PartialUtils::isLabelEqual( refLabel ) );
-    if ( b == e )
-	{
-		Throw( InvalidArgument, "no Partial has the specified reference label" );
-	}
-
-    if ( 0 == b->numBreakpoints() )
+    b = std::find_if(b, e, PartialUtils::isLabelEqual(refLabel));
+    if (b == e)
     {
-        Throw( InvalidArgument, 
-               "Cannot use an empty reference Partial in Harmonizer" );
+        Throw(InvalidArgument, "no Partial has the specified reference label");
+    }
+
+    if (0 == b->numBreakpoints())
+    {
+        Throw(InvalidArgument,
+              "Cannot use an empty reference Partial in Harmonizer");
     }
     _refPartial = *b;
 }
@@ -285,53 +278,23 @@ Harmonifier::Harmonifier( Iter b, Iter e, Partial::label_type refLabel,
 // ---------------------------------------------------------------------------
 //	harmonify
 // ---------------------------------------------------------------------------
-//! Apply the reference envelope to all Partials in a range.    
-template<typename Iter>
-void Harmonifier::harmonify( Iter b, Iter e  )
+//! Apply the reference envelope to all Partials in a range.
+template <typename Iter>
+void
+Harmonifier::harmonify(Iter b, Iter e)
 {
-    while ( b != e )
+    while (b != e)
     {
-        harmonify( *b );
+        harmonify(*b);
         ++b;
     }
-}    
-
-// ---------------------------------------------------------------------------
-//	harmonify (STATIC)
-// ---------------------------------------------------------------------------
-//! Static member that constructs an instance and applies
-//! it to a sequence of Partials. 
-//! Construct a Harmonifier using as reference the Partial in
-//! the specified range labeled refLabel, then apply
-//! the instance to all Partials in the range.
-//!
-//!	\param  b is the beginning of the range of Partials to harmonify
-//!	\param  e is (one-past) the end of the range of Partials to harmonify
-//! \param  refLabel is the label of the Partial in [b,e) to
-//!         use as reference Partial. The reference Partial is the first
-//!         Partial in the range [b,e) having the specified label. 
-//! \param  threshold_dB is the amplitude below which breakpoint
-//!         frequencies are harmonified (0 by default, to apply 
-//!         only to quiet Partials, specify a threshold, like -90). 
-//! 
-//! \throw  InvalidArgument if no Partial in the range [b,e)
-//!         has the specified label.	
-//! \throw  InvalidArgument if refLabel is non-positive.	
-//!	
-template< typename Iter >
-void Harmonifier::harmonify( Iter b, Iter e, 
-                             Partial::label_type refLabel,
-                             double threshold_dB )
-{
-    Harmonifier instance( b, e, refLabel, threshold_dB );
-    instance.harmonify( b, e );
 }
 
 // ---------------------------------------------------------------------------
 //	harmonify (STATIC)
 // ---------------------------------------------------------------------------
 //! Static member that constructs an instance and applies
-//! it to a sequence of Partials. 
+//! it to a sequence of Partials.
 //! Construct a Harmonifier using as reference the Partial in
 //! the specified range labeled refLabel, then apply
 //! the instance to all Partials in the range.
@@ -340,27 +303,58 @@ void Harmonifier::harmonify( Iter b, Iter e,
 //!	\param  e is (one-past) the end of the range of Partials to harmonify
 //! \param  refLabel is the label of the Partial in [b,e) to
 //!         use as reference Partial. The reference Partial is the first
-//!         Partial in the range [b,e) having the specified label. 
+//!         Partial in the range [b,e) having the specified label.
+//! \param  threshold_dB is the amplitude below which breakpoint
+//!         frequencies are harmonified (0 by default, to apply
+//!         only to quiet Partials, specify a threshold, like -90).
+//!
+//! \throw  InvalidArgument if no Partial in the range [b,e)
+//!         has the specified label.
+//! \throw  InvalidArgument if refLabel is non-positive.
+//!
+template <typename Iter>
+void
+Harmonifier::harmonify(Iter b, Iter e, Partial::label_type refLabel,
+                       double threshold_dB)
+{
+    Harmonifier instance(b, e, refLabel, threshold_dB);
+    instance.harmonify(b, e);
+}
+
+// ---------------------------------------------------------------------------
+//	harmonify (STATIC)
+// ---------------------------------------------------------------------------
+//! Static member that constructs an instance and applies
+//! it to a sequence of Partials.
+//! Construct a Harmonifier using as reference the Partial in
+//! the specified range labeled refLabel, then apply
+//! the instance to all Partials in the range.
+//!
+//!	\param  b is the beginning of the range of Partials to harmonify
+//!	\param  e is (one-past) the end of the range of Partials to harmonify
+//! \param  refLabel is the label of the Partial in [b,e) to
+//!         use as reference Partial. The reference Partial is the first
+//!         Partial in the range [b,e) having the specified label.
 //! \param  env is a weighting envelope to apply to the harmonification
 //!         process: when env is 1, use harmonic frequencies, when env
 //!         is 0, breakpoint frequencies are unmodified.
 //! \param  threshold_dB is the amplitude below which breakpoint
-//!         frequencies are harmonified (0 by default, to apply 
-//!         only to quiet Partials, specify a threshold, like -90). 
-//! 
+//!         frequencies are harmonified (0 by default, to apply
+//!         only to quiet Partials, specify a threshold, like -90).
+//!
 //! \throw  InvalidArgument if no Partial in the range [b,e)
-//!         has the specified label.	
-//! \throw  InvalidArgument if refLabel is non-positive.	
-//!	
-template< typename Iter >
-void Harmonifier::harmonify( Iter b, Iter e, 
-                             Partial::label_type refLabel,
-                             const Envelope & env, double threshold_dB )
+//!         has the specified label.
+//! \throw  InvalidArgument if refLabel is non-positive.
+//!
+template <typename Iter>
+void
+Harmonifier::harmonify(Iter b, Iter e, Partial::label_type refLabel,
+                       const Envelope &env, double threshold_dB)
 {
-    Harmonifier instance( b, e, refLabel, env, threshold_dB );
-    instance.harmonify( b, e );
+    Harmonifier instance(b, e, refLabel, env, threshold_dB);
+    instance.harmonify(b, e);
 }
 
-}	// namespace Loris
+} // namespace Loris
 
-#endif	/* ndef INCLUDE_HARMONIFIER_H */
+#endif /* ndef INCLUDE_HARMONIFIER_H */

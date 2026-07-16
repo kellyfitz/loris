@@ -1,8 +1,8 @@
 #ifndef INCLUDE_SIEVE_H
 #define INCLUDE_SIEVE_H
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -32,26 +32,25 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
- 
-#include "Distiller.h"	//	for default fade time and silent time
- 
 
+#include "Distiller.h" //	for default fade time and silent time
 #include "PartialPtrs.h"
 
 //  begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //  class Sieve
 //
 //! A Sieve eliminating temporal overlap among Partials.
 //!
-//! Class Sieve represents an algorithm for identifying channelized (see also 
+//! Class Sieve represents an algorithm for identifying channelized (see also
 //! Channelizer) Partials that overlap in time, and selecting the longer
-//! one to represent the channel. The identification of overlap includes 
-//! the time needed for Partials to fade to and from zero amplitude in 
+//! one to represent the channel. The identification of overlap includes
+//! the time needed for Partials to fade to and from zero amplitude in
 //!  synthesis (see also  Synthesizer) or distillation. (see also Distiller)
-//! 
+//!
 //! In some cases, the energy redistribution effected by the distiller
 //! (see also Distiller) is undesirable. In such cases, the partials can be
 //! sifted before distillation. The sifting process in Loris identifies
@@ -65,110 +64,106 @@ namespace Loris {
 //
 class Sieve
 {
-//  -- instance variables --
+    //  -- instance variables --
 
-    double _fadeTime; //! extra time (in seconds) added to each end of 
-                      //! a Partial when determining overlap, to accomodate 
+    double _fadeTime; //! extra time (in seconds) added to each end of
+                      //! a Partial when determining overlap, to accomodate
                       //! the fade to and from zero amplitude.
-    
-//  -- public interface --
-public:
 
-//  -- global defaults and constants --
+    //  -- public interface --
+  public:
+    //  -- global defaults and constants --
 
-	//! Default time in milliseconds over which Partials joined by
-	//! distillation fade to and from zero amplitude. Divide by
-	//!	1000 to use as a member function parameter. This parameter
-	//!	should be the same in Distiller, Sieve, and Collator.
-	static constexpr int DefaultFadeTimeMs = Distiller::DefaultFadeTimeMs;
+    //! Default time in milliseconds over which Partials joined by
+    //! distillation fade to and from zero amplitude. Divide by
+    //!	1000 to use as a member function parameter. This parameter
+    //!	should be the same in Distiller, Sieve, and Collator.
+    static constexpr int DefaultFadeTimeMs = Distiller::DefaultFadeTimeMs;
 
-	//! Default minimum duration in milliseconds of the silent
-	//! (zero-amplitude) gap between two Partials joined by
-	//!	distillation. Divide by 1000 to use as a member function
-	//!	parameter. This parameter should be the same in Distiller,
-	//!	Sieve, and Collator.
-	static constexpr int DefaultSilentTimeMs = Distiller::DefaultSilentTimeMs;
-    
-//  -- construction --
+    //! Default minimum duration in milliseconds of the silent
+    //! (zero-amplitude) gap between two Partials joined by
+    //!	distillation. Divide by 1000 to use as a member function
+    //!	parameter. This parameter should be the same in Distiller,
+    //!	Sieve, and Collator.
+    static constexpr int DefaultSilentTimeMs = Distiller::DefaultSilentTimeMs;
+
+    //  -- construction --
 
     //! Construct a new Sieve using the specified partial fade
-    //! time. If unspecified, the default fade time (same as the   
+    //! time. If unspecified, the default fade time (same as the
     //! default fade time for the Distiller) is used.
     //!
-    //!   \param   partialFadeTime is the extra time (in seconds)  
-    //!            added to each end of a Partial to accomodate 
+    //!   \param   partialFadeTime is the extra time (in seconds)
+    //!            added to each end of a Partial to accomodate
     //!            the fade to and from zero amplitude. Fade time
     //!            must be non-negative. A default value is used
     //!			   if unspecified.
     //!   \throw  InvalidArgument if partialFadeTime is negative.
-    explicit Sieve( double partialFadeTime = Sieve::DefaultFadeTimeMs/1000.0 );
-     
+    explicit Sieve(double partialFadeTime = Sieve::DefaultFadeTimeMs / 1000.0);
+
     //  Use compiler-generated copy, assign, and destroy.
-    
-//  -- sifting --
+
+    //  -- sifting --
 
     //! Sift labeled Partials on the specified half-open (STL-style)
     //! range. If any two Partials having same label overlap in time, keep
     //! only the longer of the two Partials. Set the label of the shorter
     //! duration partial to zero. No Partials are removed from the
-    //! sequence and the sequence order is unaltered. 
+    //! sequence and the sequence order is unaltered.
     //!
     //! \param sift_begin is the beginning of the range of Partials to sift
     //! \param sift_end is (one-past) the end of the range of Partials to sift
-    //! 
-    template<typename Iter>
-    void sift( Iter sift_begin, Iter sift_end  );
+    //!
+    template <typename Iter> void sift(Iter sift_begin, Iter sift_end);
 
     //! Sift labeled Partials in the specified container
     //! If any two Partials having same label overlap in time, keep
     //! only the longer of the two Partials. Set the label of the shorter
     //! duration partial to zero. No Partials are removed from the
-    //! container and the container order is unaltered. 
+    //! container and the container order is unaltered.
     //!
     //! \param  partials is the collection of Partials to sift in-place
-    //! 
-    template< typename Container >
-    void sift( Container & partials  )
+    //!
+    template <typename Container>
+    void
+    sift(Container &partials)
     {
-        sift( partials.begin(), partials.end() );
+        sift(partials.begin(), partials.end());
     }
-         
-// -- static members --
+
+    // -- static members --
 
     //! Static member that constructs an instance and applies
-    //! it to a sequence of Partials. 
+    //! it to a sequence of Partials.
     //! Construct a Sieve using the specified Partial
     //! fade time (in seconds), and use it to sift a
-    //! sequence of Partials. 
+    //! sequence of Partials.
     //!
     //! \param  sift_begin is the beginning of the range of Partials to sift
     //! \param  sift_end is (one-past) the end of the range of Partials to sift
-    //! \param  partialFadeTime is the extra time (in seconds)  
-    //!         added to each end of a Partial to accomodate 
+    //! \param  partialFadeTime is the extra time (in seconds)
+    //!         added to each end of a Partial to accomodate
     //!         the fade to and from zero amplitude. The Partial fade time
     //!         must be non-negative.
     //! \throw  InvalidArgument if partialFadeTime is negative.
-    //! 
-    template< typename Iter >
-    static 
-    void sift( Iter sift_begin, Iter sift_end, 
-              double partialFadeTime );
+    //!
+    template <typename Iter>
+    static void sift(Iter sift_begin, Iter sift_end, double partialFadeTime);
 
-//  -- helper --
-private:
+    //  -- helper --
+  private:
+    //!   Sift labeled Partials. If any two Partials having the same (non-zero)
+    //!   label overlap in time (where overlap includes the fade time at both
+    //!   ends of each Partial), then set the label of the Partial having the
+    //!   shorter duration to zero. Sifting is performed on a collection of
+    //!   pointers to Partials so that the it can be performed without changing
+    //!   the order of the Partials in the sequence.
+    //!
+    //!   \param   ptrs is a collection of pointers to the Partials in the
+    //!            sequence to be sifted.
+    void sift_ptrs(PartialPtrs &ptrs);
 
-   //!   Sift labeled Partials. If any two Partials having the same (non-zero)
-   //!   label overlap in time (where overlap includes the fade time at both 
-   //!   ends of each Partial), then set the label of the Partial having the
-   //!   shorter duration to zero. Sifting is performed on a collection of 
-   //!   pointers to Partials so that the it can be performed without changing 
-   //!   the order of the Partials in the sequence.
-   //!
-   //!   \param   ptrs is a collection of pointers to the Partials in the
-   //!            sequence to be sifted.
-    void sift_ptrs( PartialPtrs & ptrs );
-
-};  //  end of class Sieve
+}; //  end of class Sieve
 
 // ---------------------------------------------------------------------------
 //  sift
@@ -177,44 +172,45 @@ private:
 //! range. If any two Partials having same label overlap in time, keep
 //! only the longer of the two Partials. Set the label of the shorter
 //! duration partial to zero. No Partials are removed from the
-//! sequence and the sequence order is unaltered. 
+//! sequence and the sequence order is unaltered.
 //!
 //! \param sift_begin is the beginning of the range of Partials to sift
 //! \param sift_end is (one-past) the end of the range of Partials to sift
-//! 
-template< typename Iter >
-void Sieve::sift( Iter sift_begin, Iter sift_end  )
+//!
+template <typename Iter>
+void
+Sieve::sift(Iter sift_begin, Iter sift_end)
 {
     PartialPtrs ptrs;
-    fillPartialPtrs( sift_begin, sift_end, ptrs );
-    sift_ptrs( ptrs );
+    fillPartialPtrs(sift_begin, sift_end, ptrs);
+    sift_ptrs(ptrs);
 }
 
 // ---------------------------------------------------------------------------
 //  sift (static)
 // ---------------------------------------------------------------------------
 //! Static member that constructs an instance and applies
-//! it to a sequence of Partials. 
+//! it to a sequence of Partials.
 //! Construct a Sieve using the specified Partial
 //! fade time (in seconds), and use it to sift a
-//! sequence of Partials. 
+//! sequence of Partials.
 //!
 //! \param  sift_begin is the beginning of the range of Partials to sift
 //! \param  sift_end is (one-past) the end of the range of Partials to sift
-//! \param  partialFadeTime is the extra time (in seconds)  
-//!         added to each end of a Partial to accomodate 
+//! \param  partialFadeTime is the extra time (in seconds)
+//!         added to each end of a Partial to accomodate
 //!         the fade to and from zero amplitude. The Partial fade time
 //!         must be non-negative.
 //! \throw  InvalidArgument if partialFadeTime is negative.
-//! 
-template< typename Iter >
-void Sieve::sift( Iter sift_begin, Iter sift_end, 
-                  double partialFadeTime )
+//!
+template <typename Iter>
+void
+Sieve::sift(Iter sift_begin, Iter sift_end, double partialFadeTime)
 {
-   Sieve instance( partialFadeTime );
-   instance.sift( sift_begin, sift_end );
+    Sieve instance(partialFadeTime);
+    instance.sift(sift_begin, sift_end);
 }
 
-}   //  end of namespace Loris
+} //  end of namespace Loris
 
 #endif /* ndef INCLUDE_SIEVE_H */

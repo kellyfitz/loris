@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -26,12 +26,12 @@
  * extracted from a reassigned time-frequency spectrum to form ridges
  * and construct Partials.
  *
- * This strategy attemps to follow a mFreqWarping frequency envelope when 
+ * This strategy attemps to follow a mFreqWarping frequency envelope when
  * forming Partials, by prewarping all peak frequencies according to the
- * (inverse of) frequency mFreqWarping envelope. At the end of the analysis, 
+ * (inverse of) frequency mFreqWarping envelope. At the end of the analysis,
  * Partial frequencies need to be un-warped by calling fixPartialFrequencies().
  *
- * The first attempt was the same as the basic partial formation strategy, 
+ * The first attempt was the same as the basic partial formation strategy,
  * but for purposes of matching, peak frequencies are scaled by the ratio
  * of the mFreqWarping envelope's value at the previous frame to its value
  * at the current frame. This was not adequate, didn't store enough history
@@ -46,12 +46,11 @@
  *
  */
 
-#include "PartialBuilder.h"
-
 #include "BreakpointEnvelope.h"
 #include "Envelope.h"
 #include "Notifier.h"
 #include "Partial.h"
+#include "PartialBuilder.h"
 #include "PartialList.h"
 #include "PartialPtrs.h"
 #include "SpectralPeaks.h"
@@ -66,7 +65,8 @@
 // ---------------------------------------------------------------------------
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	construction
@@ -74,9 +74,9 @@ namespace Loris {
 //  Construct a new builder that constrains Partial frequnecy
 //  drift by the specified drift value in Hz.
 //
-PartialBuilder::PartialBuilder( double drift ) :
-	mFreqWarping( new BreakpointEnvelope(1.0) ),
-	mFreqDrift( drift )
+PartialBuilder::PartialBuilder(double drift) :
+    mFreqWarping(new BreakpointEnvelope(1.0)),
+    mFreqDrift(drift)
 {
 }
 
@@ -91,9 +91,9 @@ PartialBuilder::PartialBuilder( double drift ) :
 //  need to be un-warped at the ned of the building process, by
 //  calling finishBuilding().
 //
-PartialBuilder::PartialBuilder( double drift, const Envelope & env ) :
-	mFreqWarping( env.clone() ),
-	mFreqDrift( drift )
+PartialBuilder::PartialBuilder(double drift, const Envelope &env) :
+    mFreqWarping(env.clone()),
+    mFreqDrift(drift)
 {
 }
 
@@ -104,29 +104,31 @@ PartialBuilder::PartialBuilder( double drift, const Envelope & env ) :
 // ---------------------------------------------------------------------------
 //	Return the frequency of the last Breakpoint in a Partial.
 //
-static inline double end_frequency( const Partial & partial )
+static inline double
+end_frequency(const Partial &partial)
 {
-	return partial.last().frequency();
+    return partial.last().frequency();
 }
 
 // ---------------------------------------------------------------------------
 //	warped_freq_distance
 // ---------------------------------------------------------------------------
 //	Helper function, used in formPartials().
-//	Returns the (positive) frequency distance between a Breakpoint 
+//	Returns the (positive) frequency distance between a Breakpoint
 //	and the last Breakpoint in a Partial.
 //
 //  Compute distance using warped frequencies
 //
-inline double 
-PartialBuilder::warped_freq_distance( const Partial & partial, const SpectralPeak & pk )
+inline double
+PartialBuilder::warped_freq_distance(const Partial &partial,
+                                     const SpectralPeak &pk)
 {
-    double normBpFreq = pk.frequency() / mFreqWarping->valueAt( pk.time() );
-    
-    double normPartialEndFreq = 
-        partial.last().frequency() / mFreqWarping->valueAt( partial.endTime() );
-    
-	return std::fabs( normPartialEndFreq - normBpFreq );
+    double normBpFreq = pk.frequency() / mFreqWarping->valueAt(pk.time());
+
+    double normPartialEndFreq =
+        partial.last().frequency() / mFreqWarping->valueAt(partial.endTime());
+
+    return std::fabs(normPartialEndFreq - normBpFreq);
 }
 
 // ---------------------------------------------------------------------------
@@ -142,22 +144,24 @@ PartialBuilder::warped_freq_distance( const Partial & partial, const SpectralPea
 //	return false.
 //
 
-bool PartialBuilder::better_match( const Partial & part, const SpectralPeak & pk1,
-                                   const SpectralPeak & pk2 )
+bool
+PartialBuilder::better_match(const Partial &part, const SpectralPeak &pk1,
+                             const SpectralPeak &pk2)
 {
-	Assert( part.numBreakpoints() > 0 );
-	
-	return warped_freq_distance( part, pk1 ) < warped_freq_distance( part, pk2 );
-}	                                   
-                                   
-bool PartialBuilder::better_match( const Partial & part1, 
-                                   const Partial & part2, const SpectralPeak & pk )
+    Assert(part.numBreakpoints() > 0);
+
+    return warped_freq_distance(part, pk1) < warped_freq_distance(part, pk2);
+}
+
+bool
+PartialBuilder::better_match(const Partial &part1, const Partial &part2,
+                             const SpectralPeak &pk)
 {
-	Assert( part1.numBreakpoints() > 0 );
-	Assert( part2.numBreakpoints() > 0 );
-	
-	return warped_freq_distance( part1, pk ) < warped_freq_distance( part2, pk );
-}	
+    Assert(part1.numBreakpoints() > 0);
+    Assert(part2.numBreakpoints() > 0);
+
+    return warped_freq_distance(part1, pk) < warped_freq_distance(part2, pk);
+}
 
 // --- Partial building members ---
 
@@ -169,120 +173,124 @@ bool PartialBuilder::better_match( const Partial & part1,
 //	be used to extend eliglble Partials spawn new Partials.
 //
 //	This is similar to the basic MQ partial formation strategy, except that
-//	before matching, all frequencies are normalized by the value of the 
-//	warping envelope at the time of the current frame. 
+//	before matching, all frequencies are normalized by the value of the
+//	warping envelope at the time of the current frame.
 //
-void 
-PartialBuilder::buildPartials( Peaks & peaks, double frameTime )
-{	
-	mNewlyEligible.clear();
-	
-	unsigned int matchCount = 0;	//	for debugging
-		
-	//	frequency-sort the spectral peaks:
-	//	(the eligible partials are always sorted by
-	//	increasing frequency if we always sort the
-	//	peaks this way)
-	std::sort( peaks.begin(), peaks.end(), SpectralPeak::sort_increasing_freq );
-	
-	PartialPtrs::iterator eligible = mEligiblePartials.begin();
-	for ( Peaks::iterator bpIter = peaks.begin(); bpIter != peaks.end(); ++bpIter ) 
-	{
-		//const Breakpoint & bp = bpIter->breakpoint;
-		const double peakTime = frameTime + bpIter->time();
-		
-		// 	find the Partial that is nearest in frequency to the Peak:
-		PartialPtrs::iterator nextEligible = eligible;
-		if ( eligible != mEligiblePartials.end() &&
-			 end_frequency( **eligible ) < bpIter->frequency() )
-		{
-			++nextEligible;
-			while ( nextEligible != mEligiblePartials.end() &&
-					end_frequency( **nextEligible ) < bpIter->frequency() )
-			{
-				++nextEligible;
-				++eligible;
-			}
-			
-			if ( nextEligible != mEligiblePartials.end() &&
-				 better_match( **nextEligible, **eligible, *bpIter ) )
-			{
-				eligible = nextEligible;
-			}
-		}
-		
-		// 	INVARIANT:
-		//
-		//	eligible is the position of the nearest (in frequency)
-		//	eligible Partial (pointer) or it is mEligiblePartials.end().
-		//
-		//	nextEligible is the eligible Partial with frequency 
-		//	greater than bp, or it is mEligiblePartials.end().  
-              
+void
+PartialBuilder::buildPartials(Peaks &peaks, double frameTime)
+{
+    mNewlyEligible.clear();
+
+    unsigned int matchCount = 0; //	for debugging
+
+    //	frequency-sort the spectral peaks:
+    //	(the eligible partials are always sorted by
+    //	increasing frequency if we always sort the
+    //	peaks this way)
+    std::sort(peaks.begin(), peaks.end(), SpectralPeak::sort_increasing_freq);
+
+    PartialPtrs::iterator eligible = mEligiblePartials.begin();
+    for (Peaks::iterator bpIter = peaks.begin(); bpIter != peaks.end();
+         ++bpIter)
+    {
+        // const Breakpoint & bp = bpIter->breakpoint;
+        const double peakTime = frameTime + bpIter->time();
+
+        // 	find the Partial that is nearest in frequency to the Peak:
+        PartialPtrs::iterator nextEligible = eligible;
+        if (eligible != mEligiblePartials.end() &&
+            end_frequency(**eligible) < bpIter->frequency())
+        {
+            ++nextEligible;
+            while (nextEligible != mEligiblePartials.end() &&
+                   end_frequency(**nextEligible) < bpIter->frequency())
+            {
+                ++nextEligible;
+                ++eligible;
+            }
+
+            if (nextEligible != mEligiblePartials.end() &&
+                better_match(**nextEligible, **eligible, *bpIter))
+            {
+                eligible = nextEligible;
+            }
+        }
+
+        // 	INVARIANT:
+        //
+        //	eligible is the position of the nearest (in frequency)
+        //	eligible Partial (pointer) or it is mEligiblePartials.end().
+        //
+        //	nextEligible is the eligible Partial with frequency
+        //	greater than bp, or it is mEligiblePartials.end().
+
 #if defined(Debug_Loris) && Debug_Loris
         /*
-		if ( nextEligible != mEligiblePartials.end() )
-		{
-			debugger << matchFrequency << "( " << end_frequency( **eligible )
-					 << ", " << end_frequency( **nextEligible ) << ")" << endl;
-		}
+        if ( nextEligible != mEligiblePartials.end() )
+        {
+            debugger << matchFrequency << "( " << end_frequency( **eligible )
+                     << ", " << end_frequency( **nextEligible ) << ")" << endl;
+        }
         */
 #endif
-								
-		//	create a new Partial if there is no eligible Partial,
-		//	or the frequency difference to the eligible Partial is 
-		//	too great, or the next peak is a better match for the 
-		//	eligible Partial, otherwise add this peak to the eligible
-		//	Partial:
-		Peaks::iterator nextPeak = //Peaks::iterator( bpIter ); ++nextPeak;
-								   ++Peaks::iterator( bpIter ); //  some compilers choke on this?
+
+        //	create a new Partial if there is no eligible Partial,
+        //	or the frequency difference to the eligible Partial is
+        //	too great, or the next peak is a better match for the
+        //	eligible Partial, otherwise add this peak to the eligible
+        //	Partial:
+        Peaks::iterator nextPeak =     // Peaks::iterator( bpIter ); ++nextPeak;
+            ++Peaks::iterator(bpIter); //  some compilers choke on this?
 
         //  decide whether this match should be made:
         //  - can only make the match if eligible is not the end of the list
         //  - the match is only good if it is close enough in frequency
-        //  - even if the match is good, only match if the next one is not better
+        //  - even if the match is good, only match if the next one is not
+        //  better
         bool makeMatch = false;
-        if ( eligible != mEligiblePartials.end() )
+        if (eligible != mEligiblePartials.end())
         {
-            bool matchIsGood =  mFreqDrift > 
-                std::fabs( end_frequency( **eligible ) - bpIter->frequency() );
-            if ( matchIsGood )
+            bool matchIsGood =
+                mFreqDrift >
+                std::fabs(end_frequency(**eligible) - bpIter->frequency());
+            if (matchIsGood)
             {
-                bool nextIsBetter = ( nextPeak != peaks.end() &&
-                                      better_match( **eligible, *nextPeak, *bpIter ) ); 
-                if ( ! nextIsBetter )
+                bool nextIsBetter =
+                    (nextPeak != peaks.end() &&
+                     better_match(**eligible, *nextPeak, *bpIter));
+                if (!nextIsBetter)
                 {
                     makeMatch = true;
                 }
-            }                       
+            }
         }
-        
+
         Breakpoint bp = bpIter->createBreakpoint();
-        
-        if ( makeMatch )
+
+        if (makeMatch)
         {
             //  invariant:
-            //  if makeMatch is true, then eligible is the position of a valid Partial
-            (*eligible)->insert( peakTime, bp );
-			mNewlyEligible.push_back( *eligible );
-			
-			++matchCount;
+            //  if makeMatch is true, then eligible is the position of a valid
+            //  Partial
+            (*eligible)->insert(peakTime, bp);
+            mNewlyEligible.push_back(*eligible);
+
+            ++matchCount;
         }
         else
         {
             Partial p;
-            p.insert( peakTime, bp );
-            mCollectedPartials.push_back( p );
-            mNewlyEligible.push_back( & mCollectedPartials.back() );
+            p.insert(peakTime, bp);
+            mCollectedPartials.push_back(p);
+            mNewlyEligible.push_back(&mCollectedPartials.back());
         }
-        
-		//	update eligible, nextEligible is the eligible Partial
-		//	with frequency greater than bp, or it is mEligiblePartials.end():
-		eligible = nextEligible;
-	}			 
-	 	
-	mEligiblePartials = mNewlyEligible;
 
+        //	update eligible, nextEligible is the eligible Partial
+        //	with frequency greater than bp, or it is mEligiblePartials.end():
+        eligible = nextEligible;
+    }
+
+    mEligiblePartials = mNewlyEligible;
 }
 
 // ---------------------------------------------------------------------------
@@ -290,22 +298,20 @@ PartialBuilder::buildPartials( Peaks & peaks, double frameTime )
 // ---------------------------------------------------------------------------
 //	Return the Partials that were built. After calling finishBuilding, the
 //  builder is returned to its initial state, and ready to build another
-//  set of Partials. 
+//  set of Partials.
 //
 PartialList
-PartialBuilder::finishBuilding( void )
-{	
+PartialBuilder::finishBuilding(void)
+{
     //  return the collected Partials:
-	PartialList product = mCollectedPartials;
-    
+    PartialList product = mCollectedPartials;
+
     //  reset the builder state:
     mCollectedPartials.clear();
     mEligiblePartials.clear();
     mNewlyEligible.clear();
-    
+
     return product;
 }
 
-
-
-}	//	end of namespace Loris
+} // namespace Loris

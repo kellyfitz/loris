@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -23,10 +23,10 @@
  * Marker.cc
  *
  * Definition of members for Marker and MarkerContainer representing labeled
- * time points or temporal features in imported and exported data. Used by 
+ * time points or temporal features in imported and exported data. Used by
  * file I/O classes AiffFile, SdifFile, and SpcFile.
  *
- * Kelly Fitz, 8 Jan 2003 
+ * Kelly Fitz, 8 Jan 2003
  * loris@cerlsoundgroup.org
  *
  * http://www.cerlsoundgroup.org/Loris/
@@ -35,7 +35,8 @@
 #include "Marker.h"
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // -- construction --
 
@@ -44,20 +45,20 @@ namespace Loris {
 // ---------------------------------------------------------------------------
 //	Default constructor - initialize a Marker at time zero with no label.
 //
-Marker::Marker( void ) :
-	m_time( 0. ),
-	m_name("Untitled Marker")
+Marker::Marker(void) :
+    m_time(0.),
+    m_name("Untitled Marker")
 {
 }
-	 
+
 // ---------------------------------------------------------------------------
 //	Marker - constructor from time and name
 // ---------------------------------------------------------------------------
 //	Initialize a Marker with the specified time (in seconds) and name.
 //
-Marker::Marker( double t, const std::string & s ) :
-	m_time( t ),
-	m_name( s )
+Marker::Marker(double t, const std::string &s) :
+    m_time(t),
+    m_name(s)
 {
 }
 
@@ -67,33 +68,32 @@ Marker::Marker( double t, const std::string & s ) :
 //	Initialize a Marker that is an exact copy of another Marker, that is,
 //	having the same time and name.
 //
-Marker::Marker( const Marker & other ) :
-	m_time( other.m_time ),
-	m_name( other.m_name )
+Marker::Marker(const Marker &other) :
+    m_time(other.m_time),
+    m_name(other.m_name)
 {
 }
 
 // ---------------------------------------------------------------------------
 //	assignment operator (operator =)
 // ---------------------------------------------------------------------------
-//	Make this Marker an exact copy, having the same time and name, 
+//	Make this Marker an exact copy, having the same time and name,
 //	as the Marker rhs.
 //
-Marker & 
-Marker::operator=( const Marker & rhs )
+Marker &
+Marker::operator=(const Marker &rhs)
 {
-	if ( this != &rhs )
-	{
-		//	the only imaginable exception that could be generated
-		//	would be an out-of-memory exception at the time of this
-		//	string assignment, reserve memory first, so that if this
-		//	does except, the Marker is unchanged:
-		m_name.reserve( rhs.m_name.size() );
-		m_name = rhs.m_name;
-		m_time = rhs.m_time;		
-
-	}
-	return *this;
+    if (this != &rhs)
+    {
+        //	the only imaginable exception that could be generated
+        //	would be an out-of-memory exception at the time of this
+        //	string assignment, reserve memory first, so that if this
+        //	does except, the Marker is unchanged:
+        m_name.reserve(rhs.m_name.size());
+        m_name = rhs.m_name;
+        m_time = rhs.m_time;
+    }
+    return *this;
 }
 
 // -- comparison --
@@ -105,10 +105,10 @@ Marker::operator=( const Marker & rhs )
 //	collection of Markers, and false otherwise. (Markers are sorted by time.)
 //
 bool
-Marker::operator< ( const Marker & rhs ) const
+Marker::operator<(const Marker &rhs) const
 {
-	return m_time < rhs.m_time;
-}	 
+    return m_time < rhs.m_time;
+}
 
 // -- access --
 
@@ -117,10 +117,10 @@ Marker::operator< ( const Marker & rhs ) const
 // ---------------------------------------------------------------------------
 //	Return a reference to the name string for this Marker.
 //
-std::string & 
-Marker::name( void )
+std::string &
+Marker::name(void)
 {
-	return m_name;
+    return m_name;
 }
 
 // ---------------------------------------------------------------------------
@@ -128,21 +128,21 @@ Marker::name( void )
 // ---------------------------------------------------------------------------
 //	Return a const reference to the name string for this Marker.
 //
-const std::string & 
-Marker::name( void ) const
+const std::string &
+Marker::name(void) const
 {
-	return m_name;
+    return m_name;
 }
-	 
+
 // ---------------------------------------------------------------------------
 //	time
 // ---------------------------------------------------------------------------
 //	Return the time (in seconds) associated with this Marker.
 //
-double 
-Marker::time( void ) const
+double
+Marker::time(void) const
 {
-	return m_time;
+    return m_time;
 }
 
 // -- mutation --
@@ -152,21 +152,21 @@ Marker::time( void ) const
 // ---------------------------------------------------------------------------
 //	Set the name of the Marker.
 //
-void 
-Marker::setName( const std::string & s )
+void
+Marker::setName(const std::string &s)
 {
-	m_name = s;
+    m_name = s;
 }
-	 
+
 // ---------------------------------------------------------------------------
 //	setName
 // ---------------------------------------------------------------------------
 //	Set the time (in seconds) associated with this Marker.
 //
-void 
-Marker::setTime( double t )
+void
+Marker::setTime(double t)
 {
-	m_time = t;
+    m_time = t;
 }
 
-}	//	end of namespace Loris
+} // namespace Loris

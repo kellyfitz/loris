@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -25,10 +25,10 @@
  * Implementation of class Exception, a generic exception class.
  *
  * This file was formerly called Exception.C, and had a corresponding header
- * called Exception.h but that filename caused build problems on case-insensitive 
- * systems that sometimes had system headers called exception.h. So the header
- * name was changed to LorisExceptions.h, and this source files name was
- * changed to match. 
+ * called Exception.h but that filename caused build problems on
+ * case-insensitive systems that sometimes had system headers called
+ * exception.h. So the header name was changed to LorisExceptions.h, and this
+ * source files name was changed to match.
  *
  * Kelly Fitz, 17 Oct 2006
  * loris@cerlsoundgroup.org
@@ -38,10 +38,12 @@
  */
 
 #include "LorisExceptions.h"
+
 #include <string>
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	Exception constructor
@@ -56,27 +58,27 @@ namespace Loris {
 //!         the source code from which the exception was thrown
 //!         (generated automatically byt he Throw macro).
 //
-Exception::Exception( const std::string & str, const std::string & where ) :
-	_sbuf( str )
+Exception::Exception(const std::string &str, const std::string &where) :
+    _sbuf(str)
 {
-	_sbuf.append( where );
-	_sbuf.append(" ");
+    _sbuf.append(where);
+    _sbuf.append(" ");
 }
-	
+
 // ---------------------------------------------------------------------------
-//	append 
+//	append
 // ---------------------------------------------------------------------------
 //! Append the specified string to this Exception's description,
 //! and return a reference to this Exception.
-//! 
+//!
 //! \param  str is text to append to the exception description
 //! \return a reference to this Exception.
 //
-Exception & 
-Exception::append( const std::string & str )
+Exception &
+Exception::append(const std::string &str)
 {
-	_sbuf.append(str);
-	return *this;
+    _sbuf.append(str);
+    return *this;
 }
 
-}	//	end of namespace Loris
+} // namespace Loris

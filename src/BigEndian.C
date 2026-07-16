@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -33,43 +33,49 @@
 
 #include "BigEndian.h"
 #include "LorisExceptions.h"
-#include <vector>
+
 #include <iostream>
+#include <vector>
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	bigEndianSystem
 // ---------------------------------------------------------------------------
 //	Return true is this is a big-endian system, false otherwise.
 //
-static bool bigEndianSystem( void )
+static bool
+bigEndianSystem(void)
 {
-	static union {
-		int s ;
-		char c[sizeof(int)] ;
-	} x ;
-	static bool ret = (x.s = 1, x.c[0] != 1) ? true : false;
+    static union
+    {
+        int s;
+        char c[sizeof(int)];
+    } x;
+    static bool ret = (x.s = 1, x.c[0] != 1) ? true : false;
 
-	return ret; // x.c[0] != 1;
+    return ret; // x.c[0] != 1;
 }
 
 // ---------------------------------------------------------------------------
 //	swapByteOrder
 // ---------------------------------------------------------------------------
-//	
-static void swapByteOrder( char * bytes, int n )
+//
+static void
+swapByteOrder(char *bytes, int n)
 {
-	char * beg = bytes, * end = bytes + n - 1;
-	while ( beg < end ) {
-		char tmp = *end;
-		*end = *beg;
-		*beg = tmp;
-		
-		++beg;
-		--end;
-	}
+    char *beg = bytes, *end = bytes + n - 1;
+    while (beg < end)
+    {
+        char tmp = *end;
+        *end = *beg;
+        *beg = tmp;
+
+        ++beg;
+        --end;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -77,28 +83,28 @@ static void swapByteOrder( char * bytes, int n )
 // ---------------------------------------------------------------------------
 //
 std::istream &
-BigEndian::read( std::istream & s, long howmany, int size, char * putemHere )
+BigEndian::read(std::istream &s, long howmany, int size, char *putemHere)
 {
-	//	read the bytes into data:
-	s.read( putemHere, howmany*size );
-	
-	//	check stream state:	
-    if ( s )
+    //	read the bytes into data:
+    s.read(putemHere, howmany * size);
+
+    //	check stream state:
+    if (s)
     {
         //  if the stream is still in a good state, then
         //  the correct number of bytes must have been read:
-        Assert( s.gcount() == howmany*size );
+        Assert(s.gcount() == howmany * size);
 
         //	swap byte order if nec.
-        if ( ! bigEndianSystem() && size > 1 ) 
+        if (!bigEndianSystem() && size > 1)
         {
-            for ( long i = 0; i < howmany; ++i )
+            for (long i = 0; i < howmany; ++i)
             {
-                swapByteOrder( putemHere + (i*size), size );
+                swapByteOrder(putemHere + (i * size), size);
             }
         }
     }
-    
+
     return s;
 }
 
@@ -107,32 +113,30 @@ BigEndian::read( std::istream & s, long howmany, int size, char * putemHere )
 // ---------------------------------------------------------------------------
 //
 std::ostream &
-BigEndian::write( std::ostream & s, long howmany, int size, const char * stuff )
+BigEndian::write(std::ostream &s, long howmany, int size, const char *stuff)
 {
-	//	swap byte order if nec.
-	if ( ! bigEndianSystem() && size > 1 ) 
-	{
-		//	use a temporary vector to automate storage:
-		std::vector<char> v( stuff, stuff + (howmany*size) );
-		for ( long i = 0; i < howmany; ++i )
-		{
-			swapByteOrder( & v[i*size], size );
-		}
-		s.write( &v[0], howmany*size );
-	}
-	else
-	{
-		//	read the bytes into data:
-		s.write( stuff, howmany*size );
-	}
-	
-	//	check stream state:
-	if ( ! s.good() )
-		Throw( FileIOException, "File write failed. " );
-        
+    //	swap byte order if nec.
+    if (!bigEndianSystem() && size > 1)
+    {
+        //	use a temporary vector to automate storage:
+        std::vector<char> v(stuff, stuff + (howmany * size));
+        for (long i = 0; i < howmany; ++i)
+        {
+            swapByteOrder(&v[i * size], size);
+        }
+        s.write(&v[0], howmany * size);
+    }
+    else
+    {
+        //	read the bytes into data:
+        s.write(stuff, howmany * size);
+    }
+
+    //	check stream state:
+    if (!s.good())
+        Throw(FileIOException, "File write failed. ");
+
     return s;
 }
 
-}	//	end of namespace Loris
-
-
+} // namespace Loris

@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -22,26 +22,26 @@
  *
  *	lorisException_pi.C
  *
- *	A component of the C-linkable procedural interface for Loris. 
+ *	A component of the C-linkable procedural interface for Loris.
  *
  *	Main components of the Loris procedural interface:
- *	- object interfaces - Analyzer, Synthesizer, Partial, PartialIterator, 
- *		PartialList, PartialListIterator, Breakpoint, BreakpointEnvelope,  
- *		and SampleVector need to be (opaque) objects in the interface, 
- * 		either because they hold state (e.g. Analyzer) or because they are 
- *		fundamental data types (e.g. Partial), so they need a procedural 
- *		interface to their member functions. All these things need to be 
+ *	- object interfaces - Analyzer, Synthesizer, Partial, PartialIterator,
+ *		PartialList, PartialListIterator, Breakpoint, BreakpointEnvelope,
+ *		and SampleVector need to be (opaque) objects in the interface,
+ * 		either because they hold state (e.g. Analyzer) or because they are
+ *		fundamental data types (e.g. Partial), so they need a procedural
+ *		interface to their member functions. All these things need to be
  *		opaque pointers for the benefit of C.
  *	- non-object-based procedures - other classes in Loris are not so stateful,
- *		and have sufficiently narrow functionality that they need only 
+ *		and have sufficiently narrow functionality that they need only
  *		procedures, and no object representation.
  *	- utility functions - some procedures that are generally useful but are
  *		not yet part of the Loris core are also defined.
  *	- notification and exception handlers - all exceptions must be caught and
- *		handled internally, clients can specify an exception handler and 
+ *		handled internally, clients can specify an exception handler and
  *		a notification function (the default one in Loris uses printf()).
  *
- *	This file defines the exception and notification handling functions 
+ *	This file defines the exception and notification handling functions
  *	used in the Loris procedural interface.
  *
  * Kelly Fitz, 10 Nov 2000
@@ -50,62 +50,60 @@
  * http://www.cerlsoundgroup.org/Loris/
  *
  */
-#include "lorisException_pi.h"
-
-
-#include "loris.h"
 #include "Notifier.h"
+#include "loris.h"
+#include "lorisException_pi.h"
 
 using namespace Loris;
 
 /* ---------------------------------------------------------------- */
-/*		notification and exception handlers							
+/*		notification and exception handlers
 /*
 /*
-	An exception handler and a notifier may be specified. Both 
-	are functions taking a const char * argument and returning
-	void.
+    An exception handler and a notifier may be specified. Both
+    are functions taking a const char * argument and returning
+    void.
  */
 
 /* ---------------------------------------------------------------- */
-/*        handleException        
+/*        handleException
 /*
-/*	Report exceptions thrown out of Loris. If no handler is 
-	specified, report them using Loris' notifier and return
-	without further incident.
+/*	Report exceptions thrown out of Loris. If no handler is
+    specified, report them using Loris' notifier and return
+    without further incident.
  */
-static void(*ex_handler)(const char *) = NULL;
-void handleException( const char * s )
+static void (*ex_handler)(const char *) = NULL;
+void
+handleException(const char *s)
 {
-	if ( ex_handler )
-		ex_handler( s );
-	else
-		notifier << s << endl;
+    if (ex_handler)
+        ex_handler(s);
+    else
+        notifier << s << endl;
 }
 
 /* ---------------------------------------------------------------- */
-/*        setExceptionHandler        
+/*        setExceptionHandler
 /*
-/*	Specify a function to call when reporting exceptions. The 
-	function takes a const char * argument, and returns void.
+/*	Specify a function to call when reporting exceptions. The
+    function takes a const char * argument, and returns void.
  */
-extern "C" 
-void setExceptionHandler( void(*f)(const char *) )
+extern "C" void
+setExceptionHandler(void (*f)(const char *))
 {
-	ex_handler = f;
+    ex_handler = f;
 }
 
 /* ---------------------------------------------------------------- */
 /*        setNotifier
 /*                                                                  */
-/*	Specify a notification function. The function takes a 
-	const char * argument, and returns void.
+/*	Specify a notification function. The function takes a
+    const char * argument, and returns void.
  */
-extern "C" 
-void setNotifier( void(*f)(const char *) )
+extern "C" void
+setNotifier(void (*f)(const char *))
 {
-	//	these are guaranteed not to throw:
-	setNotifierHandler( f );
-	setDebuggerHandler( f );
+    //	these are guaranteed not to throw:
+    setNotifierHandler(f);
+    setDebuggerHandler(f);
 }
-

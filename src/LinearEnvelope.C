@@ -1,6 +1,6 @@
 /*
- * This is the Loris C++ Class Library, implementing analysis, 
- * manipulation, and synthesis of digitized sounds using the Reassigned 
+ * This is the Loris C++ Class Library, implementing analysis,
+ * manipulation, and synthesis of digitized sounds using the Reassigned
  * Bandwidth-Enhanced Additive Sound Model.
  *
  * Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken
@@ -34,31 +34,32 @@
 #include "LinearEnvelope.h"
 
 //	begin namespace
-namespace Loris {
+namespace Loris
+{
 
 // ---------------------------------------------------------------------------
 //	constructor
 // ---------------------------------------------------------------------------
-//!	Construct a new LinearEnvelope having no 
-//!	breakpoints (and an implicit value of 0 everywhere).		
+//!	Construct a new LinearEnvelope having no
+//!	breakpoints (and an implicit value of 0 everywhere).
 //
-LinearEnvelope::LinearEnvelope( void )
+LinearEnvelope::LinearEnvelope(void)
 {
 }
 
 // ---------------------------------------------------------------------------
 //	constructor with initial (or constant) value
 // ---------------------------------------------------------------------------
-//!	Construct and return a new LinearEnvelope having a 
+//!	Construct and return a new LinearEnvelope having a
 //!	single breakpoint at 0 (and an implicit value everywhere)
-//!	of initialValue.		
-//!	
+//!	of initialValue.
+//!
 //!	\param   initialValue is the value of this LinearEnvelope
-//!            at time 0.	
+//!            at time 0.
 //
-LinearEnvelope::LinearEnvelope( double initialValue )
+LinearEnvelope::LinearEnvelope(double initialValue)
 {
-	insertBreakpoint( 0., initialValue );
+    insertBreakpoint(0., initialValue);
 }
 
 // ---------------------------------------------------------------------------
@@ -67,27 +68,27 @@ LinearEnvelope::LinearEnvelope( double initialValue )
 //!	Return an exact copy of this LinearEnvelope
 //!	(polymorphic copy, following the Prototype pattern).
 //
-LinearEnvelope * 
-LinearEnvelope::clone( void ) const
+LinearEnvelope *
+LinearEnvelope::clone(void) const
 {
-	return new LinearEnvelope( *this );
+    return new LinearEnvelope(*this);
 }
 
 // ---------------------------------------------------------------------------
 //	insert
 // ---------------------------------------------------------------------------
-//!	Insert a breakpoint representing the specified (time, value) 
-//!	pair into this LinearEnvelope. If there is already a 
-//!	breakpoint at the specified time, it will be replaced with 
+//!	Insert a breakpoint representing the specified (time, value)
+//!	pair into this LinearEnvelope. If there is already a
+//!	breakpoint at the specified time, it will be replaced with
 //!	the new breakpoint.
-//!	
+//!
 //!	\param   time is the time at which to insert a new breakpoint
 //!	\param   value is the value of the new breakpoint
-//	
+//
 void
-LinearEnvelope::insert( double time, double value )
+LinearEnvelope::insert(double time, double value)
 {
-	(*this)[time] = value;
+    (*this)[time] = value;
 }
 
 // ---------------------------------------------------------------------------
@@ -97,9 +98,10 @@ LinearEnvelope::insert( double time, double value )
 //! to self.
 //!
 //! \param  offset is the value to add to all points in the envelope
-LinearEnvelope & LinearEnvelope::operator+=( double offset )
+LinearEnvelope &
+LinearEnvelope::operator+=(double offset)
 {
-    for ( iterator it = begin(); it != end(); ++it )
+    for (iterator it = begin(); it != end(); ++it)
     {
         it->second += offset;
     }
@@ -112,11 +114,12 @@ LinearEnvelope & LinearEnvelope::operator+=( double offset )
 //! Scale this LinearEnvelope by a constant value and return a reference
 //! to self.
 //!
-//! \param  scale is the value by which to multiply to all points in 
+//! \param  scale is the value by which to multiply to all points in
 //!         the envelope
-LinearEnvelope & LinearEnvelope::operator*=( double scale )
+LinearEnvelope &
+LinearEnvelope::operator*=(double scale)
 {
-    for ( iterator it = begin(); it != end(); ++it )
+    for (iterator it = begin(); it != end(); ++it)
     {
         it->second *= scale;
     }
@@ -126,61 +129,62 @@ LinearEnvelope & LinearEnvelope::operator*=( double scale )
 // ---------------------------------------------------------------------------
 //	operator/ (non-member binary operator)
 // ---------------------------------------------------------------------------
-//! Divide constant value by a LinearEnvelope and return a new 
-//! LinearEnvelope. No shortcut implementation for this one, 
+//! Divide constant value by a LinearEnvelope and return a new
+//! LinearEnvelope. No shortcut implementation for this one,
 //! don't inline.
-LinearEnvelope operator/( double num, LinearEnvelope env )
+LinearEnvelope
+operator/(double num, LinearEnvelope env)
 {
-    for ( LinearEnvelope::iterator it = env.begin(); it != env.end(); ++it )
+    for (LinearEnvelope::iterator it = env.begin(); it != env.end(); ++it)
     {
         it->second = num / it->second;
     }
-    
+
     return env;
 }
 
 // ---------------------------------------------------------------------------
 //	valueAt
 // ---------------------------------------------------------------------------
-//!	Return the linearly-interpolated value of this LinearEnvelope at 
+//!	Return the linearly-interpolated value of this LinearEnvelope at
 //!	the specified time.
-//!	
+//!
 //!	\param   t is the time at which to evaluate this LinearEnvelope.
 //
 double
-LinearEnvelope::valueAt( double t ) const
+LinearEnvelope::valueAt(double t) const
 {
-	//	return zero if no breakpoints have been specified:
-	if ( size() == 0 ) 
-	{
-		return 0.;
-	}
+    //	return zero if no breakpoints have been specified:
+    if (size() == 0)
+    {
+        return 0.;
+    }
 
-	const_iterator it = lower_bound( t );
+    const_iterator it = lower_bound(t);
 
-	if ( it == begin() ) 
-	{
-		//	t is less than the first breakpoint, extend:
-		return it->second;
-	}
-	else if ( it == end() ) 
-	{
-		//	t is greater than the last breakpoint, extend:
-		// 	(no direct way to access the last element of a map)
-		return (--it)->second;
-	}
-	else 
-	{
-		//	linear interpolation between consecutive breakpoints:
-		double xgreater = it->first;
-		double ygreater = it->second;
-		--it;
-		double xless = it->first;
-		double yless = it->second;
-		
-		double alpha = (t -  xless) / (xgreater - xless);
-		return ( alpha * ygreater ) + ( (1. - alpha) * yless );
-	}
+    if (it == begin())
+    {
+        //	t is less than the first breakpoint, extend:
+        return it->second;
+    }
+    else if (it == end())
+    {
+        //	t is greater than the last breakpoint, extend:
+        // 	(no direct way to access the last element of a map)
+        return (--it)->second;
+    }
+    else
+    {
+        //	linear interpolation between consecutive breakpoints:
+        double xgreater = it->first;
+        double ygreater = it->second;
+        --it;
+        double xless = it->first;
+        double yless = it->second;
+
+        double alpha = (t - xless) / (xgreater - xless);
+        return (alpha * ygreater) + ((1. - alpha) * yless);
+    }
 }
 
-}	//	end of namespace Loris
+} // namespace Loris
