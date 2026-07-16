@@ -90,14 +90,14 @@ public:
 
     //! Return an exact copy of this LinearEnvelope
     //! (polymorphic copy, following the Prototype pattern).
-    virtual LinearEnvelope * clone( void ) const;
+    LinearEnvelope * clone( void ) const override;
 
     //! Return the linearly-interpolated value of this LinearEnvelope at 
     //! the specified time.
     //! 
     //! \param  t is the time at which to evaluate this 
     //!         LinearEnvelope.
-    virtual double valueAt( double t ) const;   
+    double valueAt( double t ) const override;
         
     
 //  -- envelope composition --

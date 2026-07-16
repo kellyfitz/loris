@@ -68,16 +68,8 @@ public:
     //! \param  b the beginning of the sequence of Partials
     //! \param  e the end of the sequence of Partials
     //!
-    //!	If compiled with NO_TEMPLATE_MEMBERS defined, then b and e
-    //!	must be PartialList::iterators, otherwise they can be any type
-    //!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
     SpectralSurface( Iter b, Iter e );
-#else
-    inline
-    SpectralSurface( PartialList::iterator b, PartialList::iterator e );
-#endif    
 
     //  use compiler-generated copy/assign/destroy
 
@@ -105,16 +97,8 @@ public:
     //! \param  b the beginning of the sequence of Partials
     //! \param  e the end of the sequence of Partials
     //!
-    //!	If compiled with NO_TEMPLATE_MEMBERS defined, then b and e
-    //!	must be PartialList::iterators, otherwise they can be any type
-    //!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
     void scaleAmplitudes( Iter b, Iter e );
-#else
-    inline
-	void scaleAmplitudes( PartialList::iterator b, PartialList::iterator e );
-#endif
     
 	//! Set the amplitude of every Breakpoint in a Partial
     //! equal to the amplitude of the spectral surface
@@ -140,16 +124,8 @@ public:
     //! \param  b the beginning of the sequence of Partials
     //! \param  e the end of the sequence of Partials
     //!
-    //!	If compiled with NO_TEMPLATE_MEMBERS defined, then b and e
-    //!	must be PartialList::iterators, otherwise they can be any type
-    //!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
     void setAmplitudes( Iter b, Iter e );
-#else
-    inline
-	void setAmplitudes( PartialList::iterator b, PartialList::iterator e );
-#endif
 	
 // --- access/mutation ---
 
@@ -241,18 +217,8 @@ private:
 //! \param  b the beginning of the sequence of Partials
 //! \param  e the end of the sequence of Partials
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, then b and e
-//!	must be PartialList::iterators, otherwise they can be any type
-//!	of iterators over a sequence of Partials.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 SpectralSurface::SpectralSurface( Iter b, Iter e ) :
-#else
-inline
-SpectralSurface::SpectralSurface( PartialList::iterator b, 
-                                  PartialList::iterator e ) :
-#endif    
 	mStretchFreq( 1.0 ),
 	mStretchTime( 1.0 ),
 	mEffect( 1.0 ),
@@ -302,18 +268,8 @@ SpectralSurface::SpectralSurface( PartialList::iterator b,
 //! \param  b the beginning of the sequence of Partials
 //! \param  e the end of the sequence of Partials
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, then b and e
-//!	must be PartialList::iterators, otherwise they can be any type
-//!	of iterators over a sequence of Partials.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void SpectralSurface::scaleAmplitudes( Iter b, Iter e )
-#else
-inline
-void SpectralSurface::scaleAmplitudes( PartialList::iterator b, 
-                                       PartialList::iterator e )
-#endif
 {	
 	while ( b != e )
 	{
@@ -342,18 +298,8 @@ void SpectralSurface::scaleAmplitudes( PartialList::iterator b,
 //! \param  b the beginning of the sequence of Partials
 //! \param  e the end of the sequence of Partials
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, then b and e
-//!	must be PartialList::iterators, otherwise they can be any type
-//!	of iterators over a sequence of Partials.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void SpectralSurface::setAmplitudes( Iter b, Iter e )
-#else
-inline
-void SpectralSurface::setAmplitudes( PartialList::iterator b, 
-                                     PartialList::iterator e )
-#endif
 {	
 	while ( b != e )
 	{

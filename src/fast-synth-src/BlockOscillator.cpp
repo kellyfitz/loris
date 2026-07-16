@@ -45,11 +45,7 @@
 #include <cmath>
 #include <vector>
 
-#if defined(HAVE_M_PI) && (HAVE_M_PI)
-    const Fastsynth_Float_Type Pi = M_PI;
-#else
-    const Fastsynth_Float_Type Pi = 3.14159265358979324;
-#endif
+const Fastsynth_Float_Type Pi = M_PI;
 const Fastsynth_Float_Type TwoPi = 2*Pi;
 const Fastsynth_Float_Type OneOverTwoPi = 1.0/TwoPi;
 

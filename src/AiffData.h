@@ -48,17 +48,15 @@ typedef std::uint32_t 	Uint_32;
 namespace Loris {
 
 //	-- chunk types --
-enum 
-{ 
-	ContainerId = 0x464f524d,				// 'FORM' 
-	AiffType = 0x41494646,					// 'AIFF' 
-	CommonId = 0x434f4d4d,					// 'COMM'
-	ApplicationSpecificId = 0x4150504c,		// 'APPL'
-	SosEnvelopesId = 0x534f5365,			// 'SOSe'
-	SoundDataId = 0x53534e44,				// 'SSND'
-	InstrumentId = 0x494e5354,				// 'INST'
-	MarkerId = 0x4d41524b					// 'MARK'
-};
+//	chunk IDs are always exactly 4 bytes in the file format
+constexpr Uint_32 ContainerId = 0x464f524d;				// 'FORM'
+constexpr Uint_32 AiffType = 0x41494646;				// 'AIFF'
+constexpr Uint_32 CommonId = 0x434f4d4d;				// 'COMM'
+constexpr Uint_32 ApplicationSpecificId = 0x4150504c;	// 'APPL'
+constexpr Uint_32 SosEnvelopesId = 0x534f5365;			// 'SOSe'
+constexpr Uint_32 SoundDataId = 0x53534e44;				// 'SSND'
+constexpr Uint_32 InstrumentId = 0x494e5354;			// 'INST'
+constexpr Uint_32 MarkerId = 0x4d41524b;				// 'MARK'
 
 typedef Uint_32 ID;
 typedef char Byte;

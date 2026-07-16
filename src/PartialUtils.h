@@ -116,7 +116,7 @@ public:
 	
 	//! Function call operator: apply a scale factor to the specified
 	//! Partial.
-	void operator()( Partial & p ) const;
+	void operator()( Partial & p ) const override;
 };
 
 // ---------------------------------------------------------------------------
@@ -176,7 +176,7 @@ public:
 	
 	//! Function call operator: apply a scale factor to the specified
 	//! Partial.
-	void operator()( Partial & p ) const;
+	void operator()( Partial & p ) const override;
 };
 
 // ---------------------------------------------------------------------------
@@ -236,7 +236,7 @@ public:
 	
 	//! Function call operator: assign a bw factor to the specified
 	//! Partial.
-	void operator()( Partial & p ) const;
+	void operator()( Partial & p ) const override;
 };
 
 // ---------------------------------------------------------------------------
@@ -296,7 +296,7 @@ public:
 	
 	//! Function call operator: apply a scale factor to the specified
 	//! Partial.
-	void operator()( Partial & p ) const;
+	void operator()( Partial & p ) const override;
 };
 
 // ---------------------------------------------------------------------------
@@ -356,7 +356,7 @@ public:
 	
 	//! Function call operator: apply a scale factor to the specified
 	//! Partial.
-	void operator()( Partial & p ) const;
+	void operator()( Partial & p ) const override;
 };
 
 // ---------------------------------------------------------------------------
@@ -417,7 +417,7 @@ public:
 	
 	//! Function call operator: apply a scale factor to the specified
 	//! Partial.
-	void operator()( Partial & p ) const;
+	void operator()( Partial & p ) const override;
 };
 
 // ---------------------------------------------------------------------------
@@ -967,7 +967,8 @@ void fixPhaseBetween( Iter b, Iter e, double t1, double t2 )
 //! Partial argument is less than the specified duration in
 //! seconds, and false otherwise.
 //
-class isDurationLess{
+class isDurationLess
+{
 public:
     //! Initialize a new instance with the specified label.
 	isDurationLess( double x ) : mDurationSecs(x) {}
@@ -990,7 +991,8 @@ private:
 //! Predicate functor returning true if the label of its Partial argument is
 //! equal to the specified 32-bit label, and false otherwise.
 //
-class isLabelEqual{
+class isLabelEqual
+{
 public:
     //! Initialize a new instance with the specified label.
 	isLabelEqual( int l ) : label(l) {}
@@ -1013,7 +1015,8 @@ private:
 //! Predicate functor returning true if the label of its Partial argument is
 //! greater than the specified 32-bit label, and false otherwise.
 //
-class isLabelGreater{
+class isLabelGreater
+{
 public:
    //! Initialize a new instance with the specified label.
 	isLabelGreater( int l ) : label(l) {}
@@ -1036,7 +1039,8 @@ private:
 //! Predicate functor returning true if the label of its Partial argument is
 //! less than the specified 32-bit label, and false otherwise.
 //
-class isLabelLess{
+class isLabelLess
+{
 public:
    //! Initialize a new instance with the specified label.
 	isLabelLess( int l ) : label(l) {}
@@ -1060,7 +1064,8 @@ private:
 //! Partial argument is less than the specified absolute amplitude, and 
 //! false otherwise.
 //
-class isPeakLess{
+class isPeakLess
+{
 public:
     //! Initialize a new instance with the specified peak amplitude.
 	isPeakLess( double x ) : thresh(x) {}

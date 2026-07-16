@@ -116,15 +116,8 @@ public:
     //! Initialize an instance of SdifFile with copies of the Partials
     //! on the specified half-open (STL-style) range.
     //! 
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-    //! only PartialList::const_iterator arguments.
-#if !defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	SdifFile( Iter begin_partials, Iter end_partials  );
-#else
-	SdifFile( PartialList::const_iterator begin_partials, 
-			  PartialList::const_iterator end_partials  );
-#endif
  
     //! Initialize an empty instance of SdifFile having no Partials.
 	SdifFile( void );
@@ -156,15 +149,8 @@ public:
     //! Add a copy of each Partial on the specified half-open (STL-style) 
     //! range to this SdifFile.
     //! 
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-    //! only PartialList::const_iterator arguments.
-#if !defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void addPartials( Iter begin_partials, Iter end_partials  );
-#else
-	void addPartials( PartialList::const_iterator begin_partials, 
-					  PartialList::const_iterator end_partials  );
-#endif
 	 
 //	-- export --
 
@@ -207,17 +193,8 @@ private:
 //	Initialize an instance of SdifFile with copies of the Partials
 //	on the specified half-open (STL-style) range.
 //
-//	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//	only PartialList::const_iterator arguments.
-//
-#if !defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 SdifFile::SdifFile( Iter begin_partials, Iter end_partials  )
-#else
-inline
-SdifFile::SdifFile( PartialList::const_iterator begin_partials, 
-					PartialList::const_iterator end_partials )
-#endif
 {
 	addPartials( begin_partials, end_partials );
 }
@@ -228,17 +205,8 @@ SdifFile::SdifFile( PartialList::const_iterator begin_partials,
 //	Add a copy of each Partial on the specified half-open (STL-style) 
 //	range to this SdifFile.
 //	
-//	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//	only PartialList::const_iterator arguments.
-//
-#if !defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void SdifFile::addPartials( Iter begin_partials, Iter end_partials  )
-#else
-inline
-void SdifFile::addPartials( PartialList::const_iterator begin_partials, 
-							PartialList::const_iterator end_partials  )
-#endif
 {
 	partials_.insert( partials_.end(), begin_partials, end_partials );
 }

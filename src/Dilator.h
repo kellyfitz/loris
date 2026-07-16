@@ -33,9 +33,6 @@
  *
  */
 
-#if defined(NO_TEMPLATE_MEMBERS)
-#include "PartialList.h"
-#endif
 
 #include <vector>
 
@@ -86,15 +83,8 @@ public:
 	//!	         this sequence must be as long as the sequence of initial time
 	//!	         point described by ibegin and iend.
 	//!
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//!	only const double * arguments.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter1, typename Iter2>
 	Dilator( Iter1 ibegin, Iter1 iend, Iter2 tbegin );
-#else
-    inline
-	Dilator( const double * ibegin, const double * iend, const double * tbegin );
-#endif
 
 	//	Use compiler-generated copy, assign, and destroy.
 	
@@ -164,38 +154,18 @@ public:
 	//!	\param dilate_begin is the beginning of a sequence of Partials to dilate.
 	//!	\param dilate_end is (one-past) the end of a sequence of Partials to dilate.
 	//!
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//!	only PartialList::const_iterator arguments. Otherwise, this member
-	//!   also works for sequences of Markers.
-	//!	
 	//!	\sa Dilator::dilate( Partial & p ) const
 	//!	\sa Dilator::dilate( Marker & m ) const
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void dilate( Iter dilate_begin, Iter dilate_end  ) const;
-#else
-    inline
-	void dilate( PartialList::iterator dilate_begin, 
-				    PartialList::iterator dilate_end  ) const;
-#endif
 	 
 	//!	Function call operator: same as 
 	//!	dilate( Iter dilate_begin, Iter dilate_end )
 	//!
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//!	only PartialList::const_iterator arguments. Otherwise, this member
-	//!   also works for sequences of Markers.
-	//!	
 	//!	\sa Dilator::dilate( Partial & p ) const
 	//!	\sa Dilator::dilate( Marker & m ) const
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void operator() ( Iter dilate_begin, Iter dilate_end  ) const;
-#else
-    inline
-	void operator() ( PartialList::iterator dilate_begin, 
-					      PartialList::iterator dilate_end ) const;
-#endif
 	 
 	//!	Return the dilated time value corresponding to the specified initial time.
 	//! 
@@ -220,27 +190,12 @@ public:
 	//!	         this sequence must be as long as the sequence of initial time
 	//!	         point described by ibegin and iend.
 	//!
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//!	only PartialList::const_iterator arguments. Otherwise, this member
-	//!   also works for sequences of Markers.
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//!	only const double * arguments for the times, otherwise, any iterator
-	//!   will do..
-	//!	
 	//!	\sa Dilator::dilate( Partial & p ) const
 	//!	\sa Dilator::dilate( Marker & m ) const
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template< typename PartialsIter, typename TimeIter1, typename TimeIter2 >
 	static 
 	void dilate( PartialsIter dilate_begin, PartialsIter dilate_end,
 	             TimeIter1 ibegin, TimeIter1 iend, TimeIter2 tbegin  );
-#else
-    static inline
- 	void dilate( PartialList::iterator dilate_begin, 
-				 PartialList::iterator dilate_end,
-		   		 const double * ibegin, const double * iend, 
-				 const double * tbegin  );
-#endif
 
 };	//	end of class Dilator
 
@@ -261,16 +216,8 @@ public:
 //!	        this sequence must be as long as the sequence of initial time
 //!	        point described by ibegin and iend.
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//!	only const double * arguments.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter1, typename Iter2>
 Dilator::Dilator( Iter1 ibegin, Iter1 iend, Iter2 tbegin )
-#else
-inline
-Dilator::Dilator( const double * ibegin, const double * iend, const double * tbegin )
-#endif
 {
 	while ( ibegin != iend )
 	{
@@ -288,21 +235,11 @@ Dilator::Dilator( const double * ibegin, const double * iend, const double * tbe
 //!	\param dilate_begin is the beginning of a sequence of Partials to dilate.
 //!	\param dilate_end is (one-past) the end of a sequence of Partials to dilate.
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//!	only PartialList::const_iterator arguments. Otherwise, this member
-//! also works for sequences of Markers.
-//!	
 //!	\sa Dilator::dilate( Partial & p ) const
 //!	\sa Dilator::dilate( Marker & m ) const
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void Dilator::dilate( Iter dilate_begin, Iter dilate_end  ) const
-#else
-inline
-void Dilator::dilate( PartialList::iterator dilate_begin, 
-					  PartialList::iterator dilate_end  ) const
-#endif
 {
 	while ( dilate_begin != dilate_end )
 	{
@@ -316,21 +253,11 @@ void Dilator::dilate( PartialList::iterator dilate_begin,
 //!	Function call operator: same as 
 //!	dilate( Iter dilate_begin, Iter dilate_end )
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//!	only PartialList::const_iterator arguments. Otherwise, this member
-//! also works for sequences of Markers.
-//!	
 //!	\sa Dilator::dilate( Partial & p ) const
 //!	\sa Dilator::dilate( Marker & m ) const
 //	 
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void Dilator::operator() ( Iter dilate_begin, Iter dilate_end  ) const
-#else
-inline
-void Dilator::operator() ( PartialList::iterator dilate_begin, 
-						   PartialList::iterator dilate_end ) const
-#endif
 { 
 	dilate( dilate_begin, dilate_end ); 
 }
@@ -379,27 +306,12 @@ void Dilator::operator() ( Marker & m ) const
 //!	         this sequence must be as long as the sequence of initial time
 //!	         point described by ibegin and iend.
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//!	only PartialList::const_iterator arguments. Otherwise, this member
-//!   also works for sequences of Markers.
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//!	only const double * arguments for the times, otherwise, any iterator
-//!   will do..
-//!	
 //!	\sa Dilator::dilate( Partial & p ) const
 //!	\sa Dilator::dilate( Marker & m ) const
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename PartialsIter, typename TimeIter1, typename TimeIter2 >
 void Dilator::dilate( PartialsIter dilate_begin, PartialsIter dilate_end,
 			 		  TimeIter1 ibegin, TimeIter1 iend, TimeIter2 tbegin  )
-#else
-inline
-void Dilator::dilate( PartialList::iterator dilate_begin, 
-			 		  PartialList::iterator dilate_end,
-			 		  const double * ibegin, const double * iend, 
-			 		  const double * tbegin  )
-#endif
 { 
   	Dilator instance( ibegin, iend, tbegin );
 	instance.dilate( dilate_begin, dilate_end ); 

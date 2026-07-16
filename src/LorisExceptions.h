@@ -80,7 +80,7 @@ public:
    //! C-style string (char pointer). Overrides std::exception::what.
    //!
    //! \return a C-style string describing the exceptional condition.
-	const char * what( void ) const throw() { return _sbuf.c_str(); }
+	const char * what( void ) const throw() override { return _sbuf.c_str(); }
 	 
 	//! Append the specified string to this Exception's description,
 	//! and return a reference to this Exception.

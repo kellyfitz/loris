@@ -84,23 +84,14 @@ public:
 	//!	Initialize an instance of SpcFile with copies of the Partials
 	//!	on the specified half-open (STL-style) range.
 	//!
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//!	only PartialList::const_iterator arguments.
-	//!
 	//! \param	begin_partials the beginning of a range of Partials to prepare
 	//!			for Spc export
 	//! \param	end_partials the end of a range of Partials to prepare
 	//!			for Spc export
 	//!	\param	midiNoteNum the fractional MIDI note number, if specified
 	//!			(default is 60)
-#if !defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	SpcFile( Iter begin_partials, Iter end_partials, double midiNoteNum = 60  );
-#else
-	SpcFile( PartialList::const_iterator begin_partials, 
-			 PartialList::const_iterator end_partials,
-			 double midiNoteNum = 60  );
-#endif
 
 	//!	Initialize an instance of SpcFile having the specified fractional
 	//!	MIDI note number, and no Partials (or envelope parameter streams). 
@@ -171,9 +162,6 @@ public:
 	//!	label, so an added Partial will replace a Partial having the 
 	//!	same label, if such a Partial exists.
 	//!
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//!	only PartialList::const_iterator arguments.
-	//!
 	//!	This may throw an InvalidArgument exception if an attempt is made
 	//!	to add unlabeled Partials, or Partials labeled higher than the
 	//!	allowable maximum.
@@ -182,13 +170,8 @@ public:
 	//!			to add to this Spc file
 	//! \param	end_partials the end of a range of Partials
 	//!			to add to this Spc file
-#if !defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void addPartials( Iter begin_partials, Iter end_partials  );
-#else
-	void addPartials( PartialList::const_iterator begin_partials, 
-					  PartialList::const_iterator end_partials  );
-#endif
 
 	//!	Set the fractional MIDI note number assigned to this SpcFile. 
 	//!	If the sound has no definable pitch, use note number 60.0 
@@ -294,24 +277,14 @@ private:
 //!	Initialize an instance of SpcFile with copies of the Partials
 //!	on the specified half-open (STL-style) range.
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//!	only PartialList::const_iterator arguments.
-//!
 //! \param	begin_partials the beginning of a range of Partials to prepare
 //!			for Spc export
 //! \param	end_partials the end of a range of Partials to prepare
 //!			for Spc export
 //!	\param	midiNoteNum the fractional MIDI note number, if specified
 //!			(default is 60)
-#if !defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 SpcFile::SpcFile( Iter begin_partials, Iter end_partials, double midiNoteNum  ) :
-#else
-inline
-SpcFile::SpcFile( PartialList::const_iterator begin_partials, 
-				  PartialList::const_iterator end_partials,
-				  double midiNoteNum ) :
-#endif
 //	initializers:
 	notenum_( midiNoteNum ),
 	rate_( DefaultRate )
@@ -330,9 +303,6 @@ SpcFile::SpcFile( PartialList::const_iterator begin_partials,
 //!	label, so an added Partial will replace a Partial having the 
 //!	same label, if such a Partial exists.
 //!
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//!	only PartialList::const_iterator arguments.
-//!
 //!	This may throw an InvalidArgument exception if an attempt is made
 //!	to add unlabeled Partials, or Partials labeled higher than the
 //!	allowable maximum.
@@ -341,14 +311,8 @@ SpcFile::SpcFile( PartialList::const_iterator begin_partials,
 //!			to add to this Spc file
 //! \param	end_partials the end of a range of Partials
 //!			to add to this Spc file
-#if !defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void SpcFile::addPartials( Iter begin_partials, Iter end_partials  )
-#else
-inline
-void SpcFile::addPartials( PartialList::const_iterator begin_partials, 
-						   PartialList::const_iterator end_partials  )
-#endif
 {
 	while ( begin_partials != end_partials )
 	{

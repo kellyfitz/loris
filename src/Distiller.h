@@ -77,22 +77,18 @@ public:
 
 //  -- global defaults and constants --
 
-	enum 
-	{
-	
-		//! Default time in milliseconds over which Partials joined by
-		//! distillation fade to and from zero amplitude. Divide by 
-		//!	1000 to use as a member function parameter. This parameter
-		//!	should be the same in Distiller, Sieve, and Collator.
-		DefaultFadeTimeMs = 5,
-		
-		//! Default minimum duration in milliseconds of the silent 
-		//! (zero-amplitude) gap between two Partials joined by 
-		//!	distillation. Divide by 1000 to use as a member function 
-		//!	parameter. This parameter should be the same in Distiller, 
-		//!	Sieve, and Collator.
-		DefaultSilentTimeMs = 1
-    };
+	//! Default time in milliseconds over which Partials joined by
+	//! distillation fade to and from zero amplitude. Divide by
+	//!	1000 to use as a member function parameter. This parameter
+	//!	should be the same in Distiller, Sieve, and Collator.
+	static constexpr int DefaultFadeTimeMs = 5;
+
+	//! Default minimum duration in milliseconds of the silent
+	//! (zero-amplitude) gap between two Partials joined by
+	//!	distillation. Divide by 1000 to use as a member function
+	//!	parameter. This parameter should be the same in Distiller,
+	//!	Sieve, and Collator.
+	static constexpr int DefaultSilentTimeMs = 1;
 
 //  -- construction --
 
@@ -144,26 +140,13 @@ public:
     //!         which is either the end of the collection, or the position
     //!         or the first unlabeled Partial.
     //!
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-    //! must be a PartialList, otherwise it can be any container type
-    //! storing Partials that supports at least bidirectional iterators.
-    //!
     //! \sa Distiller::distill( Container & partials )
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Container >
     typename Container::iterator distill( Container & partials );
-#else
-    inline
-    PartialList::iterator distill( PartialList & partials );
-#endif
 
     //! Function call operator: same as distill( PartialList & partials ).
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Container >
     typename Container::iterator operator() ( Container & partials );
-#else
-    PartialList::iterator operator() ( PartialList & partials );
-#endif
     
     //! Static member that constructs an instance and applies
     //! it to a sequence of Partials. 
@@ -183,19 +166,10 @@ public:
     //!         which is either the end of the collection, or the position
     //!         or the first unlabeled Partial.
     //!
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-    //! must be a PartialList, otherwise it can be any container type
-    //! storing Partials that supports at least bidirectional iterators.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Container >
     static typename Container::iterator 
     distill( Container & partials, double partialFadeTime,
              double partialSilentTime = DefaultSilentTimeMs/1000.0 );
-#else
-    static inline PartialList::iterator
-    distill( PartialList & partials, double partialFadeTime,
-             double partialSilentTime = DefaultSilentTimeMs/1000.0 );
-#endif
 
 private:
 
@@ -260,12 +234,6 @@ private:
 //!           which is either the end of the collection, or the position
 //!           or the first unlabeled Partial.
 //!
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-//! must be a PartialList, otherwise it can be any container type
-//! storing Partials that supports at least bidirectional iterators.
-//!
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Container >
 typename Container::iterator Distiller::distill( Container & partials )
 {
@@ -302,13 +270,6 @@ PartialList::iterator Distiller::distill( PartialList & partials )
 {
     return distill_list( partials );
 }
-#else
-inline
-PartialList::iterator Distiller::distill( PartialList & partials )
-{
-    return distill_list( partials );
-}
-#endif
 
 // ---------------------------------------------------------------------------
 //  Function call operator 
@@ -317,13 +278,8 @@ PartialList::iterator Distiller::distill( PartialList & partials )
 //! 
 //! \sa Distiller::distill( Container & partials )
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Container >
 typename Container::iterator Distiller::operator()( Container & partials )
-#else
-inline
-PartialList::iterator Distiller::operator()( PartialList & partials )
-#endif
 { 
     return distill( partials );
 }
@@ -349,21 +305,10 @@ PartialList::iterator Distiller::operator()( PartialList & partials )
 //!           which is either the end of the collection, or the position
 //!           or the first unlabeled Partial.
 //!
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-//! must be a PartialList, otherwise it can be any container type
-//! storing Partials that supports at least bidirectional iterators.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Container >
 typename Container::iterator 
 Distiller::distill( Container & partials, double partialFadeTime,
                                           double partialSilentTime )
-#else
-inline
-PartialList::iterator 
-Distiller::distill( PartialList & partials, double partialFadeTime,
-                                            double partialSilentTime )
-#endif
 {
     Distiller instance( partialFadeTime, partialSilentTime );
     return instance.distill( partials );

@@ -119,11 +119,11 @@ public:
 
 	//!	Return an exact copy of this FrequencyReference (following the
 	//!	Prototype pattern).
-	virtual FrequencyReference * clone( void ) const;
+	FrequencyReference * clone( void ) const override;
 	
 	//!	Return the frequency value (in Hz) of this FrequencyReference at the
 	//!	specified time.
-	virtual double valueAt( double x ) const;	
+	double valueAt( double x ) const override;
 
 };	// end of class FrequencyReference
 

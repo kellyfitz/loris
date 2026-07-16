@@ -75,7 +75,7 @@ class BlockOscillator
 
 public:	
 	
-	enum { TabSize = 1024 };
+	static constexpr int TabSize = 1024;
 
 	
 	// Cannot store these in vectors without a default constructor.

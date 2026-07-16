@@ -42,11 +42,7 @@
 #include <cmath>
 #include <complex>
 
-#if defined(HAVE_M_PI) && (HAVE_M_PI)
 	const double Pi = M_PI;
-#else
-	const double Pi = std::acos( -1.0 );
-#endif
 
 #if defined(HAVE_FFTW3_H) && HAVE_FFTW3_H
     #include <fftw3.h>

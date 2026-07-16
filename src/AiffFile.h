@@ -33,9 +33,6 @@
 #include "Marker.h"
 #include "Synthesizer.h"
 
-#if defined(NO_TEMPLATE_MEMBERS)
-#include "PartialList.h"
-#endif
 
 #include <memory>
 #include <string>
@@ -99,17 +96,9 @@ public:
     //! the Partials on the specified range. If unspecified, the
     //! fade time is taken from the Synthesizer DefaultParameters.
     //!
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-    //! only PartialList::const_iterator arguments.
-#if !defined(NO_TEMPLATE_MEMBERS)
     template<typename Iter>
     AiffFile( Iter begin_partials, Iter end_partials, 
               double samplerate, double fadeTime = FadeTimeUnspecified );
-#else
-    AiffFile( PartialList::const_iterator begin_partials, 
-              PartialList::const_iterator end_partials,
-              double samplerate, double fadeTime = FadeTimeUnspecified ); 
-#endif
 
     //! Initialize an instance of AiffFile having the specified sample 
     //! rate, preallocating numFrames samples, initialized to zero.
@@ -250,17 +239,9 @@ public:
 	//! the Partials on the specified range. If unspecified, the
 	//! fade time is taken from the Synthesizer DefaultParameters.
 	//! 
-	//! If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-	//! only PartialList::const_iterator arguments.
-#if !defined(NO_TEMPLATE_MEMBERS)
     template<typename Iter>
     void addPartials( Iter begin_partials, Iter end_partials, 
     				  double fadeTime = FadeTimeUnspecified  );
-#else
-    void addPartials( PartialList::const_iterator begin_partials, 
-                      PartialList::const_iterator end_partials,
-                      double fadeTime = FadeTimeUnspecified  );
-#endif
 
     //! Set the fractional MIDI note number assigned to this AiffFile. 
     //! If the sound has no definable pitch, use note number 60.0 (the default).
@@ -299,7 +280,7 @@ private:
 	//	Import data from an AIFF file on disk.
     void readAiffData( const std::string & filename );
     
-    enum { FadeTimeUnspecified = -9999999 };
+    static constexpr int FadeTimeUnspecified = -9999999;
     //	This is not pretty, but it is better (perhaps) than defining two 
     //	of every member having an optional fade time parameter.
 
@@ -328,19 +309,9 @@ private:
 //! the Partials on the specified range. If unspecified, the
 //! fade time is taken from the Synthesizer DefaultParameters.
 //!
-//! If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//! only PartialList::const_iterator arguments.
-//
-#if !defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 AiffFile::AiffFile( Iter begin_partials, Iter end_partials, 
                      double samplerate, double fadeTime ) :
-#else
-inline
-AiffFile::AiffFile( PartialList::const_iterator begin_partials, 
-                     PartialList::const_iterator end_partials,
-                     double samplerate, double fadeTime ) :
-#endif
 //  initializers:
     notenum_( 60 ),
     rate_( samplerate ),
@@ -368,20 +339,9 @@ AiffFile::AiffFile( PartialList::const_iterator begin_partials,
 //! the Partials on the specified range. If unspecified, the
 //! fade time is taken from the Synthesizer DefaultParameters.
 //! 
-//! If compiled with NO_TEMPLATE_MEMBERS defined, this member accepts
-//! only PartialList::const_iterator arguments.
-//
-#if !defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 void 
 AiffFile::addPartials( Iter begin_partials, Iter end_partials, double fadeTime )
-#else
-inline
-void 
-AiffFile::addPartials( PartialList::const_iterator begin_partials, 
-                        PartialList::const_iterator end_partials,
-                        double fadeTime )
-#endif
 { 
     Synthesizer synth = configureSynthesizer( fadeTime );    
     synth.synthesize( begin_partials, end_partials );

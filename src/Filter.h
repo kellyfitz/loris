@@ -98,16 +98,10 @@ public:
     //! \param fbackend is the end of a sequence of feedback coefficients   
     //! \param gain is an optional gain scale applied to the filtered signal
     //
-#if !defined(NO_TEMPLATE_MEMBERS)
     template<typename IterT1, typename IterT2>
     Filter( IterT1 ffwdbegin, IterT1 ffwdend,   //  feed-forward coeffs
             IterT2 fbackbegin, IterT2 fbackend, //  feedback coeffs
             double gain = 1. );
-#else
-    Filter( const double * ffwdbegin, const double * ffwdend, //    feed-forward coeffs
-            const double * fbackbegin, const double * fbackend, //  feedback coeffs
-            double gain = 1. );
-#endif
 
     
     // copy constructor 
@@ -208,17 +202,10 @@ private:
 //! \param fbackend is the end of a sequence of feedback coefficients   
 //! \param gain is an optional gain scale applied to the filtered signal
 //
-#if !defined(NO_TEMPLATE_MEMBERS)
 template<typename IterT1, typename IterT2>
 Filter::Filter( IterT1 ffwdbegin, IterT1 ffwdend,   //  feed-forward coeffs
                 IterT2 fbackbegin, IterT2 fbackend, //  feedback coeffs
                 double gain ) :
-#else
-inline 
-Filter::Filter( const double * ffwdbegin, const double * ffwdend, //    feed-forward coeffs
-                const double * fbackbegin, const double * fbackend, //  feedback coeffs
-                double gain ) :
-#endif
     m_ffwdcoefs( ffwdbegin, ffwdend ),
     m_fbackcoefs( fbackbegin, fbackend ),
     m_delayline( std::max( ffwdend-ffwdbegin, fbackend-fbackbegin ) - 1, 0. ),

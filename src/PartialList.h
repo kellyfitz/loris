@@ -111,16 +111,9 @@ public:
     //! range [b,e). Partials in the specified range are copied (immediately),
     //! not shared through the smart pointer. 
     //!
-    //! If NO_TEMPLATE_MEMBERS, b and e must be PartialList::iterators.
-    //! Otherwise, they may be iterators on any sequence of Partials.
-    //!
     //! Same as std::list range constructor.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template<class InIt>
     PartialList( InIt b, InIt e ) :
-#else
-    PartialList( iterator b, iterator e ) :
-#endif
         mList( new list_of_Partials_type( b, e ) )
     {
     }
@@ -205,17 +198,9 @@ public:
         { return mList->insert( where, val ); }
     
     //! Same as the corresponding member of std::list.    
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template<class InIt>
     void insert( iterator where, InIt first, InIt last )
         { mList->insert( where, first, last ); }
-#else
-    void insert( iterator where, const_iterator first, const_iterator last )
-        { mList->insert( where, first, last ); }
-        
-    void insert( iterator where, iterator first, iterator last )
-        { mList->insert( where, first, last ); }
-#endif
 
     
     //! Same as the corresponding member of std::list.
@@ -252,18 +237,11 @@ public:
     //  sorting
     
     //! Same as the corresponding member of std::list.    
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template<class Comparitor>
     void sort( Comparitor c )
     {
         mList->sort( c );
     }
-#else
-    void sort( bool ( * c )( const Partial &, const Partial & ) )
-    {
-        mList->sort( c );
-    }
-#endif
         
                 
     //  splicing

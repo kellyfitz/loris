@@ -35,9 +35,6 @@
  
 #include "Distiller.h"	//	for default fade time and silent time
  
-#if defined(NO_TEMPLATE_MEMBERS)
-#include "PartialList.h"
-#endif
 
 #include "PartialPtrs.h"
 
@@ -79,22 +76,18 @@ public:
 
 //  -- global defaults and constants --
 
-	enum 
-	{
-	
-		//! Default time in milliseconds over which Partials joined by
-		//! distillation fade to and from zero amplitude. Divide by 
-		//!	1000 to use as a member function parameter. This parameter
-		//!	should be the same in Distiller, Sieve, and Collator.
-		DefaultFadeTimeMs = Distiller::DefaultFadeTimeMs,
-		
-		//! Default minimum duration in milliseconds of the silent 
-		//! (zero-amplitude) gap between two Partials joined by 
-		//!	distillation. Divide by 1000 to use as a member function 
-		//!	parameter. This parameter should be the same in Distiller, 
-		//!	Sieve, and Collator.
-		DefaultSilentTimeMs = Distiller::DefaultSilentTimeMs
-    };
+	//! Default time in milliseconds over which Partials joined by
+	//! distillation fade to and from zero amplitude. Divide by
+	//!	1000 to use as a member function parameter. This parameter
+	//!	should be the same in Distiller, Sieve, and Collator.
+	static constexpr int DefaultFadeTimeMs = Distiller::DefaultFadeTimeMs;
+
+	//! Default minimum duration in milliseconds of the silent
+	//! (zero-amplitude) gap between two Partials joined by
+	//!	distillation. Divide by 1000 to use as a member function
+	//!	parameter. This parameter should be the same in Distiller,
+	//!	Sieve, and Collator.
+	static constexpr int DefaultSilentTimeMs = Distiller::DefaultSilentTimeMs;
     
 //  -- construction --
 
@@ -123,16 +116,8 @@ public:
     //! \param sift_begin is the beginning of the range of Partials to sift
     //! \param sift_end is (one-past) the end of the range of Partials to sift
     //! 
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then sift_begin and 
-    //! sift_end must be PartialList::iterators, otherwise they can be any type
-    //! of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template<typename Iter>
     void sift( Iter sift_begin, Iter sift_end  );
-#else
-   inline
-    void sift( PartialList::iterator sift_begin, PartialList::iterator sift_end  );
-#endif
 
     //! Sift labeled Partials in the specified container
     //! If any two Partials having same label overlap in time, keep
@@ -142,16 +127,8 @@ public:
     //!
     //! \param  partials is the collection of Partials to sift in-place
     //! 
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-    //! must be a PartialList, otherwise it can be any container type
-    //! storing Partials that supports at least bidirectional iterators.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Container >
     void sift( Container & partials  )
-#else
-   inline
-    void sift( PartialList & partials )
-#endif
     {
         sift( partials.begin(), partials.end() );
     }
@@ -172,19 +149,10 @@ public:
     //!         must be non-negative.
     //! \throw  InvalidArgument if partialFadeTime is negative.
     //! 
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-    //! must be PartialList::iterators, otherwise they can be any type
-    //! of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Iter >
     static 
     void sift( Iter sift_begin, Iter sift_end, 
               double partialFadeTime );
-#else
-    static inline 
-    void sift( PartialList::iterator sift_begin, PartialList::iterator sift_end,
-              double partialFadeTime );
-#endif   
 
 //  -- helper --
 private:
@@ -214,16 +182,8 @@ private:
 //! \param sift_begin is the beginning of the range of Partials to sift
 //! \param sift_end is (one-past) the end of the range of Partials to sift
 //! 
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then sift_begin and 
-//! sift_end must be PartialList::iterators, otherwise they can be any type
-//! of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 void Sieve::sift( Iter sift_begin, Iter sift_end  )
-#else
-inline
-void Sieve::sift( PartialList::iterator sift_begin, PartialList::iterator sift_end  )
-#endif
 {
     PartialPtrs ptrs;
     fillPartialPtrs( sift_begin, sift_end, ptrs );
@@ -247,18 +207,9 @@ void Sieve::sift( PartialList::iterator sift_begin, PartialList::iterator sift_e
 //!         must be non-negative.
 //! \throw  InvalidArgument if partialFadeTime is negative.
 //! 
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-//! must be PartialList::iterators, otherwise they can be any type
-//! of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 void Sieve::sift( Iter sift_begin, Iter sift_end, 
                   double partialFadeTime )
-#else
-inline 
-void Sieve::sift( PartialList::iterator sift_begin, PartialList::iterator sift_end,
-                  double partialFadeTime )
-#endif   
 {
    Sieve instance( partialFadeTime );
    instance.sift( sift_begin, sift_end );

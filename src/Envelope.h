@@ -123,13 +123,13 @@ public:
 
 	//!	Return an exact copy of this Envelope (following the Prototype
 	//!	pattern).
-	ScaleAndOffsetEnvelope * clone( void ) const 
+	ScaleAndOffsetEnvelope * clone( void ) const override
 	{
 		return new ScaleAndOffsetEnvelope( *this );
 	}
 
-	//!	Return the value of this Envelope at the specified time. 	 
-	virtual double valueAt( double x ) const
+	//!	Return the value of this Envelope at the specified time.
+	double valueAt( double x ) const override
 	{
 		return m_offset + ( m_scale * m_env->valueAt( x ) );
 	}

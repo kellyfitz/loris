@@ -40,11 +40,7 @@
 #include <numeric>	    //	for std::accumulate()
 
 #include <cmath>	//	for M_PI (except when its not there), fmod, fabs
-#if defined(HAVE_M_PI) && (HAVE_M_PI)
 	const double Pi = M_PI;
-#else
-	const double Pi = 3.14159265358979324;
-#endif
 
 // The old quadratic interpolation code is still around, in case
 // we ever want to use it for comparison, Lemur used to use that.

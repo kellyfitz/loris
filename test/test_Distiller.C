@@ -46,11 +46,7 @@ using namespace Loris;
 using namespace std;
 
 
-#if defined(HAVE_M_PI) && (HAVE_M_PI)
-	const double Pi = M_PI;
-#else
-	const double Pi = 3.14159265358979324;
-#endif
+const double Pi = M_PI;
 
 // --- macros ---
 

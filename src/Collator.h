@@ -74,22 +74,18 @@ public:
 
 //  -- global defaults and constants --
 
-	enum 
-	{
-	
-		//! Default time in milliseconds over which Partials joined by
-		//! distillation fade to and from zero amplitude. Divide by 
-		//!	1000 to use as a member function parameter. This parameter
-		//!	should be the same in Distiller, Sieve, and Collator.
-		DefaultFadeTimeMs = Distiller::DefaultFadeTimeMs,
-		
-		//! Default minimum duration in milliseconds of the silent 
-		//! (zero-amplitude) gap between two Partials joined by 
-		//!	distillation. Divide by 1000 to use as a member function 
-		//!	parameter. This parameter should be the same in Distiller, 
-		//!	Sieve, and Collator.
-		DefaultSilentTimeMs = Distiller::DefaultSilentTimeMs
-    };
+	//! Default time in milliseconds over which Partials joined by
+	//! distillation fade to and from zero amplitude. Divide by
+	//!	1000 to use as a member function parameter. This parameter
+	//!	should be the same in Distiller, Sieve, and Collator.
+	static constexpr int DefaultFadeTimeMs = Distiller::DefaultFadeTimeMs;
+
+	//! Default minimum duration in milliseconds of the silent
+	//! (zero-amplitude) gap between two Partials joined by
+	//!	distillation. Divide by 1000 to use as a member function
+	//!	parameter. This parameter should be the same in Distiller,
+	//!	Sieve, and Collator.
+	static constexpr int DefaultSilentTimeMs = Distiller::DefaultSilentTimeMs;
     
 //  -- construction --
 
@@ -126,7 +122,6 @@ public:
     //! list, and appear at the end of the sequence, after all previously-labeled
     //! Partials.
     //!
-    //!
     //! Return an iterator refering to the position of the first collated Partial,
     //! or the end of the collated collection if there are no collated Partials.
     //! Since collating is in-place, the Partials collection may be smaller
@@ -139,26 +134,13 @@ public:
     //!           of the first collated Partial, composed of unlabeled Partials
     //!           in the original collection.
     //!
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-    //! must be a PartialList, otherwise it can be any container type
-    //! storing Partials that supports at least bidirectional iterators.
-    //!
     //!  \sa Collator::collate( Container & partials )
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Container >
     typename Container::iterator collate( Container & partials );
-#else
-    inline
-    PartialList::iterator collate( PartialList & partials );
-#endif
 
     //! Function call operator: same as collate( PartialList & partials ).
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Container >
     typename Container::iterator operator() ( Container & partials );
-#else
-    PartialList::iterator operator() ( PartialList & partials );
-#endif
     
     //! Static member that constructs an instance and applies
     //! it to a sequence of Partials.  Collated Partials are 
@@ -174,19 +156,10 @@ public:
     //!         Partials joined by collating. 
     //! \return the position of the first collated Partial
     //!
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-    //! must be a PartialList, otherwise it can be any container type
-    //! storing Partials that supports at least bidirectional iterators.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Container >
     static typename Container::iterator 
     collate( Container & partials, double partialFadeTime,
                                    double partialSilentTime );
-#else
-    static inline PartialList::iterator
-    collate( PartialList & partials, double partialFadeTime,
-                                     double partialSilentTime );
-#endif
 
 
 private:
@@ -224,28 +197,12 @@ private:
 //!           of the first collated Partial, composed of unlabeled Partials
 //!           in the original collection.
 //!
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-//! must be a PartialList, otherwise it can be any container type
-//! storing Partials that supports at least bidirectional iterators.
-//!
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Container >
 typename Container::iterator 
 Collator::collate( Container & partials )
-#else
-inline
-PartialList::iterator 
-Collator::collate( PartialList & partials )
-#endif
 {
-#if ! defined(NO_TEMPLATE_MEMBERS)
     typedef typename Container::iterator Iterator;
     typedef typename Iterator::difference_type DiffType;
-#else
-    typedef PartialList::iterator Iterator;
-    typedef Iterator::difference_type DiffType;
-#endif
 
     // Partition the Partials into labeled and unlabeled, 
     // and collate the unlabeled ones and replace the 
@@ -312,13 +269,8 @@ Collator::collate( PartialList & partials )
 //! 
 //! \sa Collator::collate( Container & partials )
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Container >
 typename Container::iterator Collator::operator()( Container & partials )
-#else
-inline
-PartialList::iterator Collator::operator()( PartialList & partials )
-#endif
 { 
     return collate( partials );
 }
@@ -344,21 +296,10 @@ PartialList::iterator Collator::operator()( PartialList & partials )
 //!         0.0001 (one tenth of a millisecond).
 //! \return the position of the first collated Partial
 //!
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then partials
-//! must be a PartialList, otherwise it can be any container type
-//! storing Partials that supports at least bidirectional iterators.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Container >
 typename Container::iterator 
 Collator::collate( Container & partials, double partialFadeTime,
                                          double partialSilentTime )
-#else
-inline
-PartialList::iterator 
-Collator::collate( PartialList & partials, double partialFadeTime,
-                                           double partialSilentTime )
-#endif
 {
     Collator instance( partialFadeTime, partialSilentTime );
     return instance.collate( partials );

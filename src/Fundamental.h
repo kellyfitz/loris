@@ -64,19 +64,16 @@ public:
 
 //  -- constants --    
 
-    enum {
-    
-        DefaultAmpFloor = -60,          //! the default absolute amplitude threshold in dB
-        
-        DefaultAmpRange = 30,           //! the default floating amplitude threshold in dB
-    
-        DefaultFreqCeiling = 4000,      //! the default frequency threshold in Hz
-    
-        DefaultPrecisionOver100 = 10,   //! the default frequency precision in 1/100 Hz
+    static constexpr int DefaultAmpFloor = -60;         //! the default absolute amplitude threshold in dB
 
-        DefaultMinConfidencePct = 90    //! the default required percent confidence to
-                                        //! return an estimate (100 is absolute confidence)
-    };
+    static constexpr int DefaultAmpRange = 30;          //! the default floating amplitude threshold in dB
+
+    static constexpr int DefaultFreqCeiling = 4000;     //! the default frequency threshold in Hz
+
+    static constexpr int DefaultPrecisionOver100 = 10;  //! the default frequency precision in 1/100 Hz
+
+    static constexpr int DefaultMinConfidencePct = 90;  //! the default required percent confidence to
+                                                        //! return an estimate (100 is absolute confidence)
     
 
 //  -- lifecycle --
@@ -231,7 +228,7 @@ public:
                             
 
     //! Destructor    
-    ~FundamentalFromSamples( void );
+    ~FundamentalFromSamples( void ) override;
 
 //  -- fundamental frequency estimation --
 
@@ -564,7 +561,7 @@ public:
                                                         
 
     //! Destructor    
-    ~FundamentalFromPartials( void );
+    ~FundamentalFromPartials( void ) override;
     
     //! Construct a copy of an estimator. Nothing much to do since this class
     //! has no data members.

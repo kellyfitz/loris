@@ -184,25 +184,13 @@ public:
 	//!         resized to accommodate the entire duration of all the 
 	//!         Partials including fade out at the ends.
 	//!	\throw	InvalidPartial if any Partial has negative start time.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template< typename Iter >
 	void synthesize( Iter begin_partials, Iter end_partials );
-#else
-    inline
-	void synthesize( PartialList::const_iterator begin_partials, 
-					 PartialList::const_iterator end_partials );	
-#endif
 	 
 	//!	Function call operator: same as 
 	//!	synthesize( begin_partials, end_partials ).
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template< typename Iter >
 	void operator() ( Iter begin_partials, Iter end_partials );
-#else
-    inline
-	void operator() ( PartialList::const_iterator begin_partials, 
-					  PartialList::const_iterator end_partials );
-#endif
 	
 //	-- sample access --
 
@@ -247,11 +235,8 @@ public:
 
 //	-- parameters structure --
 
-    enum
-    {
-        Default_FadeTime_Ms = 1,
-        Default_SampleRate_Hz = 44100
-    };
+    static constexpr int Default_FadeTime_Ms = 1;
+    static constexpr int Default_SampleRate_Hz = 44100;
     
     // enum EnhancementFlag { Sinusoidal = 0,  BwEnhanced = 1 };
 
@@ -338,15 +323,9 @@ private:
 //!         Partials including fade out at the ends.
 //!	\throw	InvalidPartial if any Partial has negative start time.
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void 
 Synthesizer::synthesize( Iter begin_partials, Iter end_partials ) 
-#else
-inline void 
-Synthesizer::synthesize( PartialList::const_iterator begin_partials, 
-						 PartialList::const_iterator end_partials ) 
-#endif
 { 
     //	grow the sample buffer, if necessary, to accommodate the latest
     //  Partial, with the fade time tacked on the end
@@ -373,15 +352,9 @@ Synthesizer::synthesize( PartialList::const_iterator begin_partials,
 //!	Function call operator: same as 
 //!		synthesize( begin_partials, end_partials, timeShift ).
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void
 Synthesizer::operator() ( Iter begin_partials, Iter end_partials ) 
-#else
-inline void
-Synthesizer::operator() ( PartialList::const_iterator begin_partials, 
-                          PartialList::const_iterator end_partials ) 
-#endif
 { 
 	synthesize( begin_partials, end_partials ); 
 }

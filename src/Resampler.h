@@ -194,16 +194,8 @@ public:
 	//!	\param begin is the beginning of the range of Partials to resample
 	//!	\param end is (one-past) the end of the range of Partials to resample
 	//!	
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-	//!	must be PartialList::iterators, otherwise they can be any type
-	//!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void resample( Iter begin, Iter end ) const
-#else
-   inline 
-	void resample( PartialList::iterator begin, PartialList::iterator end  ) const
-#endif	 
     {
         while ( begin != end )
         {
@@ -265,17 +257,8 @@ public:
     //!         times in resampled Partials onto parameter sampling 
     //!         instants in the original Partials.
 	//!	
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-	//!	must be PartialList::iterators, otherwise they can be any type
-	//!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void resample( Iter begin, Iter end, const LinearEnvelope & timingEnv ) const
-#else
-   inline 
-	void resample( PartialList::iterator begin, PartialList::iterator end,
-	               const LinearEnvelope & timingEnv) const
-#endif	 
     {
         while ( begin != end )
         {
@@ -305,16 +288,8 @@ public:
     //!	\param begin is the beginning of the range of Partials to quantize
     //!	\param end is (one-past) the end of the range of Partials to quantize
     //!	
-    //!	If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-    //!	must be PartialList::iterators, otherwise they can be any type
-    //!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void quantize( Iter begin, Iter end ) const
-#else
-   inline 
-	void quantize( PartialList::iterator begin, PartialList::iterator end  ) const
-#endif	
     {
         while ( begin != end )
         {

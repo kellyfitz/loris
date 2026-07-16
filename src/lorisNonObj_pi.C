@@ -692,8 +692,6 @@ void importSpc( const char * path, PartialList * partials )
         {
             partials->insert( partials->end(), *it );
         }
-        //  works even with NO_TEMPLATE_MEMBERS defined, the following does not
-		// partials->insert( partials->end(), imp.partials().begin(), imp.partials().end() );
 
 	}
 	catch( Exception & ex ) 

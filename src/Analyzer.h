@@ -381,8 +381,8 @@ public:
     
 //  -- bandwidth envelope specification --
 
-    enum { Default_ResidueBandwidth_RegionWidth = 2000,
-           Default_ConvergenceBandwidth_TolerancePct = 10 };
+    static constexpr int Default_ResidueBandwidth_RegionWidth = 2000;
+    static constexpr int Default_ConvergenceBandwidth_TolerancePct = 10;
            
     //! Construct Partial bandwidth envelopes during analysis
     //! by associating residual energy in the spectrum (after
@@ -460,8 +460,8 @@ public:
 
 //  -- envelope access --
 
-    enum { Default_FundamentalEnv_ThreshDb = -60, 
-           Default_FundamentalEnv_ThreshHz = 8000 };
+    static constexpr int Default_FundamentalEnv_ThreshDb = -60;
+    static constexpr int Default_FundamentalEnv_ThreshHz = 8000;
 
     //! Specify parameters for constructing a fundamental frequency 
     //! envelope for the analyzed sound during analysis. The fundamental 

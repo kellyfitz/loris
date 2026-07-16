@@ -60,7 +60,8 @@ private:
 
 public:
 	
-	enum { TabSize = 1024, MaxDelay = 101 };
+	static constexpr int TabSize = 1024;
+	static constexpr int MaxDelay = 101;
 
 	
 	//	lifecycle

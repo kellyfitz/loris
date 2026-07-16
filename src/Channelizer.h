@@ -172,24 +172,12 @@ public:
     //! \param begin is the beginning of the range of Partials to channelize
     //! \param end is (one-past) the end of the range of Partials to channelize
     //! 
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-    //! must be PartialList::iterators, otherwise they can be any type
-    //! of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template<typename Iter>
     void channelize( Iter begin, Iter end ) const;
-#else
-    void channelize( PartialList::iterator begin, PartialList::iterator end ) const;
-#endif   
 
     //! Function call operator: same as channelize().
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template<typename Iter>
     void operator() ( Iter begin, Iter end ) const
-#else
-    inline
-    void operator() ( PartialList::iterator begin, PartialList::iterator end ) const
-#endif
          { channelize( begin, end ); }
          
     //! Compute the center frequency of one a channel at the specified
@@ -418,19 +406,10 @@ public:
     //!         refChanFreq tracks the second harmonic, etc.).
     //! \throw  InvalidArgument if refChanLabel is not positive.
     //! 
-    //! If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-    //! must be PartialList::iterators, otherwise they can be any type
-    //! of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
     template< typename Iter >
     static 
     void channelize( Iter begin, Iter end, 
                      const Envelope & refChanFreq, int refChanLabel );
-#else
-    static inline 
-    void channelize( PartialList::iterator begin, PartialList::iterator end,
-                     const Envelope & refChanFreq, int refChanLabel );
-#endif   
 
      
     //! DEPRECATED
@@ -459,17 +438,8 @@ public:
 //! \param begin is the beginning of the range of Partials to channelize
 //! \param end is (one-past) the end of the range of Partials o channelize
 //! 
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-//! must be PartialList::iterators, otherwise they can be any type
-//! of iterators over a sequence of Partials.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void Channelizer::channelize( Iter begin, Iter end ) const
-#else
-inline
-void Channelizer::channelize( PartialList::iterator begin, PartialList::iterator end ) const
-#endif
 {
     while ( begin != end )
     {
@@ -500,19 +470,9 @@ void Channelizer::channelize( PartialList::iterator begin, PartialList::iterator
 //!             refChanFreq tracks the second harmonic, etc.).
 //!   \throw   InvalidArgument if refChanLabel is not positive.
 //! 
-//! If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-//! must be PartialList::iterators, otherwise they can be any type
-//! of iterators over a sequence of Partials.
-//
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 void Channelizer::channelize( Iter begin, Iter end, 
                               const Envelope & refChanFreq, int refChanLabel )
-#else
-inline
-void Channelizer::channelize( PartialList::iterator begin, PartialList::iterator end,
-                              const Envelope & refChanFreq, int refChanLabel )
-#endif   
 {
    Channelizer instance( refChanFreq, refChanLabel );
     while ( begin != end )

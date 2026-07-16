@@ -87,11 +87,7 @@ SDIF spec: http://www.cnmat.berkeley.edu/SDIF/
 #include <string>
 #include <vector>
 
-#if HAVE_M_PI
 	const double Pi = M_PI;
-#else
-	const double Pi = 3.14159265358979324;
-#endif
 
 using namespace std;
 

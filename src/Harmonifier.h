@@ -100,15 +100,9 @@ public:
     //! \throw  InvalidArgument if no Partial in the range [b,e)
     //!         has the specified label.
     //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
    	Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
    	            double threshold_dB = 0 );
-#else
-   inline
-   	Harmonifier( PartialList::iterator b, PartialList::iterator e, 
-   	             Partial::label_type refLabel, double threshold_dB = 0 );
-#endif
 
     //! Construct a new Harmonifier that applies the specified 
     //! reference Partial to fix the frequencies of Breakpoints
@@ -124,16 +118,9 @@ public:
     //! \throw  InvalidArgument if no Partial in the range [b,e)
     //!         has the specified label.
     //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
    	Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
    	             const Envelope & env, double threshold_dB = 0 );
-#else
-   inline
-   	Harmonifier( PartialList::iterator b, PartialList::iterator e, 
-   	             Partial::label_type refLabel, const Envelope & env,
-   	             double threshold_dB = 0 );
-#endif
 
     //! Destructor.
     ~Harmonifier( void );
@@ -146,13 +133,8 @@ public:
     void harmonify( Partial & p ) const;
     
     //! Apply the reference envelope to all Partials in a range.    
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template<typename Iter>
 	void harmonify( Iter b, Iter e  );
-#else
-    inline
-    void harmonify( PartialList::iterator b, PartialList::iterator e  );
-#endif
 
 // -- static members --
 
@@ -175,21 +157,11 @@ public:
     //!         has the specified label.	
     //! \throw  InvalidArgument if refLabel is non-positive.	
 	//!	
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-	//!	must be PartialList::iterators, otherwise they can be any type
-	//!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template< typename Iter >
 	static 
 	void harmonify( Iter b, Iter e, 
 	                Partial::label_type refLabel,
                     double threshold_dB = 0 );
-#else
-	static inline 
-	void harmonify( PartialList::iterator b, PartialList::iterator e,
-	                Partial::label_type refLabel,
-                    double threshold_dB = 0 );
-#endif	 
 
 	//! Static member that constructs an instance and applies
 	//! it to a sequence of Partials. 
@@ -213,21 +185,11 @@ public:
     //!         has the specified label.	
     //! \throw  InvalidArgument if refLabel is non-positive.	
 	//!	
-	//!	If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-	//!	must be PartialList::iterators, otherwise they can be any type
-	//!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 	template< typename Iter >
 	static 
 	void harmonify( Iter b, Iter e, 
 	                Partial::label_type refLabel,
                     const Envelope & env, double threshold_dB = 0 );
-#else
-	static inline 
-	void harmonify( PartialList::iterator b, PartialList::iterator e,
-	                Partial::label_type refLabel,
-                    const Envelope & env, double threshold_dB = 0 );
-#endif	 
 
 private:
 
@@ -252,15 +214,9 @@ private:
 //!         has the specified label.
 //! \throw  InvalidArgument if refLabel is non-positive.
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 Harmonifier::Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
                           double threshold_dB ) :
-#else
-inline
-Harmonifier::Harmonifier( PartialList::iterator b, PartialList::iterator e, 
-                          Partial::label_type refLabel, double threshold_dB ) :
-#endif
     _freqFixThresholdDb( threshold_dB ),
     _weight( createDefaultEnvelope() )
 {
@@ -301,16 +257,9 @@ Harmonifier::Harmonifier( PartialList::iterator b, PartialList::iterator e,
 //!         has the specified label.
 //! \throw  InvalidArgument if refLabel is non-positive.
 //
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 Harmonifier::Harmonifier( Iter b, Iter e, Partial::label_type refLabel, 
                           const Envelope & env, double threshold_dB ) :
-#else
-inline
-Harmonifier::Harmonifier( PartialList::iterator b, PartialList::iterator e, 
-                          Partial::label_type refLabel, const Envelope & env,
-                          double threshold_dB ) :
-#endif
     _freqFixThresholdDb( threshold_dB ),
     _weight( env.clone() )
 {
@@ -337,13 +286,8 @@ Harmonifier::Harmonifier( PartialList::iterator b, PartialList::iterator e,
 //	harmonify
 // ---------------------------------------------------------------------------
 //! Apply the reference envelope to all Partials in a range.    
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template<typename Iter>
 void Harmonifier::harmonify( Iter b, Iter e  )
-#else
-inline
-void Harmonifier::harmonify( PartialList::iterator b, PartialList::iterator e  )
-#endif
 {
     while ( b != e )
     {
@@ -374,20 +318,10 @@ void Harmonifier::harmonify( PartialList::iterator b, PartialList::iterator e  )
 //!         has the specified label.	
 //! \throw  InvalidArgument if refLabel is non-positive.	
 //!	
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-//!	must be PartialList::iterators, otherwise they can be any type
-//!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 void Harmonifier::harmonify( Iter b, Iter e, 
                              Partial::label_type refLabel,
                              double threshold_dB )
-#else
-inline 
-void Harmonifier::harmonify( PartialList::iterator b, PartialList::iterator e,
-                             Partial::label_type refLabel,
-                             double threshold_dB )
-#endif	 
 {
     Harmonifier instance( b, e, refLabel, threshold_dB );
     instance.harmonify( b, e );
@@ -418,20 +352,10 @@ void Harmonifier::harmonify( PartialList::iterator b, PartialList::iterator e,
 //!         has the specified label.	
 //! \throw  InvalidArgument if refLabel is non-positive.	
 //!	
-//!	If compiled with NO_TEMPLATE_MEMBERS defined, then begin and end
-//!	must be PartialList::iterators, otherwise they can be any type
-//!	of iterators over a sequence of Partials.
-#if ! defined(NO_TEMPLATE_MEMBERS)
 template< typename Iter >
 void Harmonifier::harmonify( Iter b, Iter e, 
                              Partial::label_type refLabel,
                              const Envelope & env, double threshold_dB )
-#else
-inline 
-void Harmonifier::harmonify( PartialList::iterator b, PartialList::iterator e,
-                             Partial::label_type refLabel,
-                             const Envelope & env, double threshold_dB )
-#endif	 
 {
     Harmonifier instance( b, e, refLabel, env, threshold_dB );
     instance.harmonify( b, e );

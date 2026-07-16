@@ -55,22 +55,18 @@ typedef float			Float_32;
 typedef double			Double_64;
 
 
-#if defined(HAVE_M_PI) && (HAVE_M_PI)
 	const double Pi = M_PI;
-#else
-	const double Pi = 3.14159265358979324;
-#endif		
 
 //	begin namespace
 namespace Loris {
 
 //	-- types and ids --
-enum { 
-		ContainerId = 0x464f524d,				// 'FORM' 
-		LEMR_ID = 0x4c454d52,					// 'LEMR' 
-		AnalysisParamsID = 0x4c4d414e,			// 'LMAN' 
-		TrackDataID = 0x54524b53,				// 'TRKS'
-		FormatNumber = 4962 };
+//	chunk IDs are always exactly 4 bytes in the file format
+constexpr Int_32 ContainerId = 0x464f524d;			// 'FORM'
+constexpr Int_32 LEMR_ID = 0x4c454d52;				// 'LEMR'
+constexpr Int_32 AnalysisParamsID = 0x4c4d414e;		// 'LMAN'
+constexpr Int_32 TrackDataID = 0x54524b53;			// 'TRKS'
+constexpr Int_32 FormatNumber = 4962;
 
 //	for reading and writing files, the exact sizes and
 //	alignments are critical.
