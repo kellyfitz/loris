@@ -9,7 +9,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-# sources are utils/loris_*.C; the built programs are loris-*
+# sources are utils/loris_*.cpp; the built programs are loris-*
 set(LORIS_UTILS_PROGRAMS
     analyze
     dilate
@@ -22,7 +22,7 @@ set(LORIS_UTILS_PROGRAMS
 include(GNUInstallDirs)
 
 foreach(util IN LISTS LORIS_UTILS_PROGRAMS)
-    add_executable(loris-${util} loris_${util}.C)
+    add_executable(loris-${util} loris_${util}.cpp)
     target_link_libraries(loris-${util} PRIVATE loris)
     target_compile_options(loris-${util} PRIVATE -Wno-comment)
     # find libloris in <prefix>/lib next to <prefix>/bin after install

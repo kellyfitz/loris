@@ -10,7 +10,7 @@ partials.
 
 **Status: under active development, not ready for general use.** The
 driver utility (`utils/loris_fastsynth_main.cpp`, built as
-`loris-fastsynth`) and the comparison harness (`test/test_FastSynth.C`,
+`loris-fastsynth`) and the comparison harness (`test/test_FastSynth.cpp`,
 CTest target `test_fastsynth`) are the two ways to exercise this code.
 Neither this directory's headers nor `loris-fastsynth` are installed by
 the build; nothing here is part of the public Loris API yet.
@@ -62,7 +62,7 @@ behind the stub, for whoever picks this up:
    engine's `NoiseGenerator` + `Filter` chain -- they may or may not
    sound alike even once both are live.
 
-`test/test_FastSynth.C` should grow an energy-vs-bandwidth assertion
+`test/test_FastSynth.cpp` should grow an energy-vs-bandwidth assertion
 (rendering the same bw = 0.0 / 0.5 / 1.0 partial through both engines and
 comparing RMS energy) once noise synthesis is reinstated -- that
 comparison already exists as an ad hoc measurement in the git history

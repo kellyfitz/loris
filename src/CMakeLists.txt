@@ -14,57 +14,57 @@ configure_file(loris.h.in ${CMAKE_CURRENT_BINARY_DIR}/loris.h @ONLY)
 
 # source code for Loris classes
 set(CPP_SRC
-    AiffData.C
-    AiffFile.C
-    Analyzer.C
-    AssociateBandwidth.C
-    BigEndian.C
-    Breakpoint.C
-    BreakpointUtils.C
-    Channelizer.C
-    Collator.C
-    Dilator.C
-    Distiller.C
-    Envelope.C
-    F0Estimate.C
-    LorisExceptions.C
-    Filter.C
-    FourierTransform.C
-    FrequencyReference.C
-    Fundamental.C
-    Harmonifier.C
-    ImportLemur.C
-    KaiserWindow.C
-    LinearEnvelope.C
-    Marker.C
-    Morpher.C
-    NoiseGenerator.C
-    Notifier.C
-    Oscillator.C
-    Partial.C
-    PartialBuilder.C
-    PartialList.C
-    PartialUtils.C
-    phasefix.C
-    ReassignedSpectrum.C
-    Resampler.C
-    SdifFile.C
-    Sieve.C
-    SpcFile.C
-    SpectralPeakSelector.C
-    SpectralSurface.C
-    Synthesizer.C
+    AiffData.cpp
+    AiffFile.cpp
+    Analyzer.cpp
+    AssociateBandwidth.cpp
+    BigEndian.cpp
+    Breakpoint.cpp
+    BreakpointUtils.cpp
+    Channelizer.cpp
+    Collator.cpp
+    Dilator.cpp
+    Distiller.cpp
+    Envelope.cpp
+    F0Estimate.cpp
+    LorisExceptions.cpp
+    Filter.cpp
+    FourierTransform.cpp
+    FrequencyReference.cpp
+    Fundamental.cpp
+    Harmonifier.cpp
+    ImportLemur.cpp
+    KaiserWindow.cpp
+    LinearEnvelope.cpp
+    Marker.cpp
+    Morpher.cpp
+    NoiseGenerator.cpp
+    Notifier.cpp
+    Oscillator.cpp
+    Partial.cpp
+    PartialBuilder.cpp
+    PartialList.cpp
+    PartialUtils.cpp
+    phasefix.cpp
+    ReassignedSpectrum.cpp
+    Resampler.cpp
+    SdifFile.cpp
+    Sieve.cpp
+    SpcFile.cpp
+    SpectralPeakSelector.cpp
+    SpectralSurface.cpp
+    Synthesizer.cpp
     fftsg.c
 )
 
 # source code for the procedural (C) interface
 set(PI_SRC
-    lorisAnalyzer_pi.C
-    lorisBpEnvelope_pi.C
-    lorisException_pi.C
-    lorisNonObj_pi.C
-    lorisPartialList_pi.C
-    lorisUtilities_pi.C
+    lorisAnalyzer_pi.cpp
+    lorisBpEnvelope_pi.cpp
+    lorisException_pi.cpp
+    lorisNonObj_pi.cpp
+    lorisPartialList_pi.cpp
+    lorisUtilities_pi.cpp
 )
 
 # fast block synthesizer (work in progress; headers not installed)

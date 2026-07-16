@@ -27,25 +27,25 @@ function(loris_add_test name source)
 endfunction()
 
 # simple morphing test
-loris_add_test(test_cpp morphtest.C)
+loris_add_test(test_cpp morphtest.cpp)
 
 # procedural interface test (C source, links the C++ library)
 loris_add_test(test_pi pitest.c)
 set_target_properties(test_pi PROPERTIES LINKER_LANGUAGE CXX)
 
 # unit tests
-loris_add_test(test_aiff test_Aiff.C)
-loris_add_test(test_crop test_Cropper.C)
-loris_add_test(test_distiller test_Distiller.C)
-loris_add_test(test_fastsynth test_FastSynth.C)
-loris_add_test(test_filter test_Filter.C)
-loris_add_test(test_fundamental test_Fundamental.C)
-loris_add_test(test_identity test_Identity.C)
-loris_add_test(test_morpher test_Morpher.C)
-loris_add_test(test_partial test_Partial.C)
-loris_add_test(test_resample test_Resampler.C)
-loris_add_test(test_sdiffile test_SdifFile.C)
-loris_add_test(test_synthesizer test_Synthesizer.C)
+loris_add_test(test_aiff test_Aiff.cpp)
+loris_add_test(test_crop test_Cropper.cpp)
+loris_add_test(test_distiller test_Distiller.cpp)
+loris_add_test(test_fastsynth test_FastSynth.cpp)
+loris_add_test(test_filter test_Filter.cpp)
+loris_add_test(test_fundamental test_Fundamental.cpp)
+loris_add_test(test_identity test_Identity.cpp)
+loris_add_test(test_morpher test_Morpher.cpp)
+loris_add_test(test_partial test_Partial.cpp)
+loris_add_test(test_resample test_Resampler.cpp)
+loris_add_test(test_sdiffile test_SdifFile.cpp)
+loris_add_test(test_synthesizer test_Synthesizer.cpp)
 
 # Python module test: morphtest.py against the just-built module in
 # build/scripting (PYTHONPATH holds both _loris and loris.py there)
