@@ -19,9 +19,9 @@ jobs:
         preset: [ci, ci-release, ci-nofftw]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -33,7 +33,11 @@ jobs:
 
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
-        run: brew install swig fftw
+        run: |
+          # the runner image preinstalls aws/tap, which we do not use; brew
+          # warns about untrusted taps on every install until it is gone
+          brew untap aws/tap || true
+          brew install swig fftw
 
       - name: Report toolchain
         run: |
