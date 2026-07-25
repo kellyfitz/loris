@@ -101,7 +101,9 @@ git push origin master
 git push origin v2.0
 ```
 
-`origin` is SourceForge (`ssh://kfitz@git.code.sf.net/p/loris/loris-code`).
+`origin` is GitHub (`git@github.com:kellyfitz/loris.git`). Pushing the tag
+makes it available on the repository's Releases page; attach the source
+tarball there, which is what the SourceForge file area used to provide.
 
 
 ## 5. Post-release housekeeping

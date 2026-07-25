@@ -9,7 +9,7 @@ build with CMake, requires C++17, and builds with no compiler warnings.
 A detailed list of major changes is given in the change 
 history, below. 
 
-Loris can be downloaded from http://sourceforge.net/projects/loris
+Loris can be downloaded from https://github.com/kellyfitz/loris
 
 For more information about Loris, contact the developers at
 loris@cersloundgroup.org, or visit them at
@@ -53,6 +53,11 @@ the obsolete lorisdoc.py (its docstrings now live in the SWIG interface
 files, which also generate call signatures automatically).
 
 - FFTW remains optional; without it, Loris uses its bundled FFT.
+
+- Development has moved from SourceForge to GitHub
+(https://github.com/kellyfitz/loris). Every push is built and tested on
+Linux and macOS by GitHub Actions; this is the first release verified to
+build and pass its test suite on Linux (GCC), in addition to macOS.
 
 -------------------------------------------------------
 changes since 1.8 release:
