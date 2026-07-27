@@ -86,9 +86,28 @@
       "Bash(cmake --preset *)",
       "Bash(cmake --build *)",
       "Bash(cmake -G *)",
+      "Bash(cmake -S *)",
+      "Bash(cmake --install *)",
       "Bash(ctest)",
       "Bash(ctest *)",
       "Bash(ctest --preset *)",
+      "Bash(pre-commit run *)",
+
+      "Bash(rm -rf build)",
+      "Bash(rm -rf build/*)",
+      "Bash(rm -rf build-*)",
+      "Bash(rm -rf /tmp/claude-501/*)",
+      "Bash(rm -rf /private/tmp/claude-501/*)",
+      "Bash(rsync -a *)",
+      "Bash(du -sh *)",
+      "Bash(mkdir -p /tmp/claude-501/*)",
+      "Bash(mkdir -p /private/tmp/claude-501/*)",
+
+      "Bash(gh run list *)",
+      "Bash(gh run view *)",
+      "Bash(gh repo view *)",
+      "Bash(gh workflow list *)",
+      "Bash(gh workflow view *)",
 
       "Bash(doxygen --version)",
       "Bash(clang --version)",
@@ -97,6 +116,9 @@
       "Bash(/Users/fitz/Code/loris/.venv/bin/python --version)",
       "Bash(/Users/fitz/Code/loris/.venv/bin/python3 --version)",
       "Bash(pre-commit --version)",
+
+      "Bash(.venv/bin/python3 -m pydoc loris*)",
+      "Bash(/Users/fitz/Code/loris/.venv/bin/python3 -m pydoc loris*)",
 
       "Bash(.venv/bin/python -c \"import loris; print\\(loris.version\\(\\)\\)\")",
       "Bash(.venv/bin/python3 -c \"import loris; print\\(loris.version\\(\\)\\)\")",
