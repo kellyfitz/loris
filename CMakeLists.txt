@@ -11,7 +11,7 @@
 
 cmake_minimum_required(VERSION 3.24)
 
-project(Loris VERSION 2.0 LANGUAGES C CXX)
+project(Loris VERSION 2.1 LANGUAGES C CXX)
 
 # the sources are C++17-clean (no auto_ptr, unary/binary_function,
 # bind1st/2nd, or not1); make that a checked guarantee
@@ -27,7 +27,7 @@ set(LORIS_MINOR_VERSION ${PROJECT_VERSION_MINOR})
 # must be a number, not empty: it is substituted verbatim into the public
 # loris.h, where an empty #define cannot be used in an expression
 set(LORIS_SUBMINOR_VERSION "0")
-set(LORIS_PRERELEASE_STR "")
+set(LORIS_PRERELEASE_STR "development")
 set(LORIS_VERSION_STR "Loris ${PROJECT_VERSION}${LORIS_PRERELEASE_STR}")
 
 #----------------------------------------------------------------
