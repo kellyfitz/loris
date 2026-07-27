@@ -24,8 +24,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #----------------------------------------------------------------
 set(LORIS_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
 set(LORIS_MINOR_VERSION ${PROJECT_VERSION_MINOR})
-set(LORIS_SUBMINOR_VERSION "")
-set(LORIS_PRERELEASE_STR "development")
+# must be a number, not empty: it is substituted verbatim into the public
+# loris.h, where an empty #define cannot be used in an expression
+set(LORIS_SUBMINOR_VERSION "0")
+set(LORIS_PRERELEASE_STR "")
 set(LORIS_VERSION_STR "Loris ${PROJECT_VERSION}${LORIS_PRERELEASE_STR}")
 
 #----------------------------------------------------------------

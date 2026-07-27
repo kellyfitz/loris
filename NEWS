@@ -25,7 +25,7 @@ Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken.
 History of visible changes, organized by release number:
 
 -------------------------------------------------------
-changes since 1.9 release:
+Loris 2.0 (2026-07-27), changes since the 1.9 release:
 
 - Replaced the autotools (configure/automake/libtool) build system with
 CMake (3.24 or newer). See INSTALL for the new build instructions. The
@@ -53,6 +53,10 @@ the obsolete lorisdoc.py (its docstrings now live in the SWIG interface
 files, which also generate call signatures automatically).
 
 - FFTW remains optional; without it, Loris uses its bundled FFT.
+
+- The shared library soname advances from 13 to 14. Loris 2.0 is not
+binary compatible with 1.9: it requires C++17 and uses std::unique_ptr
+in public headers. Anything linked against libloris must be rebuilt.
 
 - Development has moved from SourceForge to GitHub
 (https://github.com/kellyfitz/loris). Every push is now built and tested

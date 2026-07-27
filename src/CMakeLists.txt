@@ -83,8 +83,11 @@ add_library(loris SHARED ${CPP_SRC} ${PI_SRC} ${FASTSYNTH_SRC})
 # (Renders in double precision, as the original Xcode target did.)
 target_compile_definitions(loris PUBLIC FASTSYNTH_FLOAT_TYPE=double)
 
-# continue the libtool -version-info 13:0:0 lineage
-set_target_properties(loris PROPERTIES VERSION 13.0.0 SOVERSION 13)
+# The libtool -version-info 13:0:0 lineage ended with 1.9. Loris 2.0 breaks
+# binary compatibility -- it requires C++17 and puts unique_ptr in public
+# headers -- so the soname advances to 14 rather than letting a 1.9-era
+# binary load this library.
+set_target_properties(loris PROPERTIES VERSION 14.0.0 SOVERSION 14)
 
 # the binary dir (generated loris.h) must precede the source dir, so that
 # a stale in-tree loris.h left by an autotools build cannot shadow it
