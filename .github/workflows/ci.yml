@@ -6,6 +6,12 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  # The Python the module is built, tested and installed against. Keep in step
+  # with LORIS_PYTHON_MIN in CMakeLists.txt; bumping the pair is the whole of
+  # moving to a newer interpreter.
+  LORIS_PYTHON_VERSION: '3.12'
+
 jobs:
   build:
     name: ${{ matrix.os }} / ${{ matrix.preset }}
@@ -23,21 +29,51 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
+          python-version: ${{ env.LORIS_PYTHON_VERSION }}
 
-      - name: Install dependencies (Linux)
+      # FFTW is a C library, so it has to come from the platform. Everything
+      # else the build needs is provisioned into the virtual environment below,
+      # which keeps the job independent of whatever the runner image ships and
+      # gives it the same shape as a developer's local build.
+      - name: Install FFTW (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y swig libfftw3-dev
+          sudo apt-get install -y libfftw3-dev
 
-      - name: Install dependencies (macOS)
+      - name: Install FFTW (macOS)
         if: runner.os == 'macOS'
         run: |
           # the runner image preinstalls aws/tap, which we do not use; brew
           # warns about untrusted taps on every install until it is gone
           brew untap aws/tap || true
-          brew install swig fftw
+          brew install fftw
+
+      - name: Create the build environment
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install swig
+          echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/.venv" >> "$GITHUB_ENV"
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
+
+      # The build must use the interpreter this job provisioned, not one the
+      # runner image supplies. Assert that rather than print it, so a drift in
+      # discovery fails the job instead of passing quietly.
+      - name: Verify the interpreter
+        run: |
+          set -euo pipefail
+          found=$(command -v python3)
+          want="$GITHUB_WORKSPACE/.venv/bin/python3"
+          if [ "$found" != "$want" ]; then
+            echo "::error::python3 resolves to $found, expected $want"
+            exit 1
+          fi
+          version=$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+          if [ "$version" != "$LORIS_PYTHON_VERSION" ]; then
+            echo "::error::python3 is $version, expected $LORIS_PYTHON_VERSION"
+            exit 1
+          fi
 
       - name: Report toolchain
         run: |
@@ -46,8 +82,12 @@ jobs:
           python3 --version
           ${{ runner.os == 'Linux' && 'g++ --version' || 'clang++ --version' }}
 
+      # setup-python exports Python3_ROOT_DIR, which FindPython honours ahead of
+      # the virtual environment. Name the interpreter outright rather than
+      # letting the two hints race; CMakeLists.txt fails the configure if the
+      # module would end up outside $VIRTUAL_ENV regardless.
       - name: Configure
-        run: cmake --preset ${{ matrix.preset }}
+        run: cmake --preset ${{ matrix.preset }} -DPython3_EXECUTABLE="$VIRTUAL_ENV/bin/python3"
 
       - name: Build
         run: cmake --build --preset ${{ matrix.preset }}
@@ -55,7 +95,16 @@ jobs:
       - name: Test
         run: ctest --preset ${{ matrix.preset }}
 
-      - name: Import the Python module
+      # Install into the virtual environment, which is also the Python prefix,
+      # so the module lands beside the libloris its RPATH looks for two levels
+      # up. This is the first coverage the install rules have had.
+      - name: Install
+        run: cmake --install build-${{ matrix.preset }} --prefix "$VIRTUAL_ENV"
+
+      # Import from outside the source and build trees, so this exercises the
+      # installed module rather than the copy in build-*/scripting. It doubles
+      # as proof that CMake selected the venv interpreter: had it chosen another
+      # one, the module would have installed somewhere this cannot see.
+      - name: Import the installed module
+        working-directory: ${{ runner.temp }}
         run: python3 -c "import loris; print(loris.version())"
-        env:
-          PYTHONPATH: build-${{ matrix.preset }}/scripting

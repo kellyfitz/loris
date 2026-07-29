@@ -38,6 +38,10 @@ option(LORIS_UTILS "Build the command line utilities" ON)
 option(LORIS_PYTHON "Build the SWIG Python module" ON)
 option(LORIS_DEBUG "Enable internal Loris debugging code (not recommended)" OFF)
 
+# Oldest Python the SWIG module is supported on. CI builds against exactly this
+# version, so raising the floor is a one-line change here and in ci.yml.
+set(LORIS_PYTHON_MIN 3.12)
+
 #----------------------------------------------------------------
 # Look for FFTW3. Optional: without it, Loris uses the bundled
 # FFT (fftsg.c), and infrequent non-power-of-two DFTs are slower.
@@ -61,21 +65,67 @@ endif()
 #----------------------------------------------------------------
 # Python module (SWIG). Python and SWIG are located here at the top
 # level so their imported targets are visible in scripting/ and test/.
-# With the project .venv first on PATH, both are found there.
+# SWIG comes from PATH; the interpreter does not — FindPython consults
+# virtual environments ahead of PATH, so see the VIRTUAL_ENV note below.
 #----------------------------------------------------------------
 if(LORIS_PYTHON)
-    # honor an activated virtual environment (VIRTUAL_ENV set): the module
-    # is then built for and installed into that venv's site-packages
-    if(DEFINED ENV{VIRTUAL_ENV})
+    # Honor an activated virtual environment (VIRTUAL_ENV set): the module is
+    # then built for and installed into that venv's site-packages.
+    #
+    # Validate the path, not merely its presence. FindPython treats both
+    # $VIRTUAL_ENV and $CONDA_PREFIX as virtual environments, so a stale
+    # VIRTUAL_ENV left behind by a deleted venv would quietly fall through to
+    # an activated conda environment and build the module for an unrelated
+    # interpreter. Fail loudly instead: the wrong Python is far more expensive
+    # to discover at import time than at configure time.
+    if(DEFINED ENV{VIRTUAL_ENV} AND NOT "$ENV{VIRTUAL_ENV}" STREQUAL "")
+        if(NOT IS_DIRECTORY "$ENV{VIRTUAL_ENV}")
+            message(FATAL_ERROR
+                "VIRTUAL_ENV is set to '$ENV{VIRTUAL_ENV}', which is not a directory. "
+                "Create it (python3 -m venv .venv && .venv/bin/pip install swig), "
+                "or unset VIRTUAL_ENV to build against the interpreter on PATH.")
+        endif()
+        file(REAL_PATH "$ENV{VIRTUAL_ENV}" LORIS_VENV)
         set(Python3_FIND_VIRTUALENV ONLY)
+    else()
+        # No venv was requested, so take the interpreter from PATH like any
+        # other tool. Without this, FindPython's default (FIRST) would prefer
+        # an activated conda environment over PATH, making the chosen Python a
+        # function of the developer's shell rather than of the preset.
+        set(LORIS_VENV "")
+        set(Python3_FIND_VIRTUALENV STANDARD)
     endif()
-    find_package(Python3 COMPONENTS Interpreter Development.Module)
+    find_package(Python3 ${LORIS_PYTHON_MIN} COMPONENTS Interpreter Development.Module)
     find_package(SWIG 4.0)
     if(Python3_FOUND AND SWIG_FOUND)
+        # ONLY is not on its own enough to guarantee we got the venv that was
+        # asked for: a Python3_ROOT_DIR hint in the environment outranks the
+        # virtual-environment search, and actions/setup-python exports exactly
+        # such a hint. Check the outcome rather than trusting the policy. If the
+        # module would not land inside the requested venv then the install is
+        # wrong and its RPATH cannot resolve libloris, so stop here.
+        if(LORIS_VENV)
+            file(REAL_PATH "${Python3_SITEARCH}" _loris_sitearch)
+            cmake_path(IS_PREFIX LORIS_VENV "${_loris_sitearch}" NORMALIZE _loris_in_venv)
+            if(NOT _loris_in_venv)
+                message(FATAL_ERROR
+                    "VIRTUAL_ENV asks for '${LORIS_VENV}', but CMake selected "
+                    "'${Python3_EXECUTABLE}', whose site-packages is "
+                    "'${Python3_SITEARCH}'. Something outranked the virtual "
+                    "environment — a Python3_ROOT_DIR hint in the environment will "
+                    "do it. Pass -DPython3_EXECUTABLE=${LORIS_VENV}/bin/python3 to "
+                    "settle the matter.")
+            endif()
+        endif()
         add_subdirectory(scripting)
         message(STATUS "Python module: ${Python3_EXECUTABLE} -> ${Python3_SITEARCH}")
+        message(STATUS "SWIG: ${SWIG_EXECUTABLE} (${SWIG_VERSION})")
     else()
-        message(WARNING "Cannot find Python and/or SWIG. Python module cannot be built.")
+        message(WARNING
+            "Python module cannot be built: need Python >= ${LORIS_PYTHON_MIN} "
+            "(found '${Python3_EXECUTABLE}' ${Python3_VERSION}) and SWIG >= 4.0 "
+            "(found '${SWIG_EXECUTABLE}' ${SWIG_VERSION}). "
+            "Set -DLORIS_PYTHON=OFF to skip it deliberately.")
     endif()
 endif()
 
