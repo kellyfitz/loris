@@ -2,49 +2,18 @@
     "version": 6,
     "configurePresets": [
         {
-            "name": "default",
-            "displayName": "Debug (venv Python)",
-            "description": "Debug build; Python/SWIG from the project .venv, FFTW from Homebrew",
-            "binaryDir": "${sourceDir}/build",
+            "name": "ci",
+            "displayName": "Debug (interpreter from the environment)",
+            "description": "Debug build that injects nothing about the toolchain: Python comes from $VIRTUAL_ENV when a virtual environment is active and from PATH otherwise, SWIG from PATH, FFTW from the usual system locations. Copy CMakeUserPresets.json.example to pin a personal layout.",
+            "binaryDir": "${sourceDir}/build-ci",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-            },
-            "environment": {
-                "VIRTUAL_ENV": "${sourceDir}/.venv",
-                "PATH": "${sourceDir}/.venv/bin:/opt/homebrew/bin:$penv{PATH}"
-            }
-        },
-        {
-            "name": "release",
-            "displayName": "Release (venv Python)",
-            "inherits": "default",
-            "binaryDir": "${sourceDir}/build-release",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "nofftw",
-            "displayName": "Debug, bundled FFT (no FFTW)",
-            "inherits": "default",
-            "binaryDir": "${sourceDir}/build-nofftw",
-            "cacheVariables": {
-                "LORIS_FFTW": "OFF"
-            }
-        },
-        {
-            "name": "ci",
-            "displayName": "CI Debug (system Python/SWIG)",
-            "description": "Debug build for continuous integration: no .venv or Homebrew paths are injected, so Python, SWIG and FFTW are taken from the platform",
-            "binaryDir": "${sourceDir}/build-ci",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
             "name": "ci-release",
-            "displayName": "CI Release (system Python/SWIG)",
+            "displayName": "Release (interpreter from the environment)",
             "inherits": "ci",
             "binaryDir": "${sourceDir}/build-ci-release",
             "cacheVariables": {
@@ -53,7 +22,7 @@
         },
         {
             "name": "ci-nofftw",
-            "displayName": "CI Debug, bundled FFT (no FFTW)",
+            "displayName": "Debug, bundled FFT (no FFTW)",
             "inherits": "ci",
             "binaryDir": "${sourceDir}/build-ci-nofftw",
             "cacheVariables": {
@@ -62,21 +31,6 @@
         }
     ],
     "buildPresets": [
-        {
-            "name": "default",
-            "configurePreset": "default",
-            "jobs": 8
-        },
-        {
-            "name": "release",
-            "configurePreset": "release",
-            "jobs": 8
-        },
-        {
-            "name": "nofftw",
-            "configurePreset": "nofftw",
-            "jobs": 8
-        },
         {
             "name": "ci",
             "configurePreset": "ci",
@@ -94,36 +48,6 @@
         }
     ],
     "testPresets": [
-        {
-            "name": "default",
-            "configurePreset": "default",
-            "output": {
-                "outputOnFailure": true
-            },
-            "execution": {
-                "jobs": 8
-            }
-        },
-        {
-            "name": "release",
-            "configurePreset": "release",
-            "output": {
-                "outputOnFailure": true
-            },
-            "execution": {
-                "jobs": 8
-            }
-        },
-        {
-            "name": "nofftw",
-            "configurePreset": "nofftw",
-            "output": {
-                "outputOnFailure": true
-            },
-            "execution": {
-                "jobs": 8
-            }
-        },
         {
             "name": "ci",
             "configurePreset": "ci",

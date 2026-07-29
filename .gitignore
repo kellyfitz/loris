@@ -43,5 +43,8 @@ __pycache__/
 # --- Claude Code (keep shared settings.json tracked; ignore personal + local) ---
 .claude/settings.local.json
 
+# --- Personal CMake presets (see CMakeUserPresets.json.example) ---
+/CMakeUserPresets.json
+
 # --- Local-only working notes (not for the repo, for now) ---
 /PROJECT-STATUS.md
