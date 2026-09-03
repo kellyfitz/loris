@@ -34,9 +34,7 @@
  *
  */
 
-#include "Notifier.h"
 #include "Partial.h"
-#include "PtrCopyOnWrite.h"
 
 #include <functional>
 #include <list>
@@ -44,24 +42,6 @@
 //	begin namespace
 namespace Loris
 {
-
-// ---------------------------------------------------------------------------
-//	clone (non-member)
-// ---------------------------------------------------------------------------
-//! Cloning operation used by the reference-counting copy-on-write pointer
-//! class that is used to maintain the std::list and avoid unnecessary
-//! copying. Specialization of the template cone function in PtrCopyOnWrite.h.
-//! This is the operation that is invoked when the underlying container needs
-//! to be duplicated, any time non-const access is required of a shared
-//! instance.
-//
-template <>
-inline std::list<Partial> *
-clone<std::list<Partial>>(const std::list<Partial> *tp)
-{
-    debugger << " +++ cloning list of " << tp->size() << " Partials" << endl;
-    return new std::list<Partial>(*tp);
-}
 
 // ---------------------------------------------------------------------------
 //	class PartialList
@@ -80,13 +60,11 @@ class PartialList
     //  --- private types ---
 
     typedef std::list<Partial> list_of_Partials_type;
-    typedef Ptr<list_of_Partials_type> list_ptr_type;
 
     //  --- member variables ---
 
-    //! Smart pointer with copy-on-write behavior, wrapping the
-    //! underlying container of Partials.
-    list_ptr_type mList;
+    //! The underlying container of Partials.
+    list_of_Partials_type mList;
 
   public:
     //  --- types ---
@@ -100,38 +78,41 @@ class PartialList
 
     //  --- lifecycle ---
 
-    //!  Construct an empty PartialList
-    PartialList(void);
+    //!  Construct an empty PartialList.
+    //!
+    //!  Must be declared explicitly: the template range constructor below
+    //!  counts as a user-declared constructor, which suppresses the
+    //!  implicitly-generated default constructor.
+    PartialList(void) = default;
 
     //! Construct a PartialList containing copies of the Partials in the
-    //! range [b,e). Partials in the specified range are copied (immediately),
-    //! not shared through the smart pointer.
+    //! range [b,e).
     //!
     //! Same as std::list range constructor.
     template <class InIt>
     PartialList(InIt b, InIt e) :
-        mList(new list_of_Partials_type(b, e))
+        mList(b, e)
     {
     }
 
-    //! Construct a PartialList that is a copy of another.
-    //! Partials are not immediately copied, the underlying
-    //! container is shared throught the smart pointer until
-    //! non-const access is required (through any non-const
-    //! member function).
-    PartialList(const PartialList &rhs);
+    //! Construct a PartialList that is a copy of another. The Partials
+    //! are copied immediately.
+    PartialList(const PartialList &rhs) = default;
 
-    //! Destroy a PartialList. The underlying container is
-    //! destroyed only if it is not referenced by any other
-    //! PartialList.
-    ~PartialList(void);
+    //! Assign the contents of a PartialList to this PartialList. The
+    //! Partials are copied immediately.
+    PartialList &operator=(const PartialList &rhs) = default;
 
-    //! Assign the contents of a PartialList to this PartialList.
-    //! Partials are not immediately copied, the underlying
-    //! container is shared throught the smart pointer until
-    //! non-const access is required (through any non-const
-    //! member function).
-    PartialList &operator=(const PartialList &rhs);
+    //! Construct a PartialList by taking over the contents of another,
+    //! which is left empty. No Partials are copied.
+    PartialList(PartialList &&rhs) = default;
+
+    //! Take over the contents of another PartialList, which is left
+    //! empty. No Partials are copied.
+    PartialList &operator=(PartialList &&rhs) = default;
+
+    //! Destroy a PartialList and the Partials it contains.
+    ~PartialList(void) = default;
 
     //  --- access and mutation ---
 
@@ -158,26 +139,26 @@ class PartialList
     iterator
     begin(void)
     {
-        return mList->begin();
+        return mList.begin();
     }
     //! Same as the corresponding member of std::list.
     iterator
     end(void)
     {
-        return mList->end();
+        return mList.end();
     }
 
     //! Same as the corresponding member of std::list.
     const_iterator
     begin(void) const
     {
-        return mList->begin();
+        return mList.begin();
     }
     //! Same as the corresponding member of std::list.
     const_iterator
     end(void) const
     {
-        return mList->end();
+        return mList.end();
     }
 
     //  container access and mutation
@@ -186,46 +167,46 @@ class PartialList
     Partial &
     front(void)
     {
-        return mList->front();
+        return mList.front();
     }
     //! Same as the corresponding member of std::list.
     const Partial &
     front(void) const
     {
-        return mList->front();
+        return mList.front();
     }
 
     //! Same as the corresponding member of std::list.
     Partial &
     back(void)
     {
-        return mList->back();
+        return mList.back();
     }
     //! Same as the corresponding member of std::list.
     const Partial &
     back(void) const
     {
-        return mList->back();
+        return mList.back();
     }
 
     //! Same as the corresponding member of std::list.
     void
     push_back(const Partial &val)
     {
-        mList->push_back(val);
+        mList.push_back(val);
     }
     //! Same as the corresponding member of std::list.
     void
     push_front(const Partial &val)
     {
-        mList->push_front(val);
+        mList.push_front(val);
     }
 
     //! Same as the corresponding member of std::list.
     iterator
     insert(iterator where, const Partial &val)
     {
-        return mList->insert(where, val);
+        return mList.insert(where, val);
     }
 
     //! Same as the corresponding member of std::list.
@@ -233,33 +214,28 @@ class PartialList
     void
     insert(iterator where, InIt first, InIt last)
     {
-        mList->insert(where, first, last);
+        mList.insert(where, first, last);
     }
 
     //! Same as the corresponding member of std::list.
     iterator
     erase(iterator where)
     {
-        return mList->erase(where);
+        return mList.erase(where);
     }
 
     //! Same as the corresponding member of std::list.
     iterator
     erase(iterator first, iterator last)
     {
-        return mList->erase(first, last);
+        return mList.erase(first, last);
     }
 
     //! Same as the corresponding member of std::list.
     void
     clear(void)
     {
-        // mList->clear();
-        //   possibly more efficient to construct a new list, if the
-        //   Partials are shared with another PartialList, clear will
-        //   trigger a copy immediately before erasing all of the
-        //   Partials.
-        mList = list_ptr_type(new list_of_Partials_type);
+        mList.clear();
     }
 
     //  query
@@ -268,14 +244,14 @@ class PartialList
     bool
     empty(void) const
     {
-        return mList->empty();
+        return mList.empty();
     }
 
     //! Same as the corresponding member of std::list.
     size_type
     size(void) const
     {
-        return mList->size();
+        return mList.size();
     }
 
     //  sorting
@@ -285,7 +261,7 @@ class PartialList
     void
     sort(Comparitor c)
     {
-        mList->sort(c);
+        mList.sort(c);
     }
 
     //  splicing
@@ -307,7 +283,7 @@ class PartialList
     void
     splice(iterator pos, PartialList &other)
     {
-        mList->splice(pos, *other.mList);
+        mList.splice(pos, other.mList);
     }
 
     //! Same as the corresponding member of std::list.
@@ -330,7 +306,7 @@ class PartialList
     void
     splice(iterator pos, PartialList &other, iterator first)
     {
-        mList->splice(pos, *other.mList, first);
+        mList.splice(pos, other.mList, first);
     }
 
     //! Same as the corresponding member of std::list.
@@ -355,7 +331,7 @@ class PartialList
     void
     splice(iterator pos, PartialList &other, iterator first, iterator last)
     {
-        mList->splice(pos, *other.mList, first, last);
+        mList.splice(pos, other.mList, first, last);
     }
 
 }; //   end of class PartialList

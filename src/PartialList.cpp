@@ -33,69 +33,13 @@
 
 #include "PartialList.h"
 
-#include "Notifier.h"
-
 //	begin namespace
 namespace Loris
 {
 
-// ---------------------------------------------------------------------------
-//	constructor (default)
-// ---------------------------------------------------------------------------
-//! Construct an empty PartialList
-//
-PartialList::PartialList(void) :
-    mList(new list_of_Partials_type)
-{
-    // debugger << " -- PartialList default constructor" << endl;
-}
-
-// ---------------------------------------------------------------------------
-//	constructor (copy)
-// ---------------------------------------------------------------------------
-//! Construct a PartialList that is a copy of another.
-//! Partials are not immediately copied, the underlying
-//! container is shared throught the smart pointer until
-//! non-const access is required (through any non-const
-//! member function).
-//
-PartialList::PartialList(const PartialList &rhs) :
-    mList(rhs.mList)
-{
-    // debugger << " -- PartialList copy " << rhs.size() << " Partials" << endl;
-}
-
-// ---------------------------------------------------------------------------
-//	destructor
-// ---------------------------------------------------------------------------
-//! Destroy a PartialList. The underlying container is
-//! destroyed only if it is not referenced by any other
-//! PartialList.
-//
-PartialList::~PartialList(void)
-{
-    // debugger << " -- PartialList destroy " << size() << " Partials" << endl;
-}
-
-// ---------------------------------------------------------------------------
-//	operator= (assignment)
-// ---------------------------------------------------------------------------
-//! Assign the contents of a PartialList to this PartialList.
-//! Partials are not immediately copied, the underlying
-//! container is shared throught the smart pointer until
-//! non-const access is required (through any non-const
-//! member function).
-//
-PartialList &
-PartialList::operator=(const PartialList &rhs)
-{
-    // debugger << " -- PartialList assign " << rhs.size() << " Partials" <<
-    // endl;
-
-    mList = rhs.mList;
-
-    return *this;
-}
+//	The default constructor, copy and move constructors, copy and move
+//	assignment operators, and destructor are all defaulted in PartialList.h;
+//	std::list provides the correct behavior for each.
 
 // ---------------------------------------------------------------------------
 //	extract
@@ -114,11 +58,7 @@ PartialList
 PartialList::extract(iterator b, iterator e)
 {
     PartialList ret;
-    ret.mList->splice(ret.begin(), *mList, b, e);
-
-    // debugger << " -- PartialList extract " << ret.size() << " Partials" <<
-    // endl;
-
+    ret.mList.splice(ret.mList.begin(), mList, b, e);
     return ret;
 }
 

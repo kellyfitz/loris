@@ -58,6 +58,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
@@ -304,8 +305,8 @@ PartialBuilder::buildPartials(Peaks &peaks, double frameTime)
 PartialList
 PartialBuilder::finishBuilding(void)
 {
-    //  return the collected Partials:
-    PartialList product = mCollectedPartials;
+    //  hand over the collected Partials, rather than copying them:
+    PartialList product = std::move(mCollectedPartials);
 
     //  reset the builder state:
     mCollectedPartials.clear();
