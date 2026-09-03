@@ -23,9 +23,14 @@
  *  test_Distiller.cpp
  *
  *  Unit tests for Distiller class. Relies on Breakpoint,
- *  Partial, PartialList and Loris Exceptions. Build with
- *  Partial.C, Breakpoint.C, Exception.C, Distiller.C
- *  and Notifier.C.
+ *  Partial, PartialList and Loris Exceptions.
+ *
+ *  Registered with CTest in test/CMakeLists.txt, and linked
+ *  against the Loris library, so no source list is needed.
+ *  Build and run the suite with:
+ *
+ *      cmake --build build
+ *      ctest --test-dir build
  *
  * Kelly Fitz, 17 April 2003
  * loris@cerlsoundgroup.org

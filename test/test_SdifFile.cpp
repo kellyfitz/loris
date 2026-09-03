@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *	test_Sdif.C
+ *	test_SdifFile.cpp
  *
  *	Unit tests for SDIF import and export.
  *

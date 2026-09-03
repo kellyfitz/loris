@@ -20,11 +20,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * loris_synthesize.C
+ * loris_dilate.cpp
  *
- * main() function for a utility program to render Partials
- * stored in a SDIF file, optionally with dilation and amplitude
- * and frequency scaling by a constant factor.
+ * main() function for a utility program to process Partials
+ * stored in a SDIF file with dilation, and optionally amplitude
+ * and frequency scaling by a constant factor. Processed Partials
+ * are written to the output SDIF file specified by Outname.
  *
  * Kelly Fitz, 20 Dec 2004
  * loris@cerlsoundgroup.org
