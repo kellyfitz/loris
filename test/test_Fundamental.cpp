@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *  test_Fundamental.C
+ *  test_Fundamental.cpp
  *
  *  Unit tests for Distiller class. Relies on Breakpoint,
  *  Partial, PartialList and Loris Exceptions. Build with

@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * AssociateBandwidth.C
+ * AssociateBandwidth.cpp
  *
  * Implementation of a class representing a policy for associating noise
  * (bandwidth) energy with reassigned spectral peaks to be used in

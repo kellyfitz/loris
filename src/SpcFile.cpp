@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * SpcFile.C
+ * SpcFile.cpp
  *
  * Implementation of SpcFile class for Partial import and export for
  * real-time synthesis in Kyma.

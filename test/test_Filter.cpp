@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *  test_Filter.C
+ *  test_Filter.cpp
  *
  *  Verify that the digital filter class (Filter) is working correctly.
  *

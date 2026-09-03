@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * FourierTransform.C
+ * FourierTransform.cpp
  *
  * Implementation of class Loris::FourierTransform, providing a simplified
  * uniform interface to the FFTW library (www.fftw.org), version 2.1.3

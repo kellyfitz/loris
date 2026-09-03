@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * Fundamental.C
+ * Fundamental.cpp
  *
  * Definition of classes for computing an estimate of time-varying
  * fundamental frequency from either a sequence of samples or a

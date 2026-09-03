@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * loris_spewmarkers.C
+ * loris_spewmarkers.cpp
  *
  * main() function for a utility program to read the
  * markers stored in a AIFF, SPC, or SDIF file and

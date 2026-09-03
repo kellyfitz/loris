@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * Synthesizer.C
+ * Synthesizer.cpp
  *
  * Implementation of class Loris::SynthesizerSynthesizer, a synthesizer of
  * bandwidth-enhanced Partials.
@@ -417,7 +417,7 @@ Synthesizer::filter(void)
 //  Synthesizer::Parameters default constructor
 // ---------------------------------------------------------------------------
 //! Assign default initial values to the Synthesizer parameters, Filter
-//! defaults are defined in Oscillator.C.
+//! defaults are defined in Oscillator.cpp.
 
 static const double Default_FadeTime_Ms = 1;
 static const double Default_SampleRate_Hz = 44100;

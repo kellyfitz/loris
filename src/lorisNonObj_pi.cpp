@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *	lorisNonObj_pi.C
+ *	lorisNonObj_pi.cpp
  *
  *	A component of the C-linkable procedural interface for Loris.
  *

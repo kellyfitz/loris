@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * loris_synthesize.C
+ * loris_synthesize.cpp
  *
  * main() function for a utility program to render Partials
  * stored in a SDIF file, optionally with dilation and amplitude

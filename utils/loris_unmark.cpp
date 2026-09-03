@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * loris_unmark.C
+ * loris_unmark.cpp
  *
  * main() function for a utility program to remove a
  * marker or markers from a AIFF, SPC, or SDIF file.

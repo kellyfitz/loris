@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *	test_Partial.C
+ *	test_Partial.cpp
  *
  *	Unit tests for Partial class. Relies on Breakpoint,
  *	Partial::iterator, and Loris Exceptions. Build with

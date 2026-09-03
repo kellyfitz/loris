@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * Oscillator.C
+ * Oscillator.cpp
  *
  * Implementation of class Loris::Oscillator, a Bandwidth-Enhanced Oscillator.
  *

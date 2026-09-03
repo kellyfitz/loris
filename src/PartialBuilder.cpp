@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * PartialBuilder.C
+ * PartialBuilder.cpp
  *
  * Implementation of a class representing a policy for connecting peaks
  * extracted from a reassigned time-frequency spectrum to form ridges

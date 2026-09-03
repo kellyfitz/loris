@@ -256,7 +256,7 @@ class Synthesizer
         //  default constructor
         //
         //!	Assign default initial values to the Synthesizer parameters, Filter
-        //!	defaults are defined in Filter.C, others in Synthesizer.C.
+        //!	defaults are defined in Filter.cpp, others in Synthesizer.cpp.
         Parameters(void);
 
         //	copy, assign, and destroy are free

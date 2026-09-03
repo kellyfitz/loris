@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *  test_Morpher.C
+ *  test_Morpher.cpp
  *
  *  Unit test for Morpher class. Relies on Partial, Breakpoint, and
  * BreakpointEnvelope, and Loris Exceptions.

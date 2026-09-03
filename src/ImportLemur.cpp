@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * ImportLemur.C
+ * ImportLemur.cpp
  *
  * Implementation of class Loris::ImportLemur for importing Partials stored
  * in Lemur 5 alpha files.
