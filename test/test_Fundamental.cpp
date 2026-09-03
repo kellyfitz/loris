@@ -22,8 +22,10 @@
  *
  *  test_Fundamental.cpp
  *
- *  Unit tests for Distiller class. Relies on Breakpoint,
- *  Partial, PartialList and Loris Exceptions.
+ *  Unit tests for the fundamental frequency estimators,
+ *  FundamentalFromPartials and FundamentalFromSamples. Relies on
+ *  Analyzer, AiffFile, SdifFile, Partial, PartialList and
+ *  LinearEnvelope.
  *
  *  Registered with CTest in test/CMakeLists.txt, and linked
  *  against the Loris library, so no source list is needed.
