@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * PartialBuilder.C
+ * PartialBuilder.cpp
  *
  * Implementation of a class representing a policy for connecting peaks
  * extracted from a reassigned time-frequency spectrum to form ridges
@@ -58,6 +58,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
@@ -304,8 +305,8 @@ PartialBuilder::buildPartials(Peaks &peaks, double frameTime)
 PartialList
 PartialBuilder::finishBuilding(void)
 {
-    //  return the collected Partials:
-    PartialList product = mCollectedPartials;
+    //  hand over the collected Partials, rather than copying them:
+    PartialList product = std::move(mCollectedPartials);
 
     //  reset the builder state:
     mCollectedPartials.clear();

@@ -20,12 +20,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *  test_Fundamental.C
+ *  test_Fundamental.cpp
  *
- *  Unit tests for Distiller class. Relies on Breakpoint,
- *  Partial, PartialList and Loris Exceptions. Build with
- *  Partial.C, Breakpoint.C, Exception.C, Distiller.C
- *  and Notifier.C.
+ *  Unit tests for the fundamental frequency estimators,
+ *  FundamentalFromPartials and FundamentalFromSamples. Relies on
+ *  Analyzer, AiffFile, SdifFile, Partial, PartialList and
+ *  LinearEnvelope.
+ *
+ *  Registered with CTest in test/CMakeLists.txt, and linked
+ *  against the Loris library, so no source list is needed.
+ *  Build and run the suite with:
+ *
+ *      cmake --build build
+ *      ctest --test-dir build
  *
  * Kelly Fitz, 29 Mar 2008
  * loris@cerlsoundgroup.org

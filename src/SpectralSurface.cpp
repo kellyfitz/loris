@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * SpectralSurface.C
+ * SpectralSurface.cpp
  *
  * Implementation of class SpectralSurface, a class representing
  * a smoothed time-frequency surface that can be used to

@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * Resampler.C
+ * Resampler.cpp
  *
  * Implementation of class Resampler, for converting reassigned Partial
  * envelopes into more conventional additive synthesis envelopes, having data

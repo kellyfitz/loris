@@ -100,7 +100,7 @@ class Partial
     typedef std::map<double, Breakpoint> container_type;
 
     //	typedef std::vector< std::pair< double, Breakpoint > > container_type;
-    //	see Partial.C for a discussion of issues surrounding the
+    //	see Partial.cpp for a discussion of issues surrounding the
     //	choice of std::map as a Breakpoint container.
 
     //! 32 bit type for labeling Partials
@@ -359,7 +359,7 @@ class Partial
     //!	errors in the least significant bit of a 48-bit mantissa for times
     //!	up to ten hours.
     //!
-    //!	1 nanosecond, see Partial.C
+    //!	1 nanosecond, see Partial.cpp
     static const double ShortestSafeFadeTime;
 
     //!	Return the interpolated amplitude of this Partial at the

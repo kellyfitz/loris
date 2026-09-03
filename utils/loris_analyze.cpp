@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * loris_analyze.C
+ * loris_analyze.cpp
  *
  * main() function for a utility program to perform Loris analysis
  * of a sampled sound (read from an AIFF file or from standard input),

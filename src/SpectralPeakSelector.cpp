@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * SpectralPeakSelector.C
+ * SpectralPeakSelector.cpp
  *
  * Implementation of a class representing a policy for selecting energy
  * peaks in a reassigned spectrum to be used in Partial formation.

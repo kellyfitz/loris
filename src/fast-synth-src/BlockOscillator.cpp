@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * BlockOscillator.C
+ * BlockOscillator.cpp
  *
  * Implementation of class Loris::BlockOscillator, a Bandwidth-Enhanced
  * wavetable oscillator that uses a fixed block (frame) size (generates

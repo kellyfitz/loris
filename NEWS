@@ -25,6 +25,17 @@ Loris is Copyright (c) 1999-2026 by Kelly Fitz and Lippold Haken.
 History of visible changes, organized by release number:
 
 -------------------------------------------------------
+Loris 2.1 (in development), changes since the 2.0 release:
+
+- PartialList now holds its std::list of Partials directly, and has
+move construction and move assignment. The hand-rolled reference-
+counting copy-on-write pointer it used to be built on (PtrCopyOnWrite.h,
+written in 2011, before C++11 move semantics existed) is removed, and is
+no longer installed. Copying a PartialList -- including through the C
+interface's partialList_copy -- now copies the Partials immediately
+rather than deferring the copy until the list is next modified.
+
+-------------------------------------------------------
 Loris 2.0 (2026-07-27), changes since the 1.9 release:
 
 - Replaced the autotools (configure/automake/libtool) build system with

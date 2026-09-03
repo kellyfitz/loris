@@ -1,4 +1,4 @@
-//  test_FastSynth.C
+//  test_FastSynth.cpp
 //
 //  Comparison harness for the fast block synthesizer (fastsynth) against
 //  the standard Loris Synthesizer.

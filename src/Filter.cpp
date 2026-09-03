@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * Filter.C
+ * Filter.cpp
  *
  * Implementation of class Loris::Filter, a generic digital filter of
  * arbitrary order having both feed-forward and feedback coefficients.

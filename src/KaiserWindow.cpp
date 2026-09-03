@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * KaiserWindow.C
+ * KaiserWindow.cpp
  *
  * Implementation of class Loris::KaiserWindow.
  *

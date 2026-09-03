@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * F0Estimate.C
+ * F0Estimate.cpp
  *
  * Implementation of an iterative alrogithm for computing an
  * estimate of fundamental frequency from a sequence of sinusoidal

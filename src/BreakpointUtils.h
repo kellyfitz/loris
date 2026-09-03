@@ -77,7 +77,7 @@ addNoiseEnergy(Breakpoint &bp, double enoise)
 //!			to that of bp, and phase computed back from that of bp
 //
 Breakpoint makeNullBefore(const Breakpoint &bp,
-                          double fadeTime); // see BreakpointUtils.C
+                          double fadeTime); // see BreakpointUtils.cpp
 
 // ---------------------------------------------------------------------------
 //	addNoiseEnergy
@@ -92,7 +92,7 @@ Breakpoint makeNullBefore(const Breakpoint &bp,
 //!			to that of bp, and phase computed forward from that of bp
 //
 Breakpoint makeNullAfter(const Breakpoint &bp,
-                         double fadeTime); // see BreakpointUtils.C
+                         double fadeTime); // see BreakpointUtils.cpp
 
 //	-- predicates --
 

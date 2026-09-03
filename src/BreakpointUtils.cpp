@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * BreakpointUtils.C
+ * BreakpointUtils.cpp
  *
  * Out-of-line Breakpoint utility functions collected in namespace
  * BreakpointUtils.

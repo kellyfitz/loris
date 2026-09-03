@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * NoiseGenerator.C
+ * NoiseGenerator.cpp
  *
  * Implementation of a class representing a gaussian noise generator, filtered
  * and used as a modulator in bandwidth-enhanced synthesis.

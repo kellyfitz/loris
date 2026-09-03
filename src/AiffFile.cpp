@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * AiffFile.C
+ * AiffFile.cpp
  *
  * Implementation of AiffFile class for sample import and export in Loris.
  *

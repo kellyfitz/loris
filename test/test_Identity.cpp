@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *	test_Identity.C
+ *	test_Identity.cpp
  *
  *	Verify that Loris synthesis/analysis is an (nearly) identity
  *  process. Analysis of samples rendered from synthetic Partials

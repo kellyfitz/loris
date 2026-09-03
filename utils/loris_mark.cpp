@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * loris_mark.C
+ * loris_mark.cpp
  *
  * main() function for a utility program to add a
  * marker to a AIFF, SPC, or SDIF file.

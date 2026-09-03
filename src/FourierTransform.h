@@ -43,7 +43,7 @@
 namespace Loris
 {
 
-//  insulating implementation class, defined in FourierTransform.C
+//  insulating implementation class, defined in FourierTransform.cpp
 class FTimpl;
 
 // ---------------------------------------------------------------------------
@@ -216,7 +216,7 @@ class FourierTransform
     std::vector<std::complex<double>> _buffer;
 
     // insulating implementation instance (defined in
-    // FourierTransform.C), conceals interface to FFTW
+    // FourierTransform.cpp), conceals interface to FFTW
     FTimpl *_impl;
 
 }; //	end of class FourierTransform

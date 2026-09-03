@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *	lorisUtilities_pi.C
+ *	lorisUtilities_pi.cpp
  *
  *	A component of the C-linkable procedural interface for Loris.
  *
