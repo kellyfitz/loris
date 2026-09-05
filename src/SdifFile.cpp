@@ -1100,7 +1100,7 @@ typedef struct
 } RowOfLorisData32;
 
 //  SDIF signatures used by Loris.
-typedef char sdif_signature[4];
+using sdif_signature = char[4];
 static sdif_signature lorisEnhancedSignature = {'R', 'B', 'E', 'P'};
 static sdif_signature lorisLabelsSignature = {'R', 'B', 'E', 'L'};
 static sdif_signature lorisSineOnlySignature = {'1', 'T', 'R', 'C'};
