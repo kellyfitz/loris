@@ -113,18 +113,18 @@ typedef double sdif_float64;
 // ---------------------------------------------------------------------------
 //	SDIF_GlobalHeader
 // ---------------------------------------------------------------------------
-typedef struct
+struct SDIF_GlobalHeader
 {
     char SDIF[4];    /* must be 'S', 'D', 'I', 'F' */
     sdif_int32 size; /* size of header frame, not including SDIF or size. */
     sdif_int32 SDIFversion;
     sdif_int32 SDIFStandardTypesVersion;
-} SDIF_GlobalHeader;
+};
 
 // ---------------------------------------------------------------------------
 //	SDIF_FrameHeader
 // ---------------------------------------------------------------------------
-typedef struct
+struct SDIF_FrameHeader
 {
     char frameType[4];      /* should be a registered frame type */
     sdif_int32 size;        /* # bytes in this frame, not including
@@ -132,18 +132,18 @@ typedef struct
     sdif_float64 time;      /* time corresponding to frame */
     sdif_int32 streamID;    /* frames that go together have the same ID */
     sdif_int32 matrixCount; /* number of matrices in frame */
-} SDIF_FrameHeader;
+};
 
 // ---------------------------------------------------------------------------
 //	SDIF_MatrixHeader
 // ---------------------------------------------------------------------------
-typedef struct
+struct SDIF_MatrixHeader
 {
     char matrixType[4];
     sdif_int32 matrixDataType;
     sdif_int32 rowCount;
     sdif_int32 columnCount;
-} SDIF_MatrixHeader;
+};
 
 /* Version numbers for SDIF_GlobalHeader associated with this library */
 #define SDIF_SPEC_VERSION 3
@@ -1087,17 +1087,17 @@ int lorisRowMaxElements = 7;
 int lorisRowEnhancedElements = 6;
 int lorisRowSineOnlyElements = 4;
 
-typedef struct
+struct RowOfLorisData64
 {
     sdif_float64 index, freqOrLabel, amp, phase, noise, timeOffset,
         resampledFlag;
-} RowOfLorisData64;
+};
 
-typedef struct
+struct RowOfLorisData32
 {
     sdif_float32 index, freqOrLabel, amp, phase, noise, timeOffset,
         resampledFlag;
-} RowOfLorisData32;
+};
 
 //  SDIF signatures used by Loris.
 using sdif_signature = char[4];
