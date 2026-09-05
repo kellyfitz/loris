@@ -76,7 +76,7 @@ using namespace Loris;
 
 struct CallWithPointer
 {
-    typedef void (*Func)(Partial *, void *);
+    using Func = void (*)(Partial *, void *);
     Func func;
     void *data;
 
@@ -95,7 +95,7 @@ struct CallWithPointer
 
 struct PredWithPointer
 {
-    typedef int (*Pred)(const Partial *, void *);
+    using Pred = int (*)(const Partial *, void *);
     Pred pred;
     void *data;
 

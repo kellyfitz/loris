@@ -270,27 +270,27 @@ Morpher::morphPartials(Partial src, Partial tgt, int assignLabel)
 //    helper - GetMorphState
 // ---------------------------------------------------------------------------
 
-typedef enum
+enum class MorphState
 {
     SRC = 0,
     TGT,
     INTERP
-} MorphState;
+};
 
 static inline MorphState
 GetMorphState(double fweight)
 {
     if (fweight <= 0)
     {
-        return SRC;
+        return MorphState::SRC;
     }
     else if (fweight >= 1)
     {
-        return TGT;
+        return MorphState::TGT;
     }
     else
     {
-        return INTERP;
+        return MorphState::INTERP;
     }
 }
 
@@ -323,7 +323,7 @@ Morpher::fixMorphedPhases(Partial &newp) const
             if (nxtstate != curstate)
             {
                 //  switch!
-                if (INTERP != curstate)
+                if (MorphState::INTERP != curstate)
                 {
                     // switch to INTERP
                     fixPhaseForward(lastPosCorrect, bppos);

@@ -37,15 +37,15 @@
 #include <string>
 #include <vector>
 
+//	begin namespace
+namespace Loris
+{
+
 //	exact-width integer types for parsing AIFF data
 typedef std::int16_t Int_16;
 typedef std::uint16_t Uint_16;
 typedef std::int32_t Int_32;
 typedef std::uint32_t Uint_32;
-
-//	begin namespace
-namespace Loris
-{
 
 //	-- chunk types --
 //	chunk IDs are always exactly 4 bytes in the file format
