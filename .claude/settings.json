@@ -43,6 +43,7 @@
       "Bash(awk *)",
       "Bash(sed -n *)",
       "Bash(diff *)",
+      "Bash(md5 *)",
       "Bash(file *)",
       "Bash(basename *)",
       "Bash(dirname *)",
