@@ -47,89 +47,89 @@
 #include <fstream>
 #include <string>
 
-//	exact-width types for parsing Lemur file data
-typedef std::int16_t Int_16;
-typedef std::uint16_t Uint_16;
-typedef std::int32_t Int_32;
-typedef std::uint32_t Uint_32;
-
-typedef float Float_32;
-typedef double Double_64;
-
 const double Pi = M_PI;
 
 //	begin namespace
 namespace Loris
 {
 
+//	exact-width types for parsing Lemur file data
+typedef std::int16_t lemur_int16;
+typedef std::uint16_t lemur_uint16;
+typedef std::int32_t lemur_int32;
+typedef std::uint32_t lemur_uint32;
+
+typedef float lemur_float32;
+typedef double lemur_float64;
+
 //	-- types and ids --
 //	chunk IDs are always exactly 4 bytes in the file format
-constexpr Int_32 ContainerId = 0x464f524d;      // 'FORM'
-constexpr Int_32 LEMR_ID = 0x4c454d52;          // 'LEMR'
-constexpr Int_32 AnalysisParamsID = 0x4c4d414e; // 'LMAN'
-constexpr Int_32 TrackDataID = 0x54524b53;      // 'TRKS'
-constexpr Int_32 FormatNumber = 4962;
+constexpr lemur_int32 ContainerId = 0x464f524d;      // 'FORM'
+constexpr lemur_int32 LEMR_ID = 0x4c454d52;          // 'LEMR'
+constexpr lemur_int32 AnalysisParamsID = 0x4c4d414e; // 'LMAN'
+constexpr lemur_int32 TrackDataID = 0x54524b53;      // 'TRKS'
+constexpr lemur_int32 FormatNumber = 4962;
 
 //	for reading and writing files, the exact sizes and
 //	alignments are critical.
-typedef Int_32 ID;
+typedef lemur_int32 lemur_ID;
 struct CkHeader
 {
-    Int_32 id;
-    Int_32 size;
+    lemur_int32 id;
+    lemur_int32 size;
 };
 
 struct ContainerCk
 {
     CkHeader header;
-    ID formType;
+    lemur_ID formType;
 };
 
 struct AnalysisParamsCk
 {
-    // Int_32 ckID;
-    // Int_32 ckSize;
+    // lemur_int32 ckID;
+    // lemur_int32 ckSize;
     CkHeader header;
 
-    Int_32 formatNumber;
-    Int_32 originalFormatNumber;
+    lemur_int32 formatNumber;
+    lemur_int32 originalFormatNumber;
 
-    Int_32 ftLength;     //	samples, transform length
-    Float_32 winWidth;   //	Hz, main lobe width
-    Float_32 winAtten;   //	dB, sidelobe attenuation
-    Int_32 hopSize;      //	samples, frame length
-    Float_32 sampleRate; // 	Hz, from analyzed sample
+    lemur_int32 ftLength;     //	samples, transform length
+    lemur_float32 winWidth;   //	Hz, main lobe width
+    lemur_float32 winAtten;   //	dB, sidelobe attenuation
+    lemur_int32 hopSize;      //	samples, frame length
+    lemur_float32 sampleRate; // 	Hz, from analyzed sample
 
-    Float_32 noiseFloor;     //	dB (negative)
-    Float_32 peakAmpRange;   //	dB, floating relative amplitde threshold
-    Float_32 maskingRolloff; //	dB/Hz, peak masking curve
-    Float_32 peakSeparation; //	Hz, minimum separation between peaks
-    Float_32 freqDrift;      //	Hz, maximum track freq drift over a frame
+    lemur_float32 noiseFloor;     //	dB (negative)
+    lemur_float32 peakAmpRange;   //	dB, floating relative amplitde threshold
+    lemur_float32 maskingRolloff; //	dB/Hz, peak masking curve
+    lemur_float32 peakSeparation; //	Hz, minimum separation between peaks
+    lemur_float32 freqDrift;      //	Hz, maximum track freq drift over a frame
 };
 
 struct TrackDataCk
 {
     CkHeader header;
-    Uint_32 numberOfTracks;
-    Int_32 trackOrder; // enumerated type
-                       // track data follows
+    lemur_uint32 numberOfTracks;
+    lemur_int32 trackOrder; // enumerated type
+                            // track data follows
 };
 
 struct TrackOnDisk
 {
-    Double_64 startTime; // in milliseconds
-    Float_32 initialPhase;
-    Uint_32 numPeaks;
-    Int_32 label;
+    lemur_float64 startTime; // in milliseconds
+    lemur_float32 initialPhase;
+    lemur_uint32 numPeaks;
+    lemur_int32 label;
 };
 
 struct PeakOnDisk
 {
-    Float_32 magnitude;
-    Float_32 frequency;
-    Float_32 interpolatedFrequency;
-    Float_32 bandwidth;
-    Double_64 ttn;
+    lemur_float32 magnitude;
+    lemur_float32 frequency;
+    lemur_float32 interpolatedFrequency;
+    lemur_float32 bandwidth;
+    lemur_float64 ttn;
 };
 
 //	prototypes for import helpers:
@@ -245,7 +245,7 @@ readContainer(std::istream &s)
             Throw(FileIOException, "Found no Container chunk.");
 
         //	read FORM type
-        BigEndian::read(s, 1, sizeof(ID), (char *)&ck.formType);
+        BigEndian::read(s, 1, sizeof(lemur_ID), (char *)&ck.formType);
     }
     catch (FileIOException &ex)
     {
@@ -365,8 +365,8 @@ getPartial(std::istream &s, PartialList &partials, double bweCutoff)
 static void
 readChunkHeader(std::istream &s, CkHeader &h)
 {
-    BigEndian::read(s, 1, sizeof(ID), (char *)&h.id);
-    BigEndian::read(s, 1, sizeof(Int_32), (char *)&h.size);
+    BigEndian::read(s, 1, sizeof(lemur_ID), (char *)&h.id);
+    BigEndian::read(s, 1, sizeof(lemur_int32), (char *)&h.size);
 }
 
 // ---------------------------------------------------------------------------
@@ -385,8 +385,8 @@ readTracksChunk(std::istream &s)
     try
     {
         //	found it, read it one field at a time:
-        BigEndian::read(s, 1, sizeof(Uint_32), (char *)&ck.numberOfTracks);
-        BigEndian::read(s, 1, sizeof(Int_32), (char *)&ck.trackOrder);
+        BigEndian::read(s, 1, sizeof(lemur_uint32), (char *)&ck.numberOfTracks);
+        BigEndian::read(s, 1, sizeof(lemur_int32), (char *)&ck.trackOrder);
     }
     catch (FileIOException &ex)
     {
@@ -411,20 +411,23 @@ readParamsChunk(std::istream &s)
     AnalysisParamsCk ck;
     try
     {
-        BigEndian::read(s, 1, sizeof(Int_32), (char *)&ck.formatNumber);
-        BigEndian::read(s, 1, sizeof(Int_32), (char *)&ck.originalFormatNumber);
+        BigEndian::read(s, 1, sizeof(lemur_int32), (char *)&ck.formatNumber);
+        BigEndian::read(s, 1, sizeof(lemur_int32),
+                        (char *)&ck.originalFormatNumber);
 
-        BigEndian::read(s, 1, sizeof(Int_32), (char *)&ck.ftLength);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.winWidth);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.winAtten);
-        BigEndian::read(s, 1, sizeof(Int_32), (char *)&ck.hopSize);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.sampleRate);
+        BigEndian::read(s, 1, sizeof(lemur_int32), (char *)&ck.ftLength);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&ck.winWidth);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&ck.winAtten);
+        BigEndian::read(s, 1, sizeof(lemur_int32), (char *)&ck.hopSize);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&ck.sampleRate);
 
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.noiseFloor);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.peakAmpRange);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.maskingRolloff);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.peakSeparation);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&ck.freqDrift);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&ck.noiseFloor);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&ck.peakAmpRange);
+        BigEndian::read(s, 1, sizeof(lemur_float32),
+                        (char *)&ck.maskingRolloff);
+        BigEndian::read(s, 1, sizeof(lemur_float32),
+                        (char *)&ck.peakSeparation);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&ck.freqDrift);
     }
     catch (FileIOException &ex)
     {
@@ -450,10 +453,10 @@ readTrackHeader(std::istream &s, TrackOnDisk &t)
 {
     try
     {
-        BigEndian::read(s, 1, sizeof(Double_64), (char *)&t.startTime);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&t.initialPhase);
-        BigEndian::read(s, 1, sizeof(Uint_32), (char *)&t.numPeaks);
-        BigEndian::read(s, 1, sizeof(Int_32), (char *)&t.label);
+        BigEndian::read(s, 1, sizeof(lemur_float64), (char *)&t.startTime);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&t.initialPhase);
+        BigEndian::read(s, 1, sizeof(lemur_uint32), (char *)&t.numPeaks);
+        BigEndian::read(s, 1, sizeof(lemur_int32), (char *)&t.label);
     }
     catch (FileIOException &ex)
     {
@@ -472,12 +475,12 @@ readPeakData(std::istream &s, PeakOnDisk &p)
 {
     try
     {
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&p.magnitude);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&p.frequency);
-        BigEndian::read(s, 1, sizeof(Float_32),
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&p.magnitude);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&p.frequency);
+        BigEndian::read(s, 1, sizeof(lemur_float32),
                         (char *)&p.interpolatedFrequency);
-        BigEndian::read(s, 1, sizeof(Float_32), (char *)&p.bandwidth);
-        BigEndian::read(s, 1, sizeof(Double_64), (char *)&p.ttn);
+        BigEndian::read(s, 1, sizeof(lemur_float32), (char *)&p.bandwidth);
+        BigEndian::read(s, 1, sizeof(lemur_float64), (char *)&p.ttn);
     }
     catch (FileIOException &ex)
     {
