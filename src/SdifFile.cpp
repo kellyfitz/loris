@@ -152,7 +152,7 @@ struct SDIF_MatrixHeader
 // ---------------------------------------------------------------------------
 //	Enumerations for type definitions in matrices.
 // ---------------------------------------------------------------------------
-typedef enum
+enum SDIF_MatrixDataType
 {
     SDIF_FLOAT32 = 0x0004,
     SDIF_FLOAT64 = 0x0008,
@@ -163,16 +163,16 @@ typedef enum
     SDIF_UTF8 = 0x0301,
     SDIF_BYTE = 0x0401,
     SDIF_NO_TYPE = -1
-} SDIF_MatrixDataType;
+};
 
-typedef enum
+enum SDIF_MatrixDataTypeHighOrder
 {
     SDIF_FLOAT = 0,
     SDIF_INT = 1,
     SDIF_UINT = 2,
     SDIF_TEXT = 3,
     SDIF_ARBITRARY = 4
-} SDIF_MatrixDataTypeHighOrder;
+};
 
 /* SDIF_GetMatrixDataTypeSize --
    Find the size in bytes of the data type indicated by "d" */
@@ -182,7 +182,7 @@ typedef enum
 // ---------------------------------------------------------------------------
 //	CNMAT SDIF error handling machinery.
 // ---------------------------------------------------------------------------
-typedef enum
+enum SDIFresult
 {
     ESDIF_SUCCESS = 0,
     ESDIF_SEE_ERRNO = 1,
@@ -199,7 +199,7 @@ typedef enum
     ESDIF_READ_FAILED = 12,
     ESDIF_OUT_OF_MEMORY = 13, /* Used only by sdif-mem.c */
     ESDIF_DUPLICATE_MATRIX_TYPE_IN_FRAME = 14
-} SDIFresult;
+};
 static const char *error_string_array[] = {
     "Everything's cool",
     "This program should display strerror(errno) instead of this string",
