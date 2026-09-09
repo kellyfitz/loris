@@ -931,6 +931,14 @@ writeSosEnvelopesChunk(std::ostream &s, const SosEnvelopesCk &ck)
         static const int InitPhaseLth = (LargestLabel + 8);
         Int_32 bogus[InitPhaseLth]; // obsolete initial phase array
         std::fill(bogus, bogus + InitPhaseLth, 0);
+
+        //  validPartials is a stream count, so it is twice the Partial
+        //  count in a bandwidth-enhanced file. configureExportStruct
+        //  bounds it; this is the backstop, because overrunning a local
+        //  array here smashes the caller's stack frame rather than
+        //  failing in any way the caller could see.
+        Assert(ck.validPartials + 1 < InitPhaseLth);
+
         bogus[ck.validPartials] = ck.resolution;
         bogus[ck.validPartials + 1] = ck.quasiHarmonic;
         BigEndian::write(s, InitPhaseLth, sizeof(Int_32), (char *)bogus);
@@ -1056,10 +1064,20 @@ configureExportStruct(const SpcFile::partials_type &plist, double midipitch,
     //  of log amp in packed spc format.
     spcEI.ampEpsilon = 2. * envExp(0x200);
 
-    // Max number of partials is due to (arbitrary) size of initPhase[].
-    if (spcEI.numPartials < 1 || spcEI.numPartials > LargestLabel)
-        Throw(FileIOException,
-              "Partials must be distilled and labeled between 1 and 512.");
+    //  The ceiling is on envelope streams, not Partials. The file holds
+    //  LargestLabel streams (the size of the obsolete initPhase[] array in
+    //  the SOSe chunk), and a bandwidth-enhanced Partial needs two of them:
+    //  one for sine magnitude and frequency, one for noise magnitude and
+    //  phase. Partial counts are padded to a power of two by growPartials,
+    //  so the effective limits are 256 sinusoidal or 128 enhanced Partials.
+    //
+    //  Guarding on numPartials alone let an enhanced export of more than
+    //  128 Partials through, and writeSosEnvelopesChunk then indexed
+    //  initPhase[] past its end and smashed the stack.
+    if (spcEI.numPartials < 1 ||
+        spcEI.numPartials * (spcEI.enhanced ? 2 : 1) > LargestLabel)
+        Throw(FileIOException, "Spc files hold at most 256 sinusoidal or 128 "
+                               "bandwidth-enhanced Partials.");
 
     // debugger << "startTime = " << spcEI.startTime << " endTime = " <<
     // spcEI.endTime

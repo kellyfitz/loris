@@ -45,6 +45,7 @@ loris_add_test(test_morpher test_Morpher.cpp)
 loris_add_test(test_partial test_Partial.cpp)
 loris_add_test(test_resample test_Resampler.cpp)
 loris_add_test(test_sdiffile test_SdifFile.cpp)
+loris_add_test(test_spcfile test_SpcFile.cpp)
 loris_add_test(test_synthesizer test_Synthesizer.cpp)
 
 # Python module test: morphtest.py against the just-built module in
