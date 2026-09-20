@@ -203,22 +203,28 @@ class Partial
 
     //!	Return an iterator refering to the insertion position for a
     //!	Breakpoint at the specified time (that is, the position of the first
-    //!	Breakpoint at a time later than the specified time).
+    //!	Breakpoint at a time not earlier than the specified time). A
+    //!	Breakpoint at exactly the specified time is that position, and is
+    //!	not skipped.
     //!
     //!	\param	time is the time in seconds to find
-    //!	\return The last position (iterator) at which a Breakpoint at the
+    //!	\return	The first position (iterator) at which a Breakpoint at the
     //!			specified time could be inserted (the position of the
-    //!			first Breakpoint later than time).
+    //!			first Breakpoint not earlier than time), or end() if every
+    //!			Breakpoint in this Partial is earlier than time.
     iterator findAfter(double time);
 
     //!	Return a const iterator refering to the insertion position for a
     //!	Breakpoint at the specified time (that is, the position of the first
-    //!	Breakpoint at a time later than the specified time).
+    //!	Breakpoint at a time not earlier than the specified time). A
+    //!	Breakpoint at exactly the specified time is that position, and is
+    //!	not skipped.
     //!
     //!	\param	time is the time in seconds to find
-    //!	\return The last position (iterator) at which a Breakpoint at the
+    //!	\return	The first position (iterator) at which a Breakpoint at the
     //!			specified time could be inserted (the position of the
-    //!			first Breakpoint later than time).
+    //!			first Breakpoint not earlier than time), or end() if every
+    //!			Breakpoint in this Partial is earlier than time.
     const_iterator findAfter(double time) const;
 
     //!	Breakpoint insertion: insert a copy of the specified Breakpoint in the
