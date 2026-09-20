@@ -41,9 +41,14 @@
 
 #include "Exception.h"
 #include "Partial.h"
+#include "PartialList.h"
+#include "Synthesizer.h"
 
 #include <cmath>
 #include <iostream>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 using namespace Loris;
 using namespace std;
@@ -379,13 +384,265 @@ test_split(void)
     }
 }
 
+// ----------- helpers for the move and sink tests -----------
+//
+//	Two different things can be asked about a pair of Partials, and they
+//	are not the same question:
+//
+//	  equivalence -- the two have the same label, and Breakpoints at the
+//	                 same times carrying the same parameters;
+//	  identity    -- the two share the very same Breakpoint objects, one
+//	                 having taken over the other's envelope storage.
+//
+//	Equivalence is the question to ask of a Partial that is supposed not
+//	to have changed. Identity is the question to ask of a move: a move
+//	and a copy leave equivalent results behind, and only the transfer of
+//	the storage tells them apart, so equivalence alone cannot show that a
+//	move is a move.
+
+static const int MOVE_NUM_BPTS = 4;
+static const double MOVE_TIMES[] = {.1, .25, .4, .55};
+static const double MOVE_FREQS[] = {310, 305, 312, 308};
+static const double MOVE_AMPS[] = {.2, .35, .3, .15};
+static const double MOVE_BWS[] = {0, .1, .25, .05};
+static const double MOVE_PHS[] = {-.8, .4, 1.1, -.3};
+static const Partial::label_type MOVE_LABEL = 7;
+
+static Partial
+make_test_partial(void)
+{
+    Partial p;
+    for (int i = 0; i < MOVE_NUM_BPTS; ++i)
+    {
+        p.insert(MOVE_TIMES[i], Breakpoint(MOVE_FREQS[i], MOVE_AMPS[i],
+                                           MOVE_BWS[i], MOVE_PHS[i]));
+    }
+    p.setLabel(MOVE_LABEL);
+    return p;
+}
+
+//	Return a token identifying a Partial's Breakpoint storage: the address
+//	of its first Breakpoint.
+//
+//	Moving a Partial has to be a constant time operation, so it cannot
+//	rebuild the Breakpoint map; it transfers the nodes, and the
+//	Breakpoints keep their addresses. Copying allocates new ones. So
+//	comparing this token before and after distinguishes a move from a
+//	copy, which comparing parameters cannot do.
+//
+//	\pre	p has at least one Breakpoint.
+static const Breakpoint *
+envelope_storage(const Partial &p)
+{
+    return &(p.begin().breakpoint());
+}
+
+//	Verify that a Partial has exactly the Breakpoints and label that
+//	make_test_partial() builds.
+static void
+verify_test_partial(const Partial &p)
+{
+    TEST(p.numBreakpoints() == Partial::size_type(MOVE_NUM_BPTS));
+    TEST(p.label() == MOVE_LABEL);
+
+    int i = 0;
+    for (Partial::const_iterator it = p.begin(); it != p.end(); ++it, ++i)
+    {
+        SAME_PARAM_VALUES(it.time(), MOVE_TIMES[i]);
+        SAME_PARAM_VALUES(it.breakpoint().frequency(), MOVE_FREQS[i]);
+        SAME_PARAM_VALUES(it.breakpoint().amplitude(), MOVE_AMPS[i]);
+        SAME_PARAM_VALUES(it.breakpoint().bandwidth(), MOVE_BWS[i]);
+        SAME_PARAM_VALUES(it.breakpoint().phase(), MOVE_PHS[i]);
+    }
+    TEST(i == MOVE_NUM_BPTS);
+}
+
+//	Verify that two Partials are equivalent: same label, same Breakpoints
+//	at the same times. This says nothing about whether they share storage,
+//	and is the right question to ask of a Partial that must not have been
+//	modified.
+static void
+verify_equivalent_partials(const Partial &p, const Partial &reference)
+{
+    TEST(p.numBreakpoints() == reference.numBreakpoints());
+    TEST(p.label() == reference.label());
+
+    Partial::const_iterator a = p.begin();
+    Partial::const_iterator b = reference.begin();
+    while (a != p.end() && b != reference.end())
+    {
+        SAME_PARAM_VALUES(a.time(), b.time());
+        SAME_PARAM_VALUES(a.breakpoint().frequency(),
+                          b.breakpoint().frequency());
+        SAME_PARAM_VALUES(a.breakpoint().amplitude(),
+                          b.breakpoint().amplitude());
+        SAME_PARAM_VALUES(a.breakpoint().bandwidth(),
+                          b.breakpoint().bandwidth());
+        SAME_PARAM_VALUES(a.breakpoint().phase(), b.breakpoint().phase());
+        ++a;
+        ++b;
+    }
+    TEST(a == p.end());
+    TEST(b == reference.end());
+}
+
+// ----------- test_move_semantics -----------
+//
+static void
+test_move_semantics(void)
+{
+    std::cout << "\t--- testing Partial move construction and assignment... "
+                 "---\n\n";
+
+    //	Partial must have move operations, and they must not throw,
+    //	otherwise every "move" is a deep copy of the Breakpoint map.
+    TEST(std::is_move_constructible<Partial>::value);
+    TEST(std::is_move_assignable<Partial>::value);
+    TEST(std::is_nothrow_move_constructible<Partial>::value);
+    TEST(std::is_nothrow_move_assignable<Partial>::value);
+
+    //	Copy operations must survive the addition of the move operations.
+    TEST(std::is_copy_constructible<Partial>::value);
+    TEST(std::is_copy_assignable<Partial>::value);
+
+    //	Move construction takes over the envelope: the new Partial has the
+    //	old one's Breakpoints, and they are the same Breakpoints, not
+    //	copies of them.
+    Partial p = make_test_partial();
+    const Breakpoint *storage = envelope_storage(p);
+
+    Partial moved(std::move(p));
+    verify_test_partial(moved);
+    TEST(envelope_storage(moved) == storage);
+
+    //	The moved-from Partial is left valid and empty, and can be used
+    //	again.
+    TEST(p.numBreakpoints() == 0);
+    p.insert(1.5, Breakpoint(440, .5, 0, 0));
+    TEST(p.numBreakpoints() == 1);
+
+    //	Move assignment takes over the envelope too, and releases whatever
+    //	the target was holding.
+    Partial assigned;
+    assigned.insert(9.0, Breakpoint(100, .1, 0, 0));
+    assigned.setLabel(99);
+
+    storage = envelope_storage(moved);
+    assigned = std::move(moved);
+    verify_test_partial(assigned);
+    TEST(envelope_storage(assigned) == storage);
+    TEST(moved.numBreakpoints() == 0);
+
+    //	Copying still copies: the result is equivalent to its source but
+    //	has its own storage, and mutating it leaves the source alone.
+    Partial source = make_test_partial();
+    Partial copy(source);
+    verify_equivalent_partials(copy, source);
+    TEST(envelope_storage(copy) != envelope_storage(source));
+
+    copy.insert(0.9, Breakpoint(200, .1, 0, 0));
+    TEST(copy.numBreakpoints() == Partial::size_type(MOVE_NUM_BPTS + 1));
+    verify_test_partial(source);
+}
+
+// ----------- test_synthesize_sink_parameter -----------
+//
+//	Synthesizer::synthesize takes its Partial by value, as a sink
+//	parameter, because it quantizes and phase-corrects a working copy.
+//	Two things follow, and they are different questions:
+//
+//	  an lvalue argument is copied, so the caller's Partial must come back
+//	  equivalent to what it was, still owning its own envelope;
+//
+//	  an rvalue argument is moved, so the caller's envelope is taken over
+//	  rather than duplicated.
+//
+static void
+test_synthesize_sink_parameter(void)
+{
+    std::cout << "\t--- testing that synthesis consumes a copy, not the "
+                 "caller's Partial... ---\n\n";
+
+    const double srate = 44100;
+
+    //	through synthesize( Partial ), with an lvalue
+    {
+        Partial p = make_test_partial();
+        Partial reference = p;
+        const Breakpoint *storage = envelope_storage(p);
+
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth.synthesize(p);
+
+        TEST(buf.size() > 0);
+        verify_equivalent_partials(p, reference);
+
+        //	the caller still owns the envelope it started with, so nothing
+        //	was moved out from under it
+        TEST(envelope_storage(p) == storage);
+    }
+
+    //	through operator()( const Partial & )
+    {
+        Partial p = make_test_partial();
+        Partial reference = p;
+        const Breakpoint *storage = envelope_storage(p);
+
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth(p);
+
+        TEST(buf.size() > 0);
+        verify_equivalent_partials(p, reference);
+        TEST(envelope_storage(p) == storage);
+    }
+
+    //	through the range overload, which dereferences its iterators to
+    //	lvalues, so every Partial in the list is copied and left alone
+    {
+        PartialList plist;
+        plist.push_back(make_test_partial());
+        plist.push_back(make_test_partial());
+        const Partial reference = make_test_partial();
+
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth.synthesize(plist.begin(), plist.end());
+
+        TEST(buf.size() > 0);
+        TEST(plist.size() == 2);
+        for (PartialList::const_iterator it = plist.begin(); it != plist.end();
+             ++it)
+        {
+            verify_equivalent_partials(*it, reference);
+        }
+    }
+
+    //	an rvalue argument is moved into the parameter: the caller's
+    //	envelope is taken over, not duplicated. Checking only that samples
+    //	came out would not show this.
+    {
+        Partial p = make_test_partial();
+
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth.synthesize(std::move(p));
+
+        TEST(buf.size() > 0);
+        TEST(p.numBreakpoints() == 0);
+    }
+}
+
 // ----------- main -----------
 //
 int
 main()
 {
     std::cout << "Unit test for Partial class." << endl;
-    std::cout << "Relies on Breakpoint and Partial::iterator." << endl << endl;
+    std::cout << "Relies on Breakpoint, Partial::iterator, and Synthesizer."
+              << endl
+              << endl;
     std::cout << "Built: " << __DATE__ << endl << endl;
 
     try
@@ -393,6 +650,8 @@ main()
         test_parametersAt();
         test_absorb();
         test_split();
+        test_move_semantics();
+        test_synthesize_sink_parameter();
     }
     catch (Exception &ex)
     {

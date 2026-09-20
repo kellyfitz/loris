@@ -78,7 +78,9 @@ class Partial_ConstIterator;
 //!	terms of these:
 //!		default construction
 //!		copy (construction)
+//!		move (construction)
 //!		operator= (assign)
+//!		operator= (move assign)
 //!		operator== (equivalence)
 //!		size
 //!		insert( pos, Breakpoint )
@@ -136,6 +138,14 @@ class Partial
     //!	\param	other is the Partial to copy.
     Partial(const Partial &other);
 
+    //!	Return a new Partial that assumes the Breakpoints and label of
+    //!	another Partial, without copying the Breakpoint envelope.
+    //!
+    //!	\param	other is the Partial to move from. It is left valid and
+    //!			empty (having no Breakpoints), and may be assigned to or
+    //!			destroyed.
+    Partial(Partial &&other) noexcept = default;
+
     //!	Destroy this Partial.
     ~Partial(void);
 
@@ -147,6 +157,14 @@ class Partial
     //!
     //!	\param	other is the Partial to copy.
     Partial &operator=(const Partial &other);
+
+    //!	Make this Partial assume the Breakpoints and label of another
+    //!	Partial, without copying the Breakpoint envelope.
+    //!
+    //!	\param	other is the Partial to move from. It is left valid and
+    //!			empty (having no Breakpoints), and may be assigned to or
+    //!			destroyed.
+    Partial &operator=(Partial &&other) noexcept = default;
 
     //	-- container-dependent implementation --
 

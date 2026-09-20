@@ -48,6 +48,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 //	begin namespace
 namespace Loris
@@ -172,7 +173,7 @@ Resampler::resample(Partial &p) const
     }
 
     //	store the new Partial:
-    p = newp;
+    p = std::move(newp);
 
     if (phaseCorrect_)
     {
@@ -265,7 +266,7 @@ Resampler::resample(Partial &p, const LinearEnvelope &timingEnv) const
     }
 
     //	store the new Partial:
-    p = newp;
+    p = std::move(newp);
 }
 
 // ---------------------------------------------------------------------------
@@ -360,7 +361,7 @@ Resampler::quantize(Partial &p) const
     }
 
     //	store the new Partial:
-    p = newp;
+    p = std::move(newp);
 }
 
 // ---------------------------------------------------------------------------

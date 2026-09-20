@@ -266,7 +266,7 @@ TimeShifter::operator()(Partial &p) const
     {
         result.insert(pos.time() + offset, pos.breakpoint());
     }
-    p = result;
+    p = std::move(result);
 }
 
 // ---------------------------------------------------------------------------
