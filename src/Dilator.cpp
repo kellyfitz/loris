@@ -41,6 +41,7 @@
 #include "PartialList.h"
 
 #include <algorithm>
+#include <utility>
 
 //	begin namespace
 namespace Loris
@@ -262,7 +263,7 @@ Dilator::dilate(Partial &p) const
     }
 
     //	store the new Partial:
-    p = newp;
+    p = std::move(newp);
 }
 
 // ---------------------------------------------------------------------------

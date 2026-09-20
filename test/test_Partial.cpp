@@ -41,9 +41,14 @@
 
 #include "Exception.h"
 #include "Partial.h"
+#include "PartialList.h"
+#include "Synthesizer.h"
 
 #include <cmath>
 #include <iostream>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 using namespace Loris;
 using namespace std;
@@ -379,13 +384,207 @@ test_split(void)
     }
 }
 
+// ----------- helpers for the move/sink tests -----------
+//
+//	Partial has no operator==, so compare field by field.
+
+static const int MOVE_NUM_BPTS = 4;
+static const double MOVE_TIMES[] = {.1, .25, .4, .55};
+static const double MOVE_FREQS[] = {310, 305, 312, 308};
+static const double MOVE_AMPS[] = {.2, .35, .3, .15};
+static const double MOVE_BWS[] = {0, .1, .25, .05};
+static const double MOVE_PHS[] = {-.8, .4, 1.1, -.3};
+static const Partial::label_type MOVE_LABEL = 7;
+
+static Partial
+make_test_partial(void)
+{
+    Partial p;
+    for (int i = 0; i < MOVE_NUM_BPTS; ++i)
+    {
+        p.insert(MOVE_TIMES[i], Breakpoint(MOVE_FREQS[i], MOVE_AMPS[i],
+                                           MOVE_BWS[i], MOVE_PHS[i]));
+    }
+    p.setLabel(MOVE_LABEL);
+    return p;
+}
+
+//	Verify that p has exactly the Breakpoints and label that
+//	make_test_partial() builds.
+static void
+verify_test_partial(const Partial &p)
+{
+    TEST(p.numBreakpoints() == Partial::size_type(MOVE_NUM_BPTS));
+    TEST(p.label() == MOVE_LABEL);
+
+    int i = 0;
+    for (Partial::const_iterator it = p.begin(); it != p.end(); ++it, ++i)
+    {
+        SAME_PARAM_VALUES(it.time(), MOVE_TIMES[i]);
+        SAME_PARAM_VALUES(it.breakpoint().frequency(), MOVE_FREQS[i]);
+        SAME_PARAM_VALUES(it.breakpoint().amplitude(), MOVE_AMPS[i]);
+        SAME_PARAM_VALUES(it.breakpoint().bandwidth(), MOVE_BWS[i]);
+        SAME_PARAM_VALUES(it.breakpoint().phase(), MOVE_PHS[i]);
+    }
+    TEST(i == MOVE_NUM_BPTS);
+}
+
+//	Verify that two Partials have identical Breakpoints and labels.
+static void
+verify_same_partial(const Partial &p, const Partial &reference)
+{
+    TEST(p.numBreakpoints() == reference.numBreakpoints());
+    TEST(p.label() == reference.label());
+
+    Partial::const_iterator a = p.begin();
+    Partial::const_iterator b = reference.begin();
+    while (a != p.end() && b != reference.end())
+    {
+        SAME_PARAM_VALUES(a.time(), b.time());
+        SAME_PARAM_VALUES(a.breakpoint().frequency(),
+                          b.breakpoint().frequency());
+        SAME_PARAM_VALUES(a.breakpoint().amplitude(),
+                          b.breakpoint().amplitude());
+        SAME_PARAM_VALUES(a.breakpoint().bandwidth(),
+                          b.breakpoint().bandwidth());
+        SAME_PARAM_VALUES(a.breakpoint().phase(), b.breakpoint().phase());
+        ++a;
+        ++b;
+    }
+    TEST(a == p.end());
+    TEST(b == reference.end());
+}
+
+// ----------- test_move_semantics -----------
+//
+static void
+test_move_semantics(void)
+{
+    std::cout << "\t--- testing Partial move construction and assignment... "
+                 "---\n\n";
+
+    //	Partial must have move operations, and they must not throw,
+    //	otherwise every "move" is a deep copy of the Breakpoint map.
+    TEST(std::is_move_constructible<Partial>::value);
+    TEST(std::is_move_assignable<Partial>::value);
+    TEST(std::is_nothrow_move_constructible<Partial>::value);
+    TEST(std::is_nothrow_move_assignable<Partial>::value);
+
+    //	Copy operations must survive the addition of the move operations.
+    TEST(std::is_copy_constructible<Partial>::value);
+    TEST(std::is_copy_assignable<Partial>::value);
+
+    //	move construction: the new Partial has everything the old one had.
+    Partial p = make_test_partial();
+    Partial moved(std::move(p));
+    verify_test_partial(moved);
+
+    //	The moved-from Partial is valid and empty, and can be used again.
+    TEST(p.numBreakpoints() == 0);
+    p.insert(1.5, Breakpoint(440, .5, 0, 0));
+    TEST(p.numBreakpoints() == 1);
+
+    //	move assignment: same story.
+    Partial assigned;
+    assigned.setLabel(99);
+    assigned = std::move(moved);
+    verify_test_partial(assigned);
+
+    TEST(moved.numBreakpoints() == 0);
+    moved = make_test_partial();
+    verify_test_partial(moved);
+
+    //	Copying still copies: the source is untouched and independent.
+    Partial source = make_test_partial();
+    Partial copy(source);
+    verify_test_partial(source);
+    verify_test_partial(copy);
+    copy.insert(0.9, Breakpoint(200, .1, 0, 0));
+    TEST(copy.numBreakpoints() == Partial::size_type(MOVE_NUM_BPTS + 1));
+    verify_test_partial(source);
+}
+
+// ----------- test_synthesize_does_not_modify_source -----------
+//
+//	Synthesizer::synthesize takes its Partial by value, as a sink
+//	parameter, because it quantizes and phase-corrects a working copy.
+//	Now that Partial has move operations, verify that an lvalue argument
+//	is still copied, and that the caller's Partial is not disturbed.
+//
+static void
+test_synthesize_does_not_modify_source(void)
+{
+    std::cout << "\t--- testing that synthesis does not modify the source "
+                 "Partial... ---\n\n";
+
+    const double srate = 44100;
+
+    //	through synthesize( Partial )
+    {
+        Partial p = make_test_partial();
+        Partial reference = p;
+
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth.synthesize(p);
+
+        TEST(buf.size() > 0);
+        verify_test_partial(p);
+        verify_same_partial(p, reference);
+    }
+
+    //	through operator()( const Partial & )
+    {
+        Partial p = make_test_partial();
+        Partial reference = p;
+
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth(p);
+
+        TEST(buf.size() > 0);
+        verify_same_partial(p, reference);
+    }
+
+    //	through the range overload, on a PartialList
+    {
+        PartialList plist;
+        plist.push_back(make_test_partial());
+        plist.push_back(make_test_partial());
+        Partial reference = make_test_partial();
+
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth.synthesize(plist.begin(), plist.end());
+
+        TEST(buf.size() > 0);
+        TEST(plist.size() == 2);
+        for (PartialList::const_iterator it = plist.begin(); it != plist.end();
+             ++it)
+        {
+            verify_same_partial(*it, reference);
+        }
+    }
+
+    //	An rvalue argument is moved, not copied: the temporary is consumed,
+    //	but nothing observable about the caller's data changes.
+    {
+        std::vector<double> buf;
+        Synthesizer synth(srate, buf);
+        synth.synthesize(make_test_partial());
+        TEST(buf.size() > 0);
+    }
+}
+
 // ----------- main -----------
 //
 int
 main()
 {
     std::cout << "Unit test for Partial class." << endl;
-    std::cout << "Relies on Breakpoint and Partial::iterator." << endl << endl;
+    std::cout << "Relies on Breakpoint, Partial::iterator, and Synthesizer."
+              << endl
+              << endl;
     std::cout << "Built: " << __DATE__ << endl << endl;
 
     try
@@ -393,6 +592,8 @@ main()
         test_parametersAt();
         test_absorb();
         test_split();
+        test_move_semantics();
+        test_synthesize_does_not_modify_source();
     }
     catch (Exception &ex)
     {

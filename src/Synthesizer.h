@@ -159,6 +159,11 @@ class Synthesizer
     //!         resized to accommodate the entire duration of the
     //!         Partial, p, including fade out at the end.
     //!	\throw	InvalidPartial if the Partial has negative start time.
+    //!
+    //!	The Partial is taken by value on purpose: it is a sink parameter.
+    //!	Synthesis quantizes and phase-corrects a working copy of the Partial
+    //!	(see Resampler::quantize), so an lvalue argument is copied once and
+    //!	left unmodified, and an rvalue argument is moved, costing nothing.
     void synthesize(Partial p);
 
     //!	Function call operator: same as synthesize( p ).

@@ -48,3 +48,5 @@ __pycache__/
 
 # --- Local-only working notes (not for the repo, for now) ---
 /PROJECT-STATUS.md
+/PLAN-time-warp.md
+/src/fast-synth-src/DESIGN-NOTES.md
