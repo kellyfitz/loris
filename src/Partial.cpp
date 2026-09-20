@@ -214,7 +214,11 @@ Partial::const_iterator
 Partial::findAfter(double time) const
 {
 #if defined(USE_VECTOR)
-    //	see note above
+    //	see note above. Note also that upper_bound does not agree with
+    //	lower_bound about a Breakpoint at exactly the specified time: it
+    //	skips one, and returns the position after it. USE_VECTOR is undefined
+    //	above, so this branch is unreachable, but anything relying on the
+    //	documented behavior would have to be revisited before enabling it.
     Partial_value_type dummy(time, Breakpoint());
     return std::upper_bound(_breakpoints.begin(), _breakpoints.end(), dummy,
                             order_by_time);
@@ -225,7 +229,7 @@ Partial::findAfter(double time) const
 
 //!	Return an iterator refering to the insertion position for a
 //!	Breakpoint at the specified time (that is, the position of the first
-//!	Breakpoint at a time later than the specified time).
+//!	Breakpoint at a time not earlier than the specified time).
 //
 Partial::iterator
 Partial::findAfter(double time)

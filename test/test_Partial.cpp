@@ -214,6 +214,53 @@ test_parametersAt(void)
     SAME_PHASE_VALUES(p1.parametersAt(t).phase(), P1_PHS[2]);
 }
 
+// ----------- test_findAfter -----------
+//
+//	findAfter is lower_bound: it returns the first Breakpoint at a time
+//	NOT EARLIER than the argument, so a Breakpoint at exactly that time is
+//	the position returned, not skipped. The header said "later than" for
+//	years and nothing caught it, so pin the contract here.
+//
+static void
+test_findAfter(void)
+{
+    std::cout << "\t--- testing Partial::findAfter... ---\n\n";
+
+    Partial p;
+    p.insert(0.1, Breakpoint(400., 0.2, 0., 0.));
+    p.insert(0.2, Breakpoint(460., 0.9, 0., 0.));
+    p.insert(0.4, Breakpoint(520., 0.5, 0., 0.));
+
+    const Partial &cp = p;
+
+    //	earlier than everything: the first Breakpoint
+    TEST(cp.findAfter(0.05) == cp.begin());
+
+    //	exactly at a Breakpoint: that Breakpoint, not the one after it
+    TEST(cp.findAfter(0.1).time() == 0.1);
+    TEST(cp.findAfter(0.2).time() == 0.2);
+    TEST(cp.findAfter(0.4).time() == 0.4);
+
+    //	between Breakpoints: the one after
+    TEST(cp.findAfter(0.15).time() == 0.2);
+    TEST(cp.findAfter(0.35).time() == 0.4);
+
+    //	later than everything: end()
+    TEST(cp.findAfter(0.5) == cp.end());
+
+    //	decrementing the position found for an exact time reaches the
+    //	latest Breakpoint STRICTLY earlier than it -- the property that
+    //	TimeWarp's reverse walk depends on
+    Partial::const_iterator it = cp.findAfter(0.4);
+    TEST(it != cp.begin());
+    TEST((--it).time() == 0.2);
+
+    //	the two overloads agree
+    TEST(Partial::const_iterator(p.findAfter(0.1)) == cp.findAfter(0.1));
+    TEST(Partial::const_iterator(p.findAfter(0.15)) == cp.findAfter(0.15));
+    TEST(Partial::const_iterator(p.findAfter(0.5)) == cp.findAfter(0.5));
+}
+
 // ----------- test_absorb -----------
 //
 static void
@@ -648,6 +695,7 @@ main()
     try
     {
         test_parametersAt();
+        test_findAfter();
         test_absorb();
         test_split();
         test_move_semantics();
