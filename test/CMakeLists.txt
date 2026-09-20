@@ -47,6 +47,7 @@ loris_add_test(test_resample test_Resampler.cpp)
 loris_add_test(test_sdiffile test_SdifFile.cpp)
 loris_add_test(test_spcfile test_SpcFile.cpp)
 loris_add_test(test_synthesizer test_Synthesizer.cpp)
+loris_add_test(test_timewarp test_TimeWarp.cpp)
 
 # Python module test: morphtest.py against the just-built module in
 # build/scripting (PYTHONPATH holds both _loris and loris.py there)

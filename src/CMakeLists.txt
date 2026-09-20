@@ -54,6 +54,7 @@ set(CPP_SRC
     SpectralPeakSelector.cpp
     SpectralSurface.cpp
     Synthesizer.cpp
+    TimeWarp.cpp
     fftsg.c
 )
 
@@ -152,6 +153,7 @@ set(LORIS_HEADERS
     SpcFile.h
     SpectralSurface.h
     Synthesizer.h
+    TimeWarp.h
 )
 
 include(GNUInstallDirs)
