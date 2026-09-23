@@ -249,7 +249,14 @@ class PartialWalker
             return;
         }
 
-        if ((_fade > Partial::ShortestSafeFadeTime) && (gap > 2. * _fade))
+        //	Two nulls need three separations wider than the merge window: the
+        //	fade out from the exit, the span between the nulls, and the fade in
+        //	to the entry. The first and last are _fade; the middle one is
+        //	gap - 2*_fade, so `gap > 2*_fade` alone is not enough -- a gap a
+        //	half-nanosecond wider than the two fades would put the second null
+        //	on top of the first and erase it.
+        if ((_fade > Partial::ShortestSafeFadeTime) &&
+            ((gap - (2. * _fade)) > Partial::ShortestSafeFadeTime))
         {
             //	room for a fade out and a fade in:
             _out.insert(_exitTime + _fade,

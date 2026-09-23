@@ -295,15 +295,33 @@ test_reverse(void)
     //	compare 10 ms blocks of the reverse render against the mirrored
     //	blocks of the forward render, skipping the outermost blocks, where
     //	the Synthesizer's own fades are not mirror images
-    const int blockLen = static_cast<int>(0.010 * fs);
-    const int numBlocks = 28;
+    const double blockDur = 0.010;
+    const int blockLen = static_cast<int>(blockDur * fs);
+
+    //	the reversed trajectory spans 0.3 s, so derive the block count from
+    //	the span rather than hard-coding it: a change to the geometry then
+    //	moves the loop with it instead of leaving it silently misaligned
+    const int numBlocks = static_cast<int>(0.3 / blockDur);
+
     for (int b = 1; b < numBlocks - 1; ++b)
     {
-        //	reverse block b covers synthesis time [b, b+1) * 0.010, which
-        //	is envelope time (0.4 - (b+1)*0.010, 0.4 - b*0.010]; the
+        //	reverse block b covers synthesis time [b, b+1) * blockDur, which
+        //	is envelope time (0.4 - (b+1)*blockDur, 0.4 - b*blockDur]; the
         //	forward render has that envelope time at the same index
         const int revFirst = b * blockLen;
-        const int fwdFirst = static_cast<int>((0.4 - ((b + 1) * 0.010)) * fs);
+        const int fwdFirst =
+            static_cast<int>((0.4 - ((b + 1) * blockDur)) * fs);
+
+        //	Both windows must lie inside what was actually rendered. Without
+        //	these, a change to the geometry or to the Synthesizer's default
+        //	fade time would read past the end of a buffer -- undefined
+        //	behavior that can pass as easily as it crashes -- instead of
+        //	failing here.
+        TEST(0 <= fwdFirst);
+        TEST(vRev.size() >=
+             static_cast<vector<double>::size_type>(revFirst + blockLen));
+        TEST(vFwd.size() >=
+             static_cast<vector<double>::size_type>(fwdFirst + blockLen));
 
         double revPeak = 0., fwdPeak = 0.;
         for (int n = 0; n < blockLen; ++n)
@@ -487,6 +505,99 @@ test_narrow_gap(void)
     SAME_PARAM(warped.amplitudeAt(times[3]), p.amplitudeAt(0.4));
 }
 
+// ----------- test_gap_null_spacing -----------
+//
+//	Whatever the fade time, bracketing a gap must never cost a Breakpoint.
+//	Partial::insert erases any neighbour within ShortestSafeFadeTime of the
+//	insertion point, so a null placed too close to the Breakpoint it is
+//	meant to separate destroys it. Sweep the fade time across the width of
+//	the gap -- in particular across the point where the two fades exactly
+//	fill it -- and assert the invariant at every step.
+//
+static void
+test_gap_null_spacing(void)
+{
+    cout << "\t--- testing null spacing across every fade time... ---\n\n";
+
+    const Partial p = makeSource();
+
+    //	the fold of test_fold_with_gap: out of the Partial at t=0.18, back in
+    //	at t=0.42, so the gap is 0.24 seconds wide
+    LinearEnvelope timing;
+    timing.insert(0.0, 0.1);
+    timing.insert(0.3, 0.6);
+    timing.insert(0.6, 0.1);
+
+    const double gap = 0.24;
+
+    //	the crossings and knees that must survive every time
+    const double kept[] = {0.0, 0.06, 0.18, 0.42, 0.54, 0.6};
+    const int numKept = 6;
+
+    //	fade times from far below half the gap to far above it, landing
+    //	exactly on half the gap and a half-nanosecond either side of it,
+    //	which is where the old guard mangled the result
+    const double fades[] = {0.0,
+                            Partial::ShortestSafeFadeTime,
+                            1.0E-8,
+                            0.001,
+                            0.05,
+                            (0.5 * gap) - 1.0E-9,
+                            (0.5 * gap) - 2.5E-10,
+                            0.5 * gap,
+                            (0.5 * gap) + 2.5E-10,
+                            (0.5 * gap) + 1.0E-9,
+                            0.2,
+                            1.0};
+    const int numFades = 12;
+
+    for (int f = 0; f < numFades; ++f)
+    {
+        const double fade = fades[f];
+        const Partial warped = TimeWarp(timing, fade).warp(p);
+
+        const vector<double> times = breakpointTimes(warped);
+
+        //	nothing was erased: every crossing and knee is still there, and
+        //	there are one or two nulls between them
+        int numNulls = 0;
+        for (Partial::const_iterator it = warped.begin(); it != warped.end();
+             ++it)
+        {
+            if (BreakpointUtils::isNull(it.breakpoint()))
+            {
+                ++numNulls;
+            }
+        }
+        TEST((1 == numNulls) || (2 == numNulls));
+        TEST(times.size() ==
+             static_cast<vector<double>::size_type>(numKept + numNulls));
+
+        int k = 0;
+        for (Partial::const_iterator it = warped.begin(); it != warped.end();
+             ++it)
+        {
+            if (!BreakpointUtils::isNull(it.breakpoint()))
+            {
+                SAME_TIME(it.time(), kept[k]);
+                ++k;
+            }
+        }
+        TEST(numKept == k);
+
+        //	and every Breakpoint is far enough from its neighbour that
+        //	Partial::insert did not merge them
+        for (vector<double>::size_type i = 1; i < times.size(); ++i)
+        {
+            TEST((times[i] - times[i - 1]) > Partial::ShortestSafeFadeTime);
+        }
+
+        //	the gap is still silent: the warped Partial reaches zero
+        //	amplitude somewhere inside it
+        TEST(0. == warped.amplitudeAt(0.5 * (0.18 + 0.42)));
+    }
+}
+
 // ----------- test_source_unmodified -----------
 //
 //	Warping is not performed in place. Unlike dilate and resample, the
@@ -602,6 +713,7 @@ main(void)
         test_freeze();
         test_fold_with_gap();
         test_narrow_gap();
+        test_gap_null_spacing();
         test_source_unmodified();
         test_validation();
     }
